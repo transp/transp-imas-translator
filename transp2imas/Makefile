@@ -53,4 +53,4 @@ transp2imas.o: transp2imas.f90
 	$(F90) $(COPTS) -I. $(INCLUDES) -c $<
 	
 clean:
-	rm -f transp2imas *.o *.mod *~
+	rm -f transp2imas eqdskin fort.* transp2ids.* *.o *.mod *~

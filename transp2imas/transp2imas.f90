@@ -1,4 +1,4 @@
-      program transp2ids_stand
+      program transp2ids
 
 !---------------------------------------------------------------------
 !  use the trread library to read single precision transp data.
@@ -11,7 +11,7 @@
 !  this program makes the calls documented in the trread.hlp
 !---------------------------------------------------------------------
 
-      use transp2ids_module
+  use transp2imas_module
   use ezspline
   use ezspline_obj
 

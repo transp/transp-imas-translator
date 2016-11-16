@@ -1,4 +1,4 @@
-module transp2ids_module
+module transp2imas_module
    use ids_schemas
    use ids_routines
 
@@ -23,4 +23,4 @@ module transp2ids_module
       integer whichtimeslice
       integer whichprofile
       real*8 timeofinterest
-end module transp2ids_module
+end module transp2imas_module

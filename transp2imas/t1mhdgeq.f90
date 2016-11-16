@@ -1,13 +1,5 @@
-!module toray_ga_global
-!
-!  integer nprof
-!
-!end module toray_ga_global
-
 subroutine t1mhdeq_geq(runid, time)
-  !
-  ! test driver for toray-ga
-  ! 
+
   implicit none
   integer, parameter :: r8 = selected_real_kind(12,100)
 
@@ -2432,7 +2424,7 @@ subroutine t1mhdeqi_geqdsk(lun_geqdsk,geqdsk_lbl, &
   use eqi_rzbox_module
   USE EZspline_obj
   USE EZspline
-  use transp2ids_module
+  use transp2imas_module
 
   implicit NONE
 
