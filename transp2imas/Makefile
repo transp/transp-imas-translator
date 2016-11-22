@@ -37,20 +37,19 @@ LIBS_transp = \
 	$(LOCAL)/lib/lsode_linpack.a \
 	$(LOCAL)/lib/portlib.a
 
-OBJ = transp2imas_mod.o transp2imas.o t1mhdgeq.o
-
-transp2imas: $(OBJ)
+transp2imas : transp2imas_mod.o transp2imas.o t1mhdgeq.o
 	@echo "   * $^ -> $@"
-	$(F90) $(OBJ) $(COPTS) $(LIBS_transp) $(INCLUDES) $(LIBS) -I. -o $@
+	$(F90) transp2imas_mod.o transp2imas.o t1mhdgeq.o $(COPTS) $(LIBS_transp) $(INCLUDES) $(LIBS) -I. -o $@
 
-transp2imas_mod.o: transp2imas_mod.f90
+transp2imas_mod.o : transp2imas_mod.f90
 	$(F90) $(COPTS) -I. $(INCLUDES) -c $<
 
-t1mhdgeq.o: t1mhdgeq.f90
+t1mhdgeq.o : t1mhdgeq.f90
 	$(F90) $(COPTS) -I. $(INCLUDES) -c $<
 
-transp2imas.o: transp2imas.f90
+transp2imas.o : transp2imas.f90
 	$(F90) $(COPTS) -I. $(INCLUDES) -c $<
 	
-clean:
+.PHONY : clean
+clean :
 	rm -f transp2imas eqdskin fort.* transp2ids.* *.o *.mod *~

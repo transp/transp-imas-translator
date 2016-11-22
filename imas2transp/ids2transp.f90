@@ -1229,7 +1229,7 @@ endif
        do kk=1,t_uf2d%ny
           t_uf2d%Y(kk)=cp%profiles_1d(1)%grid%rho_tor_norm(kk)
           do jj=1,t_uf2d%nx
-             t_uf2d%F(jj,kk)=1.0e-6 * cp%profiles_1d(jj)%n_e(kk)
+             t_uf2d%F(jj,kk)=1.0e-6 * cp%profiles_1d(jj)%electrons%density(kk)
           enddo
        enddo
        call put_data_to_ufiles(ilun, &
@@ -1281,7 +1281,7 @@ endif
        do kk=1,t_uf2d%ny
           t_uf2d%Y(kk)=cp%profiles_1d(1)%grid%rho_tor_norm(kk)
           do jj=1,t_uf2d%nx
-             t_uf2d%F(jj,kk)=cp%profiles_1d(jj)%t_e(kk)
+             t_uf2d%F(jj,kk)=cp%profiles_1d(jj)%electrons%temperature(kk)
           enddo
        enddo
        call put_data_to_ufiles(ilun, &
@@ -1322,17 +1322,18 @@ endif
     N_Ions=size(cp%profiles_1d(1)%ion)
     write(*,*)"# of ion species=", N_Ions
 
-             do ll=1,N_Ions  !=5
-                tmp1=cp%profiles_1d(1)%ion(ll)%a
-                tmp2=cp%profiles_1d(1)%ion(ll)%z_ion
-                tmp3=cp%profiles_1d(1)%ion(ll)%z_n
-                write(*,'(2i3,a,e10.3,a,e10.3,a,e10.3)') jj,ll," atom mass unit ",tmp1," ion charge unit ",tmp2," nuclear charge unit ",tmp3
-                do jj=2,t_uf2d%nx
-                   if(tmp1 .ne. cp%profiles_1d(1)%ion(ll)%a .or. &
-                      tmp2 .ne. cp%profiles_1d(1)%ion(ll)%z_n ) &
-                   write(*,*) " WARNING : atom mass not equal"
-                enddo
-             enddo
+	do ll=1,N_Ions  !=5
+		tmp1=cp%profiles_1d(1)%ion(ll)%element(1)%a
+		tmp2=cp%profiles_1d(1)%ion(ll)%z_ion
+		tmp3=cp%profiles_1d(1)%ion(ll)%element(1)%z_n
+		write(*,'(2i3,a,e10.3,a,e10.3,a,e10.3)') jj,ll," atom mass unit ",tmp1," ion charge unit ",&
+			tmp2," nuclear charge unit ",tmp3
+		do jj=2,t_uf2d%nx
+				if(tmp1 .ne. cp%profiles_1d(1)%ion(ll)%element(1)%a .or. &
+					tmp2 .ne. cp%profiles_1d(1)%ion(ll)%element(1)%z_n ) &
+					write(*,*) " WARNING : atom mass not equal"
+		enddo
+	enddo
 
     do ll=1,N_Ions  !=5
        write(*,*)"ion",ll,"label:",cp%profiles_1d(1)%ion(ll)%label
@@ -1341,15 +1342,16 @@ endif
        prefix='A'
        write(suffix,'(a,i1)') 'NZ',ll
        t_uf2d%nsc=3
-       write(comment,'(a,i2,a)') 'imported from ids cp profiles_1d(time) ion',ll,'ion cunit: ion charge unit; nuc cunit: nuclear charge unit.'
+       write(comment,'(a,i2,a)') 'imported from ids cp profiles_1d(time) ion',ll,&
+       	'ion cunit: ion charge unit; nuc cunit: nuclear charge unit.'
 
        if( t_uf2d%nsc>0) then
           allocate( t_uf2d%SCVAL( t_uf2d%nsc ) )
           allocate( t_uf2d%labels( t_uf2d%nsc ) )
           allocate( t_uf2d%unitss( t_uf2d%nsc ) )
-          t_uf2d%SCVAL(1) =  cp%profiles_1d(1)%ion(ll)%a
+          t_uf2d%SCVAL(1) =  cp%profiles_1d(1)%ion(ll)%element(1)%a
           t_uf2d%SCVAL(2) =  cp%profiles_1d(1)%ion(ll)%z_ion
-          t_uf2d%SCVAL(3) =  cp%profiles_1d(1)%ion(ll)%z_n
+          t_uf2d%SCVAL(3) =  cp%profiles_1d(1)%ion(ll)%element(1)%z_n
           write(t_uf2d%labels(1),'(a)') 'mass unit:'
           write(t_uf2d%labels(2),'(a)') 'ion cunit:'
           write(t_uf2d%labels(3),'(a)') 'nuc cunit:'
@@ -1375,7 +1377,7 @@ endif
           do kk=1,t_uf2d%ny
              t_uf2d%Y(kk)=cp%profiles_1d(1)%grid%rho_tor_norm(kk)
              do jj=1,t_uf2d%nx
-                t_uf2d%F(jj,kk)= 1.0e-6 * cp%profiles_1d(jj)%ion(ll)%n_i(kk)
+                t_uf2d%F(jj,kk)= 1.0e-6 * cp%profiles_1d(jj)%ion(ll)%density(kk)
              enddo
           enddo
           call put_data_to_ufiles(ilun, &
@@ -1421,7 +1423,7 @@ endif
           t_uf2d%Y(kk)=cp%profiles_1d(1)%grid%rho_tor_norm(kk)
           do jj=1,t_uf2d%nx
              t_uf2d%F(jj,kk)=cp%profiles_1d(jj)%n_i_total_over_n_e(kk) * &
-                             cp%profiles_1d(jj)%n_e(kk) * 1.0e-6
+                             cp%profiles_1d(jj)%electrons%density(kk) * 1.0e-6
           enddo
        enddo
        call put_data_to_ufiles(ilun, &
@@ -1465,9 +1467,9 @@ endif
           allocate( t_uf2d%SCVAL( t_uf2d%nsc ) )
           allocate( t_uf2d%labels( t_uf2d%nsc ) )
           allocate( t_uf2d%unitss( t_uf2d%nsc ) )
-          t_uf2d%SCVAL(1) =  cp%profiles_1d(1)%ion(ll)%a
+          t_uf2d%SCVAL(1) =  cp%profiles_1d(1)%ion(ll)%element(1)%a
           t_uf2d%SCVAL(2) =  cp%profiles_1d(1)%ion(ll)%z_ion
-          t_uf2d%SCVAL(3) =  cp%profiles_1d(1)%ion(ll)%z_n
+          t_uf2d%SCVAL(3) =  cp%profiles_1d(1)%ion(ll)%element(1)%z_n
           write(t_uf2d%labels(1),'(a)') 'mass unit:'
           write(t_uf2d%labels(2),'(a)') 'ion cunit:'
           write(t_uf2d%labels(3),'(a)') 'nuc cunit:'
@@ -1493,7 +1495,7 @@ endif
           do kk=1,t_uf2d%ny
              t_uf2d%Y(kk)=cp%profiles_1d(1)%grid%rho_tor_norm(kk)
              do jj=1,t_uf2d%nx
-                t_uf2d%F(jj,kk)=cp%profiles_1d(jj)%ion(ll)%t_i(kk)
+                t_uf2d%F(jj,kk)=cp%profiles_1d(jj)%ion(ll)%temperature(kk)
              enddo
           enddo
           call put_data_to_ufiles(ilun, &
