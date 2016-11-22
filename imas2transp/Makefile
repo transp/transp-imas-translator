@@ -19,17 +19,8 @@ LIBS_ezspline = \
 	$(LOCAL)/lib/ezcdf.a \
 	$(LOCAL)/lib/comput.a
 
-#ids2transp : ids2transp.o put_data_to_ufiles.o put_data_to_ufiles_module.o stringmod.o split.o
-#ids2transp : split.o stringmod.o put_data_to_ufiles_module.o put_data_to_ufiles.o ids2transp.o
-#	$(F90) $(COPTS) -o $@ $^ put_data_to_ufiles_module.o put_data_to_ufiles.o stringmod.o split.o $(LIBS_ufile) $(LIBS_ezspline) $(LIBS)
-ids2transp : put_data_to_ufiles_module.o put_data_to_ufiles.o ids2transp.o
-	$(F90) $(COPTS) -o $@ $^ put_data_to_ufiles_module.o put_data_to_ufiles.o $(LIBS_ufile) $(LIBS_ezspline) $(LIBS)
-
-split.o : split.f90
-	$(F90) $(COPTS) -c $<
-
-stringmod.o : stringmod.f90
-	$(F90) $(COPTS) -I. -c $<
+imas2transp : put_data_to_ufiles_module.o put_data_to_ufiles.o imas2transp.o
+	$(F90) $(COPTS) -o $@ $^ $(LIBS_ufile) $(LIBS_ezspline) $(LIBS)
 
 put_data_to_ufiles_module.o : put_data_to_ufiles_module.f90
 	$(F90) $(COPTS) -c $<
@@ -37,9 +28,9 @@ put_data_to_ufiles_module.o : put_data_to_ufiles_module.f90
 put_data_to_ufiles.o : put_data_to_ufiles.f90
 	$(F90) $(COPTS) -I. -c $<
 
-ids2transp.o : ids2transp.f90
+imas2transp.o : imas2transp.f90
 	$(F90) $(COPTS) -I. $(INCLUDES) -c $<
 
 .PHONY : clean
 clean :
-	rm -f ids2transp *.o *.mod *~
+	rm -f imas2transp *.o *.mod *~
