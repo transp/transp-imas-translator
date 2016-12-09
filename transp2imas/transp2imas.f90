@@ -1,4 +1,4 @@
-      program transp2ids
+program transp2ids
 
 !---------------------------------------------------------------------
 !  use the trread library to read single precision transp data.
@@ -14,7 +14,6 @@
   use transp2imas_module
   use ezspline
   use ezspline_obj
-
 
       implicit NONE
 
@@ -124,7 +123,6 @@
 
   type(ezspline1_r8) :: spln1
 
-
 !----------------------------------------------------------------
 !
       cmgsign(-1)='-'
@@ -163,13 +161,10 @@
       refshot = 100
       refrun =000
       treename = 'ids'
-!      treename = '/home/jcarlsso/projects/transp2ids'
       ! get ids shot & run number
       call getids_shotid(rpfile,shot,run)
 
       call imas_create(treename,shot,run,refshot,refrun,idsidx)
-
-!
 !
 !--------------------------
 !  connect to run
@@ -197,11 +192,11 @@
       allocate(mgdata(nmax,max(66,naxmgf)))
       allocate(mgslice(nxmax,max(66,naxmgf)))
 
-         ! fill ids
-         allocate(cp%profiles_1d(nprtime))
-         allocate(cp%time(nsctime))
-         allocate(eq%time_slice(nprtime))
-         allocate(eq%time(nsctime))
+      ! fill ids
+      allocate(cp%profiles_1d(nprtime))
+      allocate(cp%time(nsctime))
+      allocate(eq%time_slice(nprtime))
+      allocate(eq%time(nsctime))
 
 !---------------------------------
 !  get the x axis info for profiles f(x,t)
@@ -764,7 +759,8 @@
       if(iret.ne.nsctime) &
          call transp2ids_exit(' ?? VSURC read error')
       call transp2ids_echo('VSURC',scdata,1,nsctime)
-
+      write(*, *) ' VSURC', nsctime, scdata(nsctime)
+      !stop
          allocate(cp%global_quantities%v_loop(nsctime))
          cp%global_quantities%v_loop(:)= scdata(:)
 
@@ -883,6 +879,7 @@
       if(iret.ne.nsctime) &
          call transp2ids_exit(' ?? PCURC read error')
       call transp2ids_echo('PCURC',scdata,1,nsctime)
+      write(*, *) ' PCURC', nsctime, scdata(nsctime)
 
          eq%time_slice(:)%global_quantities%ip = scdata(1:)
 

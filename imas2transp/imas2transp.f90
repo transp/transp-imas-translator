@@ -7,119 +7,115 @@
 ! 2015-may-01
 ! Jin Chen PPPL
 
-program ids2transp_stand
-
 ! This program gets dummy data from ITER Data Model v3.0.3 and displays it
 
-use ids_schemas              !! These are the Fortran type definitions for the Physics Data Model
-use ids_routines             !! These are the Access Layer routines + management of IDS structures
+program ids2transp
 
-use transp_ufiles_0d         !! transp ufile scalar type
-use transp_ufiles_1d         !! transp ufile 1D array
-use transp_ufiles_2d         !! transp ufile 2D array
-use transp_ufiles_3d         !! transp ufile 3D array
+	use ids_schemas              !! These are the Fortran type definitions for the Physics Data Model
+	use ids_routines             !! These are the Access Layer routines + management of IDS structures
 
-implicit none
+	use transp_ufiles_0d         !! transp ufile scalar type
+	use transp_ufiles_1d         !! transp ufile 1D array
+	use transp_ufiles_2d         !! transp ufile 2D array
+	use transp_ufiles_3d         !! transp ufile 3D array
 
-!internal variables
-type (ids_equilibrium)   :: eq  ! Declaration of the empty ids variables to be filled
-type (ids_core_profiles) :: cp
-type (ids_pf_active)     :: pf
+	implicit none
 
-type(transp_ufiles_0d_data) :: t_uf0d
-type(transp_ufiles_1d_data) :: t_uf1d
-type(transp_ufiles_2d_data) :: t_uf2d
-type(transp_ufiles_3d_data) :: t_uf3d
+	!internal variables
+	type (ids_equilibrium)   :: eq ! Declaration of the empty ids variables to be filled
+	type (ids_core_profiles) :: cp
+	type (ids_pf_active)     :: pf
 
-character(len=132):: longstring
-character(len=5)  :: treename
+	type(transp_ufiles_0d_data) :: t_uf0d
+	type(transp_ufiles_1d_data) :: t_uf1d
+	type(transp_ufiles_2d_data) :: t_uf2d
+	type(transp_ufiles_3d_data) :: t_uf3d
 
-integer :: idx, shot, run
-integer :: i,j,k,ii
-integer :: N_Psi, N_Phi, N_Rho_Tor_Norm, N_Rho_Tor, N_Ions, N_q, N_r, N_z
-integer :: N_X_Points,N_S_Points, N_Outline_Points
-integer :: N_Profiles_2D, N_Dim1, N_Dim2
-integer :: N_C_Dim1, N_C_Dim2
-integer :: N_PF_Coils
+	character(len=132) :: longstring
+	character(len=5)   :: treename
 
-!prepare to write transp ufile
-integer :: ilun
-CHARACTER(len=16) :: prefix, suffix, disk, directory
-integer :: ishot
-CHARACTER(len=10) :: shdate
-CHARACTER(len=4) :: tdev !(tokamak id)
-integer :: ndim
-CHARACTER(len=160) :: comment
-integer :: tlen, xlen, ylen, zlen, tmplen
-integer :: is,jj,kk,ll,Ntmp,ierr
-real :: tmp1, tmp2, tmp3, eps = 1.e-6
-real :: r0 !vacuum major radius
-REAL twopi
-      integer  iarg,nargs
-      character*3 args(2),cshot,crun
+	integer :: idx, shot, run
+	integer :: i,j,k,ii
+	integer :: N_Psi, N_Phi, N_Rho_Tor_Norm, N_Rho_Tor, N_Ions, N_q, N_r, N_z
+	integer :: N_X_Points,N_S_Points, N_Outline_Points
+	integer :: N_Profiles_2D, N_Dim1, N_Dim2
+	integer :: N_C_Dim1, N_C_Dim2
+	integer :: N_PF_Coils
 
+	!prepare to write transp ufile
+	integer :: ilun
+	CHARACTER(len=16) :: prefix, suffix, disk, directory
+	integer :: ishot
+	CHARACTER(len=10) :: shdate
+	CHARACTER(len=4) :: tdev !(tokamak id)
+	integer :: ndim
+	CHARACTER(len=160) :: comment
+	integer :: tlen, xlen, ylen, zlen, tmplen
+	integer :: is,jj,kk,ll,Ntmp,ierr
+	real :: tmp1, tmp2, tmp3, eps = 1.e-6
+	real :: r0 !vacuum major radius
+	REAL :: twopi
+	integer :: iarg,nargs
+	character*3 :: args(2),cshot,crun
 
-write(*,*) "== read data from ITER Data Model v3.0.3 =="
-twopi=2.*4.*atan(1.)
+	write(*,*) "== read data from ITER Data Model v3.0.3 =="
+	twopi=2.*4.*atan(1.)
 
-treename = 'ids'
-!shot     = 20
-!run      = 107    
-      cshot = ' '
-      crun = ' '
-      call get_arg_count(nargs)
-      if(nargs.lt.2) then
-         write(*,*) 'ids2transp should be given shot and run number'
-         write(*,*) 'syntax: ids2transp shotnumber runnumber'
-         write(*,*) 'shotnumber and runnumber are <3 digits integers'
-      endif
-      iarg=1
-         call get_arg(iarg,args(iarg))
-         cshot=args(iarg)
-      iarg=2
-         call get_arg(iarg,args(iarg))
-         crun=args(iarg)
-      write(*,*) 'ids2transp runid=',trim(cshot), trim(crun)
-!convert string into integer
-read(cshot,*,iostat=ierr) shot
-read(crun,*,iostat=ierr) run
-write(*,'(a,2i3,a)') 'Open shot', shot, run, 'in MDS'
+	treename = 'ids'
+	!shot = 20
+	!run = 107
+	cshot = ' '
+	crun = ' '
+	call get_arg_count(nargs)
+	if(nargs.lt.2) then
+		write(*,*) 'ids2transp should be given shot and run number'
+		write(*,*) 'syntax: ids2transp shotnumber runnumber'
+		write(*,*) 'shotnumber and runnumber are <3 digits integers'
+	endif
+	iarg=1
+	call get_arg(iarg,args(iarg))
+	cshot=args(iarg)
+	iarg=2
+	call get_arg(iarg,args(iarg))
+	crun=args(iarg)
+	write(*,*) 'ids2transp runid=',trim(cshot), trim(crun)
+	!convert string into integer
+	read(cshot,*,iostat=ierr) shot
+	read(crun,*,iostat=ierr) run
+	write(*,'(a,2i3,a)') 'Open shot', shot, run, 'in MDS'
 
-call imas_open(treename,shot,run,idx)
-call ids_get(idx,"equilibrium",eq)
-call ids_get(idx,"core_profiles",cp)
-call ids_get(idx,"pf_active",pf)
+	call imas_open(treename,shot,run,idx)
+	call ids_get(idx,"equilibrium",eq)
+	call ids_get(idx,"core_profiles",cp)
+	call ids_get(idx,"pf_active",pf)
 
-!example test
-!ii       = 2
-!N_Rho_Tor_Norm   = size(cp%profiles_1d(ii)%grid%rho_tor_norm)
-!N_Psi            = size(eq%time_slice(ii)%profiles_1d%psi)
-!N_Ions           = size(cp%profiles_1d(ii)%ion)
-!N_Outline_Points = size(eq%time_slice(ii)%boundary%lcfs%r)
-!N_X_Points       = size(eq%time_slice(ii)%boundary%x_point)
-!N_S_Points       = size(eq%time_slice(ii)%boundary%strike_point)
-!N_Profiles_2D    = size(eq%time_slice(ii)%profiles_2d)
+	!example test
+	!ii       = 2
+	!N_Rho_Tor_Norm   = size(cp%profiles_1d(ii)%grid%rho_tor_norm)
+	!N_Psi            = size(eq%time_slice(ii)%profiles_1d%psi)
+	!N_Ions           = size(cp%profiles_1d(ii)%ion)
+	!N_Outline_Points = size(eq%time_slice(ii)%boundary%lcfs%r)
+	!N_X_Points       = size(eq%time_slice(ii)%boundary%x_point)
+	!N_S_Points       = size(eq%time_slice(ii)%boundary%strike_point)
+	!N_Profiles_2D    = size(eq%time_slice(ii)%profiles_2d)
 
+	!set up transp ufile writing
+	ilun=33
+	disk=''
+	directory='./'
+	! These subroutines are hardcoded for ITER. Commenting out. JAC 12/6/16
+	! call write_shotnumber(shot,run,ishot)
+	! tdev='ITER'
+	! call write_shdate(shdate)
+	! call write_omment(comment)
+	! write(*,*) "shot number=",ishot,"shot date=",shdate, "comment=",trim(comment)
+	write(*,*)
+	write(*,*)
+	write(*,*) "========START UFILE WRITING======================"
+	write(*,*)
+	write(*,*)
 
-!set up transp ufile writing
-ilun=33
-disk=''
-directory='./'
-call write_shotnumber (shot,run,ishot)
-tdev='ITER'
-call write_shdate (shdate)
-call write_omment (comment)
-write(*,*) "shot number=",ishot,"shot date=",shdate, "comment=",trim(comment)
-
-
-write(*,*)
-write(*,*)
-write(*,*) "========START UFILE WRITING======================"
-write(*,*)
-write(*,*)
-
-
-!good 1. A38601.CUR:plasma_current_Amperes(time_seconds)
+	!good 1. A38601.CUR:plasma_current_Amperes(time_seconds)
     ! plasma current:
     ! *CUR(TIM)       { 'plasma current',     'amps' }
     ! cp%global_quantities%ip(it) it=1,358
@@ -1573,55 +1569,51 @@ endif
     ! 144
     ! 81
 
+	call wrgeqdsk(ishot, eq)
 
-call wrgeqdsk(ishot, eq)
-
-write(*,*)
-write(*,*)
-write(*,*) "========END UFILE WRITING======================"
-write(*,*)
-write(*,*)
+	write(*,*)
+	write(*,*)
+	write(*,*) "========END UFILE WRITING======================"
+	write(*,*)
+	write(*,*)
 
 101 continue
- 
-call ids_deallocate(eq)
-call ids_deallocate(cp)
-call ids_deallocate(pf)
-call imas_close(idx)
 
-stop
-end program ids2transp_stand
+	call ids_deallocate(eq)
+	call ids_deallocate(cp)
+	call ids_deallocate(pf)
+	call imas_close(idx)
 
+	stop
+
+end program ids2transp
 
 !write transp ufile comment
-subroutine write_omment (comment)
-character(len=*) :: comment
-comment="jin chen transp ids translator from march 27 2015"
+subroutine write_omment(comment)
+  character(len=*) :: comment
+  comment="jin chen transp ids translator from march 27 2015"
 end subroutine write_omment
 
-
 !get shot date 'shdate'
-subroutine write_shdate (shdate)
-character(len=*) :: shdate
-integer,dimension(8) :: xvalues
-call date_and_time(VALUES=xvalues)
-write(shdate, '(i4,a,i2.2,a,i2.2)'), xvalues(1),'-',xvalues(2),'-',xvalues(3)
+subroutine write_shdate(shdate)
+  character(len=*) :: shdate
+  integer,dimension(8) :: xvalues
+  call date_and_time(VALUES=xvalues)
+  write(shdate, '(i4,a,i2.2,a,i2.2)'), xvalues(1),'-',xvalues(2),'-',xvalues(3)
 end subroutine write_shdate
 
-
 !get shot number 'ishot'
-subroutine write_shotnumber (shot,run,ishot)
-integer,intent(in) :: shot, run
-integer,intent(out) :: ishot
-if(shot.le.99 .and. shot.ge.10) then 
-   ishot = shot * 10**( 1 + (ceiling(log10(real(run)))) ) + run
-else if(shot.le.999 .and. shot.ge.1000) then
-   ishot = shot * 10**(ceiling(log10(real(run)))) + run
-else 
-   write(*,*) "... err: wrong shot number!"
-endif
+subroutine write_shotnumber(shot,run,ishot)
+	integer,intent(in) :: shot, run
+	integer,intent(out) :: ishot
+	if(shot.le.99 .and. shot.ge.10) then 
+		ishot = shot * 10**( 1 + (ceiling(log10(real(run)))) ) + run
+	else if(shot.le.999 .and. shot.ge.1000) then
+		ishot = shot * 10**(ceiling(log10(real(run)))) + run
+	else 
+		write(*,*) "... err: wrong shot number!"
+	endif
 end subroutine write_shotnumber
-
 
 !write geqdsk file per timeslice
 subroutine wrgeqdsk(ishot, eq)
