@@ -1,0 +1,524 @@
+<html>
+
+<head>
+<title>The core_profile IDS</title>
+</head>
+
+<body>
+
+<code>[The info on this page was extracted from IMAS source code (access-layer/fortraninterface/core_profiles_put.f90, git master 08/29/2016)]</code>
+
+<p>
+
+The core_profile IDS is a container object that has a single data object, a double(:) with all the timeslice values.
+The core_profile IDS also holds five container objects with data, or meta data, or other containers: 
+ids_properties, code, vacuum_toroidal_field, global_quantities and profiles_1d, respectively.
+profiles_1d holds the following containers: e_field, grid, electrons, ion(1:nneutrals) and neutral(1:nions). The species containers (electron, ions and neutrals) each have a velocity container. Each neutral and ion container has four container objects: state, element, label and neutral_type, respectively. Finally, the state container holds two containers: neutral_type and velocity. The core_profile IDS has a total of 22 container objects with 470 data (or meta data) objects.
+
+<p>
+
+Below is a table with all the core_profile data and meta-data objects and their types:
+
+<p>
+
+<table border="1">
+
+<tr><th align="left">data container</th>	<th>data type</th>	<th>used by<br>TRANSP?</th></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%time(nsctime)</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%ids_properties%comment</td>			<td>string</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%ids_properties%homogeneous_time</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%code%name</td>			<td>string</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%code%version</td>		<td>string</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%code%parameters</td>		<td>string</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%code%output_flag</td>	<td>int(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%vacuum_toroidal_field%r0</td>				<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%vacuum_toroidal_field%r0_error_upper</td>	<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%vacuum_toroidal_field%r0_error_lower</td>	<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%vacuum_toroidal_field%r0_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%vacuum_toroidal_field%b0</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%vacuum_toroidal_field%b0_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%vacuum_toroidal_field%b0_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%vacuum_toroidal_field%b0_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%ip</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%ip_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%ip_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%ip_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%current_non_inductive</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%current_non_inductive_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%current_non_inductive_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%current_non_inductive_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%current_bootstrap</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%current_bootstrap_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%current_bootstrap_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%current_bootstrap_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%v_loop</td>							<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%v_loop_error_upper</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%v_loop_error_lower</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%v_loop_error_index</td>				<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%li</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%li_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%li_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%li_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%beta_tor</td>							<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%beta_tor_error_upper</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%beta_tor_error_lower</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%beta_tor_error_index</td>				<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%beta_tor_norm</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%beta_tor_norm_error_upper</td>			<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%beta_tor_norm_error_lower</td>			<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%beta_tor_norm_error_index</td>			<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%beta_pol</td>							<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%beta_pol_error_upper</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%beta_pol_error_lower</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%beta_pol_error_index</td>				<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%energy_diamagnetic</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%energy_diamagnetic_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%energy_diamagnetic_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%global_quantities%energy_diamagnetic_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%t_i_average</td>							<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%t_i_average_error_upper</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%t_i_average_error_lower</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%t_i_average_error_index</td>				<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%n_i_total_over_n_e</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%n_i_total_over_n_e_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%n_i_total_over_n_e_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%n_i_total_over_n_e_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%momentum_tor</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%momentum_tor_error_upper</td>			<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%momentum_tor_error_lower</td>			<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%momentum_tor_error_index</td>			<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%zeff</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%zeff_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%zeff_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%zeff_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%pressure_ion_total</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%pressure_ion_total_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%pressure_ion_total_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%pressure_ion_total_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%pressure_thermal</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%pressure_thermal_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%pressure_thermal_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%pressure_thermal_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%pressure_perpendicular</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%pressure_perpendicular_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%pressure_perpendicular_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%pressure_perpendicular_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%pressure_parallel</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%pressure_parallel_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%pressure_parallel_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%pressure_parallel_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_total</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_total_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_total_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_total_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_tor</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_tor_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_tor_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_tor_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_ohmic</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_ohmic_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_ohmic_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_ohmic_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_non_inductive</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_non_inductive_error_upper</td>			<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_non_inductive_error_lower</td>			<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_non_inductive_error_index</td>			<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_bootstrap</td>							<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_bootstrap_error_upper</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_bootstrap_error_lower</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%j_bootstrap_error_index</td>				<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%conductivity_parallel</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%conductivity_parallel_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%conductivity_parallel_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%conductivity_parallel_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field_parallel</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field_parallel_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field_parallel_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field_parallel_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%q</td>									<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%q_error_upper</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%q_error_lower</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%q_error_index</td>						<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%magnetic_shear</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%magnetic_shear_error_upper</td>			<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%magnetic_shear_error_lower</td>			<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%magnetic_shear_error_index</td>			<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%time</td>								<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%radial</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%radial_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%radial_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%radial_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%diamagnetic</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%diamagnetic_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%diamagnetic_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%diamagnetic_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%parallel</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%parallel_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%parallel_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%parallel_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%poloidal</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%poloidal_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%poloidal_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%poloidal_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%toroidal</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%toroidal_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%toroidal_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%e_field%toroidal_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%rho_tor_norm</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%rho_tor_norm_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%rho_tor_norm_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%rho_tor_norm_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%rho_tor</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%rho_tor_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%rho_tor_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%rho_tor_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%psi</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%psi_error_upper</td>			<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%psi_error_lower</td>			<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%psi_error_index</td>			<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%volume</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%volume_error_upper</td>			<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%volume_error_lower</td>			<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%volume_error_index</td>			<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%area</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%area_error_upper</td>			<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%area_error_lower</td>			<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%grid%area_error_index</td>			<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%temperature</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%temperature_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%temperature_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%temperature_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%density</td>									<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%density_error_upper</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%density_error_lower</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%density_error_index</td>						<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%density_fast</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%density_fast_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%density_fast_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%density_fast_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%pressure</td>									<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%pressure_error_upper</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%pressure_error_lower</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%pressure_error_index</td>						<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%pressure_fast_perpendicular</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%pressure_fast_perpendicular_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%pressure_fast_perpendicular_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%pressure_fast_perpendicular_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%pressure_fast_parallel</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%pressure_fast_parallel_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%pressure_fast_parallel_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%pressure_fast_parallel_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity_tor</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity_tor_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity_tor_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity_tor_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity_pol</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity_pol_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity_pol_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity_pol_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%radial</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%radial_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%radial_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%radial_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%diamagnetic</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%diamagnetic_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%diamagnetic_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%diamagnetic_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%parallel</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%parallel_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%parallel_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%parallel_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%poloidal</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%poloidal_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%poloidal_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%poloidal_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%toroidal</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%toroidal_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%toroidal_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(i1)%electrons%velocity%toroidal_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%z_ion</td>									<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%z_ion_error_upper</td>						<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%z_ion_error_lower</td>						<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%z_ion_error_index</td>						<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%label</td>									<td>string</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%neutral_index</td>							<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%temperature</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%temperature_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%temperature_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%temperature_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%density</td>									<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%density_error_upper</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%density_error_lower</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%density_error_index</td>						<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%density_fast</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%density_fast_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%density_fast_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%density_fast_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%pressure</td>									<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%pressure_error_upper</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%pressure_error_lower</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%pressure_error_index</td>						<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%pressure_fast_perpendicular</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%pressure_fast_perpendicular_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%pressure_fast_perpendicular_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%pressure_fast_perpendicular_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%pressure_fast_parallel</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%pressure_fast_parallel_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%pressure_fast_parallel_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%pressure_fast_parallel_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity_tor</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity_tor_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity_tor_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity_tor_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity_pol</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity_pol_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity_pol_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity_pol_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%radial</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%radial_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%radial_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%radial_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%diamagnetic</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%diamagnetic_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%diamagnetic_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%diamagnetic_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%parallel</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%parallel_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%parallel_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%parallel_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%poloidal</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%poloidal_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%poloidal_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%poloidal_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%toroidal</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%toroidal_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%toroidal_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%velocity%toroidal_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%element(i3)%a</td>						<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%element(i3)%a_error_upper</td>			<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%element(i3)%a_error_lower</td>			<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%element(i3)%a_error_index</td>			<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%element(i3)%z_n</td>						<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%element(i3)%z_n_error_upper</td>			<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%element(i3)%z_n_error_lower</td>			<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%element(i3)%z_n_error_index</td>			<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%element(i3)%multiplicity</td>				<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%element(i3)%multiplicity_error_upper</td>	<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%element(i3)%multiplicity_error_lower</td>	<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%element(i3)%multiplicity_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%z_min</td>										<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%z_min_error_upper</td>							<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%z_min_error_lower</td>							<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%z_min_error_index</td>							<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%z_max</td>										<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%z_max_error_upper</td>							<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%z_max_error_lower</td>							<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%z_max_error_index</td>							<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%z_average</td>									<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%z_average_error_upper</td>						<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%z_average_error_lower</td>						<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%z_average_error_index</td>						<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%z_square_average</td>							<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%z_square_average_error_upper</td>				<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%z_square_average_error_lower</td>				<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%z_square_average_error_index</td>				<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%ionisation_potential</td>						<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%ionisation_potential_error_upper</td>			<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%ionisation_potential_error_lower</td>			<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%ionisation_potential_error_index</td>			<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%label</td>										<td>string</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%electron_configuration</td>						<td>string</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%vibrational_mode</td>							<td>string</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%vibrational_level</td>							<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%vibrational_level_error_upper</td>				<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%vibrational_level_error_lower</td>				<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%vibrational_level_error_index</td>				<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%is_neutral</td>									<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%temperature</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%temperature_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%temperature_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%temperature_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%density</td>									<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%density_error_upper</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%density_error_lower</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%density_error_index</td>						<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%density_fast</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%density_fast_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%density_fast_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%density_fast_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%pressure</td>									<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%pressure_error_upper</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%pressure_error_lower</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%pressure_error_index</td>						<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%pressure_fast_perpendicular</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%pressure_fast_perpendicular_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%pressure_fast_perpendicular_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%pressure_fast_perpendicular_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%pressure_fast_parallel</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%pressure_fast_parallel_error_upper</td>			<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%pressure_fast_parallel_error_lower</td>			<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%pressure_fast_parallel_error_index</td>			<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%neutral_type%name</td>			<td>string</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%neutral_type%index</td>			<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%neutral_type%description</td>	<td>string</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%radial</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%radial_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%radial_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%radial_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%diamagnetic</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%diamagnetic_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%diamagnetic_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%diamagnetic_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%parallel</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%parallel_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%parallel_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%parallel_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%poloidal</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%poloidal_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%poloidal_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%poloidal_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%toroidal</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%toroidal_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%toroidal_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%ion(nion)%state(i3)%velocity%toroidal_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%element(i3)%a</td>							<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%element(i3)%a_error_upper</td>				<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%element(i3)%a_error_lower</td>				<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%element(i3)%a_error_index</td>				<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%element(i3)%z_n</td>						<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%element(i3)%z_n_error_upper</td>			<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%element(i3)%z_n_error_lower</td>			<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%element(i3)%z_n_error_index</td>			<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%element(i3)%multiplicity</td>				<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%element(i3)%multiplicity_error_upper</td>	<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%element(i3)%multiplicity_error_lower</td>	<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%element(i3)%multiplicity_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%label</td>										<td>string</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%ion_index</td>									<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%temperature</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%temperature_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%temperature_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%temperature_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%density</td>									<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%density_error_upper</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%density_error_lower</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%density_error_index</td>						<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%density_fast</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%density_fast_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%density_fast_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%density_fast_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%pressure</td>									<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%pressure_error_upper</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%pressure_error_lower</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%pressure_error_index</td>						<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%pressure_fast_perpendicular</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%pressure_fast_perpendicular_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%pressure_fast_perpendicular_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%pressure_fast_perpendicular_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%pressure_fast_parallel</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%pressure_fast_parallel_error_upper</td>			<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%pressure_fast_parallel_error_lower</td>			<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%pressure_fast_parallel_error_index</td>			<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%multiple_states_flag</td>						<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%radial</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%radial_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%radial_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%radial_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%diamagnetic</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%diamagnetic_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%diamagnetic_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%diamagnetic_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%parallel</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%parallel_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%parallel_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%parallel_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%poloidal</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%poloidal_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%poloidal_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%poloidal_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%toroidal</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%toroidal_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%toroidal_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%velocity%toroidal_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%label</td>									<td>string</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%electron_configuration</td>					<td>string</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%vibrational_mode</td>							<td>string</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%vibrational_level</td>						<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%vibrational_level_error_upper</td>			<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%vibrational_level_error_lower</td>			<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%vibrational_level_error_index</td>			<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%temperature</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%temperature_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%temperature_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%temperature_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%density</td>									<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%density_error_upper</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%density_error_lower</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%density_error_index</td>						<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%density_fast</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%density_fast_error_upper</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%density_fast_error_lower</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%density_fast_error_index</td>					<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%pressure</td>									<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%pressure_error_upper</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%pressure_error_lower</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%pressure_error_index</td>						<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%pressure_fast_perpendicular</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%pressure_fast_perpendicular_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%pressure_fast_perpendicular_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%pressure_fast_perpendicular_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%pressure_fast_parallel</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%pressure_fast_parallel_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%pressure_fast_parallel_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%pressure_fast_parallel_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%neutral_type%name</td>		<td>string</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%neutral_type%index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%neutral_type%description</td>	<td>string</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%radial</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%radial_error_upper</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%radial_error_lower</td>		<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%radial_error_index</td>		<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%diamagnetic</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%diamagnetic_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%diamagnetic_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%diamagnetic_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%parallel</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%parallel_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%parallel_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%parallel_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%poloidal</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%poloidal_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%poloidal_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%poloidal_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%toroidal</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%toroidal_error_upper</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%toroidal_error_lower</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">core_profiles%profiles_1d(nprtime)%neutral(i2)%state(i3)%velocity%toroidal_error_index</td>	<td>int</td>	<td align="center">&#x2714;</td></tr>
+
+</table>
+
+</body>
+
+</html>
