@@ -1,14 +1,14 @@
-program transp2ids
+program transp2imas
 
 !---------------------------------------------------------------------
-!  use the trread library to read single precision transp data.
 !
-!  usage:
-!     transp2ids [STDOUT] [connection]
-!        STDOUT      -> output is sent to stdout
-!        connection  -> string to establish connection to rplot data
+!  to run:
+!     ./transp2imas <runid>
 !
-!  this program makes the calls documented in the trread.hlp
+!  uses
+!
+!  this program makes calls documented in the trread.hlp
+!  uses the trread library to read transp data
 !---------------------------------------------------------------------
 
   use transp2imas_module
@@ -83,7 +83,7 @@ program transp2ids
       integer :: n_rfi      ! no. of "RF tail" ion species
       integer :: n_fusi     ! no. of "fusion product" ion species.
 
-      integer :: nmlist     ! number of each category of impurity species
+      integer :: nstate     ! number of each category of impurity species
       integer :: nion     ! number of ids ions
       character*20 tmpstrng, int2strng
       character*20 tmps1, tmps2, tmps3, tmps4
@@ -121,7 +121,7 @@ program transp2ids
       real, dimension(:,:), allocatable ::  PPLAS, dPPLASdXI
       real*8, dimension(:), allocatable ::  inbuf, outbuf, doutbuf, xibuf, xbbuf
 
-  type(ezspline1_r8) :: spln1
+	type(ezspline1_r8) :: spln1
 
 !----------------------------------------------------------------
 !
@@ -132,7 +132,7 @@ program transp2ids
 !  file for messages, file for normal program output
 !
       imsg=77
-      call plc_msgs(imsg,'transp2ids.msgs')
+      call plc_msgs(imsg,'transp2imas.msgs')
 
       iout=66
       rpfile = '11114P04'
@@ -148,7 +148,7 @@ program transp2ids
          end if
       end do
       if (iout .eq. 66) then
-         open(unit=iout,file='transp2ids.output',status='unknown')
+         open(unit=iout,file='transp2imas.output',status='unknown')
       endif
 !
 !--------------------------
@@ -156,8 +156,10 @@ program transp2ids
 
       write(*,*) 'Open shot and write in IMAS !'
 
-      shot =120
-      run = 28
+      shot =386
+      run = 1
+      !shot =120
+      !run = 28
       refshot = 100
       refrun =000
       treename = 'ids'
@@ -170,7 +172,7 @@ program transp2ids
 !  connect to run
 !
       call kconnect(rpfile,rlabel,nsctime,nprtime,nxmax,nmax,ier)
-      if(ier.ne.0) call transp2ids_error('kconnect',ier)
+      if(ier.ne.0) call transp2imas_error('kconnect',ier)
 
       write(iout,*) ' kconnect:  run label (rlabel) = "',rlabel,'"'
       write(iout,*) ' '
@@ -201,7 +203,7 @@ program transp2ids
 !---------------------------------
 !  get the x axis info for profiles f(x,t)
 !
-      write(iout,*) ' transp2ids:  rpnumx, rpxname ... '
+      write(iout,*) ' transp2imas:  rpnumx, rpxname ... '
       call rpnumx(naxes)
 
       write(iout,*) ' '
@@ -215,14 +217,14 @@ program transp2ids
       enddo
 
       write(iout,*) ' '
-      write(iout,*) ' transp2ids:  rpdims... '
+      write(iout,*) ' transp2imas:  rpdims... '
       write(iout,*) ' '
       do i=0,naxes
          ij=i
          if(ij.eq.0) ij=-1
          idims=0
          call rpdims(ij,irank,idims,aname,ier)
-         if(ier.ne.0) call transp2ids_error('rpdims',ier)
+         if(ier.ne.0) call transp2imas_error('rpdims',ier)
          if(aname.eq.' ') aname='scalar'
          write(iout,1001) ij,aname,irank,(idims(j),j=1,4)
  1001    format(' istype=',i4,1x,a,1x,' rank=',i1,'   dims=',4(1x,i4))
@@ -257,7 +259,7 @@ program transp2ids
       if(maxn.lt.n_species) then
         write(iout,*) ' err cj1: rd_species not allocated enough space'
         write(iout,*) ' increase maxn from ', maxn, ' to ', n_species 
-        call transp2ids_exit(' ?? rd_nspecies not enough space')
+        call transp2imas_exit(' ?? rd_nspecies not enough space')
       endif
 
       call rd_species(maxn,n_species,zlbla,abray,itype,ifast,zz,aa,izc)
@@ -347,23 +349,23 @@ program transp2ids
            cp%profiles_1d(it)%ion(iion)%element(1)%a=aa(i)
            cp%profiles_1d(it)%ion(iion)%z_ion=zz(i)
            cp%profiles_1d(it)%ion(iion)%element(1)%z_n=izc(i)
-           cp%profiles_1d(it)%ion(iion)%label(1)=zlbla(i)
+           cp%profiles_1d(it)%ion(iion)%label(1)=zlbla(i) ! Johan
 !           cp%profiles_1d(it)%ion(iion)%multiple_charge_states_flag=0
            enddo
 
            call rplabel(abray(1,i),label,units,imulti,istype)
-           if(imulti.ne.0) call transp2ids_exit(' ?? imulti.ne.0')
+           if(imulti.ne.0) call transp2imas_exit(' ?? imulti.ne.0')
            !write(iout,*) ' ',i,abray(1,i),abray(2,i),&
            !'"',label,'" "',units,'"  istype=', istype
 
            if(istype.eq.1) then
-              !get ion densiry
+              !get ion density
               write(iout,*) ' '
               call rprofile(trim(abray(1,i)),prdata,nprtime*xsizes(istype),iret,ier)
-              if(ier.ne.0) call transp2ids_error('rprofile(abray(1,i))',ier)
+              if(ier.ne.0) call transp2imas_error('rprofile(abray(1,i))',ier)
               if(iret.ne.nprtime*xsizes(istype)) &
-                 call transp2ids_exit(' ?? '//abray(1,i)//' read error')
-              call transp2ids_echo(abray(1,i),prdata,xsizes(istype),nprtime)
+                 call transp2imas_exit(' ?? '//abray(1,i)//' read error')
+              call transp2imas_echo(abray(1,i),prdata,xsizes(istype),nprtime)
 
               offset=xsizes(istype)
               do it=1,nprtime
@@ -375,10 +377,10 @@ program transp2ids
               !get ion temperature
               write(iout,*) ' '
               call rprofile(trim(abray(2,i)),prdata,nprtime*xsizes(istype),iret,ier)
-              if(ier.ne.0) call transp2ids_error('rprofile(abray(2,i))',ier)
+              if(ier.ne.0) call transp2imas_error('rprofile(abray(2,i))',ier)
               if(iret.ne.nprtime*xsizes(istype)) &
-                 call transp2ids_exit(' ?? '//abray(2,i)//' read error')
-              call transp2ids_echo(abray(2,i),prdata,xsizes(istype),nprtime)
+                 call transp2imas_exit(' ?? '//abray(2,i)//' read error')
+              call transp2imas_echo(abray(2,i),prdata,xsizes(istype),nprtime)
 
               offset=xsizes(istype)
               do it=1,nprtime
@@ -405,21 +407,21 @@ program transp2ids
       ! profile:NIMPS_: category of impurity species named NIMPS_O   
       allocate(names(nlist))
       call rplist('profile:NIMPS_',0,names,nlist,ngot,ier)
-      if(ier.ne.0) call transp2ids_error('rplist',ier)
+      if(ier.ne.0) call transp2imas_error('rplist',ier)
       if(ngot.ne.nlist) then
          !  nlist should match due to prior rpnlist call...
-         call transp2ids_exit(' ?? ngot.ne.nlist')
+         call transp2imas_exit(' ?? ngot.ne.nlist')
       endif
 
       ! for each list i of "nlist" categories of impurity, find
       ! 1) its istype
-      ! 2) how many charge states "nmlist",
+      ! 2) how many charge states "nstate",
       !    such as NIMP_B1, NIMP_B2, NIMP_B3, ...
       ! 3) profile data "prdata" for each charge state
       do i=1,nlist
          write(iout,*) ' '
          call rplabel(names(i),label,units,imulti,istype)
-         if(imulti.ne.0) call transp2ids_exit(' ?? imulti.ne.0')
+         if(imulti.ne.0) call transp2imas_exit(' ?? imulti.ne.0')
          write(iout,*) ' impurity',i,names(i),&
             '"',label,'" "',units,'"  xid=', istype, &
             'position in n_species=',iion_start+1
@@ -429,13 +431,13 @@ program transp2ids
 !         cp%profiles_1d(it)%ion(iion)%multiple_charge_states_flag=1
          enddo
          if(istype.eq.1) then
-            !get impurity densiry
+            !get impurity density
             write(iout,*) ' '
             call rprofile(trim(names(i)),prdata,nprtime*xsizes(istype),iret,ier)
-            if(ier.ne.0) call transp2ids_error('rprofile(names(i))',ier)
+            if(ier.ne.0) call transp2imas_error('rprofile(names(i))',ier)
             if(iret.ne.nprtime*xsizes(istype)) &
-               call transp2ids_exit(' ?? '//names(i)//' read error')
-            call transp2ids_echo(names(i),prdata,xsizes(istype),nprtime)
+               call transp2imas_exit(' ?? '//names(i)//' read error')
+            call transp2imas_echo(names(i),prdata,xsizes(istype),nprtime)
 
             offset=xsizes(istype)
             do it=1,nprtime
@@ -447,10 +449,10 @@ program transp2ids
             !get impurity temperature
             write(iout,*) ' '
             call rprofile('TX',prdata,nprtime*xsizes(istype),iret,ier)
-            if(ier.ne.0) call transp2ids_error('rprofile(TX)',ier)
+            if(ier.ne.0) call transp2imas_error('rprofile(TX)',ier)
             if(iret.ne.nprtime*xsizes(istype)) &
-               call transp2ids_exit(' ?? '//'TX'//' read error')
-            call transp2ids_echo('TX',prdata,xsizes(istype),nprtime)
+               call transp2imas_exit(' ?? '//'TX'//' read error')
+            call transp2imas_echo('TX',prdata,xsizes(istype),nprtime)
 
             offset=xsizes(istype)
             do it=1,nprtime
@@ -470,40 +472,40 @@ program transp2ids
          ! cj3 profile impurity profile:NIMP_MO has           42 charge states
          ! cj3 profile impurity profile:NIMP_O has            8 charge states
          tmpstrng= 'profile:'//names(i)(1:4)//names(i)(6:)
-         CALL RPNLIST(trim(tmpstrng),istype,nmlist)
+         CALL RPNLIST(trim(tmpstrng),istype,nstate)
          write(iout,*) ' impurity ', trim(tmpstrng), &
-                       ' has ', nmlist, ' charge states', &
+                       ' has ', nstate, ' charge states', &
                        ' position in n_species ', iion_start+1
 
          do it=1,nprtime
-            allocate(cp%profiles_1d(it)%ion(n_thi+i)%state(nmlist))
-            do j = 1, nmlist
+            allocate(cp%profiles_1d(it)%ion(n_thi+i)%state(nstate))
+            do j = 1, nstate
                allocate(cp%profiles_1d(it)%ion(n_thi+i)%state(j)%label(1))
             enddo
          enddo
-
+#if 0
          ! loop through each charge state
-         do j=1,nmlist
+         do j=1,nstate
             write(iout,*) ' '
 
-            ! constrct the name of charge state in specie name j
+            ! construct the name of charge state in species j
             ! from each category of impurities i
             !write(int2strng,*) j
             !tmps1=adjustl(int2strng) ! delete the leading blank
             !tmps2=names(i)(6:)
             !lentmps2=len_trim((tmps2)) ! delete the trailing blank
             !tmpstrng= names(i)(1:4)//names(i)(6:6+lentmps2-1)//'_'//tmps1
-            !write(iout,*) ' cj3 ', i,'th imputity', &
+            !write(iout,*) ' cj3 ', i,'th impurity', &
             !              ' charge_state: ', trim(tmps1), &
             !              ' name: ', trim(tmpstrng), &
             !              ' tmps2: ', tmps2, &
             !              ' lentmps2: ', lentmps2
             !call rprofile(trim(tmpstrng),prdata,nprtime*xsizes(istype),iret,ier)
-            !if(ier.ne.0) call transp2ids_error('rprofile(tmpstrng)',ier)
+            !if(ier.ne.0) call transp2imas_error('rprofile(tmpstrng)',ier)
             !if(iret.ne.nprtime*xsizes(istype)) &
-            !   call transp2ids_exit(' ?? '//tmpstrng//' read error')
-            !call transp2ids_echo(tmpstrng,prdata,xsizes(istype),nprtime)
-            !!allocate(cp%profiles_1d(it)%ion(n_thi+i)%charge_state(nmlist)%n_z=prdata
+            !   call transp2imas_exit(' ?? '//tmpstrng//' read error')
+            !call transp2imas_echo(tmpstrng,prdata,xsizes(istype),nprtime)
+            !!allocate(cp%profiles_1d(it)%ion(n_thi+i)%charge_state(nstate)%n_z=prdata
             write(iout,*) ' ion',iion,'position in n_species ',&
             iion_start+j, ' named ', abray(1,iion_start+j), abray(2,iion_start+j)
 
@@ -512,11 +514,11 @@ program transp2ids
            !cp%profiles_1d(it)%ion(iion)%z_ion=zz(iion_start+j)
            !cp%profiles_1d(it)%ion(iion)%z_n=izc(iion_start+j)
            cp%profiles_1d(it)%ion(iion)%label(1)=label
-           cp%profiles_1d(it)%ion(iion)%state(j)%label(1)=zlbla(iion_start+j)
+           cp%profiles_1d(it)%ion(iion)%state(j)%label(1)=zlbla(iion_start+j) ! Johan
            enddo
 
            call rplabel(abray(1,iion_start+j),label,units,imulti,istype)
-           if(imulti.ne.0) call transp2ids_exit(' ?? imulti.ne.0')
+           if(imulti.ne.0) call transp2imas_exit(' ?? imulti.ne.0')
            write(iout,*) ' ',i,abray(1,i),abray(2,i),&
            '"',label,'" "',units,'"  istype=', istype
 
@@ -524,10 +526,10 @@ program transp2ids
               !get charge state  densiry
               write(iout,*) ' '
               call rprofile(trim(abray(1,iion_start+j)),prdata,nprtime*xsizes(istype),iret,ier)
-              if(ier.ne.0) call transp2ids_error('rprofile(abray(1,iion_start+j))',ier)
+              if(ier.ne.0) call transp2imas_error('rprofile(abray(1,iion_start+j))',ier)
               if(iret.ne.nprtime*xsizes(istype)) &
-                 call transp2ids_exit(' ?? '//abray(1,iion_start+j)//' read error')
-              call transp2ids_echo(abray(1,iion_start+j),prdata,xsizes(istype),nprtime)
+                 call transp2imas_exit(' ?? '//abray(1,iion_start+j)//' read error')
+              call transp2imas_echo(abray(1,iion_start+j),prdata,xsizes(istype),nprtime)
 
               offset=xsizes(istype)
               do it=1,nprtime
@@ -539,10 +541,10 @@ program transp2ids
               !get chare sgtate temperature
               write(iout,*) ' '
               call rprofile(trim(abray(2,iion_start+j)),prdata,nprtime*xsizes(istype),iret,ier)
-              if(ier.ne.0) call transp2ids_error('rprofile(abray(2,iion_start+j))',ier)
+              if(ier.ne.0) call transp2imas_error('rprofile(abray(2,iion_start+j))',ier)
               if(iret.ne.nprtime*xsizes(istype)) &
-                 call transp2ids_exit(' ?? '//abray(2,iion_start+j)//' read error')
-              call transp2ids_echo(abray(2,iion_start+j),prdata,xsizes(istype),nprtime)
+                 call transp2imas_exit(' ?? '//abray(2,iion_start+j)//' read error')
+              call transp2imas_echo(abray(2,iion_start+j),prdata,xsizes(istype),nprtime)
 
               offset=xsizes(istype)
               do it=1,nprtime
@@ -553,7 +555,8 @@ program transp2ids
            endif
 
          enddo
-         iion_start=iion_start+nmlist  ! position in n_species
+#endif
+         iion_start=iion_start+nstate  ! position in n_species
       enddo
       if(allocated(names)) deallocate(names)
 
@@ -562,7 +565,7 @@ program transp2ids
 ! get the scalar info f(t) 
 !
       write(iout,*) ' '
-      write(iout,*) ' transp2ids:  rpnlist, rplist, rplabel (scalars)...'
+      write(iout,*) ' transp2imas:  rpnlist, rplist, rplabel (scalars)...'
       call rpnlist('scalar',0,nlist)
 
       write(iout,*) ' '
@@ -570,16 +573,16 @@ program transp2ids
       write(iout,*) ' '
       allocate(names(nlist))
       call rplist('scalar',0,names,nlist,ngot,ier)
-      if(ier.ne.0) call transp2ids_error('rplist',ier)
+      if(ier.ne.0) call transp2imas_error('rplist',ier)
       if(ngot.ne.nlist) then
           !  nlist should match due to prior rpnlist call...
-         call transp2ids_exit(' ?? ngot.ne.nlist')
+         call transp2imas_exit(' ?? ngot.ne.nlist')
       endif
 
       do i=1,nlist
          call rplabel(names(i),label,units,imulti,istype)
-         if(imulti.ne.0) call transp2ids_exit(' ?? imulti.ne.0')
-         if(istype.ne.-1) call transp2ids_exit(' ?? istype.ne.-1')
+         if(imulti.ne.0) call transp2imas_exit(' ?? imulti.ne.0')
+         if(istype.ne.-1) call transp2imas_exit(' ?? istype.ne.-1')
          write(132,*) ' ',i,names(i),'"',label,'" "',units,'"'
       enddo
       if(allocated(names)) deallocate(names)
@@ -589,7 +592,7 @@ program transp2ids
 !
       write(iout,*) ' '
       write(iout,*) &
-      ' transp2ids:  rpnlist, rplist, rplabel (profiles)...'
+      ' transp2imas:  rpnlist, rplist, rplabel (profiles)...'
       call rpnlist('profile',0,nlist)
 
       write(iout,*) ' '
@@ -597,15 +600,15 @@ program transp2ids
       write(iout,*) ' '
       allocate(names(nlist))
       call rplist('profile',0,names,nlist,ngot,ier)
-      if(ier.ne.0) call transp2ids_error('rplist',ier)
+      if(ier.ne.0) call transp2imas_error('rplist',ier)
       if(ngot.ne.nlist) then
          !  nlist should match due to prior rpnlist call...
-         call transp2ids_exit(' ?? ngot.ne.nlist')
+         call transp2imas_exit(' ?? ngot.ne.nlist')
       endif
 
       do i=1,nlist
          call rplabel(names(i),label,units,imulti,istype)
-         if(imulti.ne.0) call transp2ids_exit(' ?? imulti.ne.0')
+         if(imulti.ne.0) call transp2imas_exit(' ?? imulti.ne.0')
          write(133,*) ' ',i,names(i),'"',label,'" "',units,'"  xid=', &
             istype
       enddo
@@ -627,16 +630,16 @@ program transp2ids
          write(133+j,*) ' '
          allocate(names(nlist))
          call rplist('profile',j,names,nlist,ngot,ier)
-         if(ier.ne.0) call transp2ids_error('rplist',ier)
+         if(ier.ne.0) call transp2imas_error('rplist',ier)
          if(ngot.ne.nlist) then
          !  nlist should match due to prior rpnlist call...
-            call transp2ids_exit(' ?? ngot.ne.nlist')
+            call transp2imas_exit(' ?? ngot.ne.nlist')
          endif
 
          do i=1,nlist
             call rplabel(names(i),label,units,imulti,istype)
-            if(imulti.ne.0) call transp2ids_exit(' ?? imulti.ne.0')
-            if(istype.ne.j) call transp2ids_exit(' ?? istype.ne.j')
+            if(imulti.ne.0) call transp2imas_exit(' ?? imulti.ne.0')
+            if(istype.ne.j) call transp2imas_exit(' ?? istype.ne.j')
             write(133+j,*) ' ',i,names(i),'"',label,'" "',units,'"'
          enddo
          if(allocated(names)) deallocate(names)
@@ -646,7 +649,7 @@ program transp2ids
 ! get mg info
 !
       write(iout,*) ' '
-      write(iout,*) ' transp2ids multigraphs:'
+      write(iout,*) ' transp2imas multigraphs:'
       write(iout,*) '     rpnlist, rplist, rplabel, rpmulti...'
       do j=0,naxes
          ij=j
@@ -665,21 +668,21 @@ program transp2ids
             write(iout,*) ' '
             allocate(names(nlist))
             call rplist('multi',ij,names,nlist,ngot,ier)
-            if(ier.ne.0) call transp2ids_error('rplist',ier)
+            if(ier.ne.0) call transp2imas_error('rplist',ier)
             if(ngot.ne.nlist) then
                !  nlist should match due to prior rpnlist call...
-               call transp2ids_exit(' ?? ngot.ne.nlist')
+               call transp2imas_exit(' ?? ngot.ne.nlist')
             endif
 
             do i=1,nlist
                call rplabel(names(i),label,units,imulti,istype)
-               if(imulti.ne.1) call transp2ids_exit(' ?? imulti.ne.1')
+               if(imulti.ne.1) call transp2imas_exit(' ?? imulti.ne.1')
                if(istype.ne.ij) &
-                  call transp2ids_exit(' ?? istype.ne.ij')
+                  call transp2imas_exit(' ?? istype.ne.ij')
                write(133+naxes+j+1,*) ' ',i,names(i),'"',label,'" "',units,'"'
                call rpmulti(names(i),istype,label,units,infuns,mgsigns, &
                   mgnames,ier)
-               if(ier.ne.0) call transp2ids_error('rpmulti',ier)
+               if(ier.ne.0) call transp2imas_error('rpmulti',ier)
 
                do k=1,infuns
                   if(mgsigns(k).eq.-1) then
@@ -687,7 +690,7 @@ program transp2ids
                   else if(mgsigns(k).eq.1) then
                      write(133+naxes+j+1,*) '     +',mgnames(k)
                   else
-                     call transp2ids_exit(' ?? sign factor not +/-1')
+                     call transp2imas_exit(' ?? sign factor not +/-1')
                   endif
                enddo
 
@@ -709,8 +712,8 @@ program transp2ids
       write(iout,*) ' '
       call rptime_s(sctime,nsctime,iret)
       if(iret.ne.nsctime) &
-         call transp2ids_exit(' ?? sctime read error')
-      call transp2ids_echo('scalar time',sctime,1,nsctime)
+         call transp2imas_exit(' ?? sctime read error')
+      call transp2imas_echo('scalar time',sctime,1,nsctime)
 
          ! fill ids scalar time
          write(*,*) 'fill ids sctime time'
@@ -723,8 +726,8 @@ program transp2ids
       write(iout,*) ' '
       call rptime_p(prtime,nprtime,iret)
       if(iret.ne.nprtime) &
-         call transp2ids_exit(' ?? prtime read error')
-      call transp2ids_echo('profile time',prtime,1,nprtime)
+         call transp2imas_exit(' ?? prtime read error')
+      call transp2imas_echo('profile time',prtime,1,nprtime)
 
          ! fill ids profile time
          write(*,*) 'fill ids prtime'
@@ -742,10 +745,10 @@ program transp2ids
       ! same as ids li_3 definition : i.e.
       ! li_3 = 2/R0/mu0^2/Ip^2 * int(Bp^2 dV).
       call rpscalar('LI_3',scdata,nsctime,iret,ier)
-      if(ier.ne.0) call transp2ids_error('rpscalar',ier)
+      if(ier.ne.0) call transp2imas_error('rpscalar',ier)
       if(iret.ne.nsctime) &
-         call transp2ids_exit(' ?? LI_3 read error')
-      call transp2ids_echo('LI_3',scdata,1,nsctime)
+         call transp2imas_exit(' ?? LI_3 read error')
+      call transp2imas_echo('LI_3',scdata,1,nsctime)
 
          allocate(cp%global_quantities%li(nsctime))
          cp%global_quantities%li(:)= scdata(:)
@@ -755,10 +758,10 @@ program transp2ids
       !VSUR0: measured value from VSF ufile
       !call rpscalar('VSUR0',scdata,nsctime,iret,ier)
       call rpscalar('VSURC',scdata,nsctime,iret,ier)
-      if(ier.ne.0) call transp2ids_error('rpscalar',ier)
+      if(ier.ne.0) call transp2imas_error('rpscalar',ier)
       if(iret.ne.nsctime) &
-         call transp2ids_exit(' ?? VSURC read error')
-      call transp2ids_echo('VSURC',scdata,1,nsctime)
+         call transp2imas_exit(' ?? VSURC read error')
+      call transp2imas_echo('VSURC',scdata,1,nsctime)
       write(*, *) ' VSURC', nsctime, scdata(nsctime)
       !stop
          allocate(cp%global_quantities%v_loop(nsctime))
@@ -767,10 +770,10 @@ program transp2ids
       write(iout,*) ' '
       !ids: Poloidal beta. Defined as betap = 4 int(p dV) / [R_0 * mu_0 * Ip^2]
       call rpscalar('BETAT',scdata,nsctime,iret,ier)
-      if(ier.ne.0) call transp2ids_error('rpscalar',ier)
+      if(ier.ne.0) call transp2imas_error('rpscalar',ier)
       if(iret.ne.nsctime) &
-         call transp2ids_exit(' ?? BETAT read error')
-      call transp2ids_echo('BETAT',scdata,1,nsctime)
+         call transp2imas_exit(' ?? BETAT read error')
+      call transp2imas_echo('BETAT',scdata,1,nsctime)
 
          allocate(cp%global_quantities%beta_pol(nsctime))
          cp%global_quantities%beta_pol(:)= scdata(:)
@@ -779,20 +782,21 @@ program transp2ids
 
       write(iout,*) ' '
       call rpscalar('BZ',scdata,nsctime,iret,ier)
-      if(ier.ne.0) call transp2ids_error('rpscalar',ier)
+      if(ier.ne.0) call transp2imas_error('rpscalar',ier)
       if(iret.ne.nsctime) &
-         call transp2ids_exit(' ?? BZ read error')
-      call transp2ids_echo('BZ',scdata,1,nsctime)
+         call transp2imas_exit(' ?? BZ read error')
+      call transp2imas_echo('BZ',scdata,1,nsctime)
 
          allocate(eq%vacuum_toroidal_field%b0(nsctime))
          eq%vacuum_toroidal_field%b0(:) = scdata(:)
+        cp%vacuum_toroidal_field%b0(:) = eq%vacuum_toroidal_field%b0(:)
 
       write(iout,*) ' '
       call rpscalar('BZXR',scdata,nsctime,iret,ier)
-      if(ier.ne.0) call transp2ids_error('rpscalar',ier)
+      if(ier.ne.0) call transp2imas_error('rpscalar',ier)
       if(iret.ne.nsctime) &
-         call transp2ids_exit(' ?? BZXR read error')
-      call transp2ids_echo('BZXR',scdata,1,nsctime)
+         call transp2imas_exit(' ?? BZXR read error')
+      call transp2imas_echo('BZXR',scdata,1,nsctime)
 
          ! save to calculate F (also called G) function
          allocate(bzxr(nsctime))
@@ -802,70 +806,71 @@ program transp2ids
       write(iout,*) ' '
       call rpcalc('BZXR/BZ',scdata,nsctime,iret, istype, &
          iwarn,ier)
-      if(ier.ne.0) call transp2ids_error('rpcalc(BZXR/BZ) ier',ier)
-      if(iwarn.ne.0) call transp2ids_error('rpcalc(BZXR/BZ) iwarn',iwarn)
+      if(ier.ne.0) call transp2imas_error('rpcalc(BZXR/BZ) ier',ier)
+      if(iwarn.ne.0) call transp2imas_error('rpcalc(BZXR/BZ) iwarn',iwarn)
       write(iout,*) ' rpcalc call OK, returned istype = ',istype
       if(iret.ne.nsctime) &
-         call transp2ids_exit(' ?? BZXR/BZ calc size result error')
-      call transp2ids_echo('BZXR/BZ (rpcalc)',scdata,1,nsctime)
+         call transp2imas_exit(' ?? BZXR/BZ calc size result error')
+      call transp2imas_echo('BZXR/BZ (rpcalc)',scdata,1,nsctime)
             ! take the average to fill R0 where vacuum toroidal field B0
             ! is measured
          eq%vacuum_toroidal_field%r0= &
          .5* ( scdata(1)+scdata(nsctime) )*1.e-2
+        cp%vacuum_toroidal_field%r0(:) = eq%vacuum_toroidal_field%r0(:)
 
       write(iout,*) ' '
       call rpscalar('PSI0_TR',scdata,nsctime,iret,ier)
-      if(ier.ne.0) call transp2ids_error('rpscalar',ier)
+      if(ier.ne.0) call transp2imas_error('rpscalar',ier)
       if(iret.ne.nsctime) &
-         call transp2ids_exit(' ?? PSI0_TR read error')
-      call transp2ids_echo('PSI0_TR',scdata,1,nsctime)
+         call transp2imas_exit(' ?? PSI0_TR read error')
+      call transp2imas_echo('PSI0_TR',scdata,1,nsctime)
 
          eq%time_slice(:)%global_quantities%psi_axis= scdata(:) * twopi
 
       write(iout,*) ' '
       call rpscalar('PLFLXA',scdata,nsctime,iret,ier)
-      if(ier.ne.0) call transp2ids_error('rpscalar',ier)
+      if(ier.ne.0) call transp2imas_error('rpscalar',ier)
       if(iret.ne.nsctime) &
-         call transp2ids_exit(' ?? PLFLXA read error')
-      call transp2ids_echo('PLFLXA',scdata,1,nsctime)
+         call transp2imas_exit(' ?? PLFLXA read error')
+      call transp2imas_echo('PLFLXA',scdata,1,nsctime)
          eq%time_slice(:)%global_quantities%psi_boundary = &
          scdata(:) * twopi
 
       write(iout,*) ' '
       ! PVOL, PVOLB, PVOLF, PVOL is the total volume of plasma
       call rpscalar('PVOL',scdata,nsctime,iret,ier)
-      if(ier.ne.0) call transp2ids_error('rpscalar',ier)
+      if(ier.ne.0) call transp2imas_error('rpscalar',ier)
       if(iret.ne.nsctime) &
-         call transp2ids_exit(' ?? PVOL read error')
-      call transp2ids_echo('PVOL',scdata,1,nsctime)
+         call transp2imas_exit(' ?? PVOL read error')
+      call transp2imas_echo('PVOL',scdata,1,nsctime)
 
          eq%time_slice(:)%global_quantities%volume = scdata(:) * 1.e-6
 
       write(iout,*) ' '
       call rpscalar('PAREA',scdata,nsctime,iret,ier)
-      if(ier.ne.0) call transp2ids_error('rpscalar',ier)
+      if(ier.ne.0) call transp2imas_error('rpscalar',ier)
       if(iret.ne.nsctime) &
-         call transp2ids_exit(' ?? PAREA read error')
-      call transp2ids_echo('PAREA',scdata,1,nsctime)
+         call transp2imas_exit(' ?? PAREA read error')
+      call transp2imas_echo('PAREA',scdata,1,nsctime)
 
          eq%time_slice(:)%global_quantities%area = scdata(:) * 1.e-4
 
       write(iout,*) ' '
       call rpscalar('RAXIS',scdata,nsctime,iret,ier)
-      if(ier.ne.0) call transp2ids_error('rpscalar',ier)
+      if(ier.ne.0) call transp2imas_error('rpscalar',ier)
       if(iret.ne.nsctime) &
-         call transp2ids_exit(' ?? RAXIS read error')
-      call transp2ids_echo('RAXIS',scdata,1,nsctime)
+         call transp2imas_exit(' ?? RAXIS read error')
+      call transp2imas_echo('RAXIS',scdata,1,nsctime)
 
          eq%time_slice(:)%global_quantities%magnetic_axis%r = &
          scdata(:) * 1.e-2
 
       write(iout,*) ' '
       call rpscalar('YAXIS',scdata,nsctime,iret,ier)
-      if(ier.ne.0) call transp2ids_error('rpscalar',ier)
+      if(ier.ne.0) call transp2imas_error('rpscalar',ier)
       if(iret.ne.nsctime) &
-         call transp2ids_exit(' ?? YAXIS read error')
-      call transp2ids_echo('YAXIS',scdata,1,nsctime)
+         call transp2imas_exit(' ?? YAXIS read error')
+      call transp2imas_echo('YAXIS',scdata,1,nsctime)
 
          eq%time_slice(:)%global_quantities%magnetic_axis%z = &
          scdata(:) * 1.e-2
@@ -875,20 +880,20 @@ program transp2ids
       ! PCUR is the measured (from input data) plasma current.
       ! PCURC is computed from the plasma parameters
       call rpscalar('PCURC',scdata,nsctime,iret,ier)
-      if(ier.ne.0) call transp2ids_error('rpscalar',ier)
+      if(ier.ne.0) call transp2imas_error('rpscalar',ier)
       if(iret.ne.nsctime) &
-         call transp2ids_exit(' ?? PCURC read error')
-      call transp2ids_echo('PCURC',scdata,1,nsctime)
+         call transp2imas_exit(' ?? PCURC read error')
+      call transp2imas_echo('PCURC',scdata,1,nsctime)
       write(*, *) ' PCURC', nsctime, scdata(nsctime)
 
          eq%time_slice(:)%global_quantities%ip = scdata(1:)
 
       write(iout,*) ' '
       call rpscalar('Q0',scdata,nsctime,iret,ier)
-      if(ier.ne.0) call transp2ids_error('rpscalar',ier)
+      if(ier.ne.0) call transp2imas_error('rpscalar',ier)
       if(iret.ne.nsctime) &
-         call transp2ids_exit(' ?? Q0 read error')
-      call transp2ids_echo('Q0',scdata,1,nsctime)
+         call transp2imas_exit(' ?? Q0 read error')
+      call transp2imas_echo('Q0',scdata,1,nsctime)
 
          eq%time_slice(:)%global_quantities%q_axis = scdata(:)
 
@@ -914,10 +919,10 @@ program transp2ids
       write(iout,*) ' '
       !? Poloidal beta. Defined as betap = 4 int(p dV) / [R_0 * mu_0 * Ip^2]
       call rpscalar('BPEQ',scdata,nsctime,iret,ier)
-      if(ier.ne.0) call transp2ids_error('rpscalar',ier)
+      if(ier.ne.0) call transp2imas_error('rpscalar',ier)
       if(iret.ne.nsctime) &
-         call transp2ids_exit(' ?? BPEQ read error')
-      call transp2ids_echo('BPEQ',scdata,1,nsctime)
+         call transp2imas_exit(' ?? BPEQ read error')
+      call transp2imas_echo('BPEQ',scdata,1,nsctime)
 
          eq%time_slice(:)%global_quantities%beta_pol = scdata(:)
 
@@ -925,19 +930,19 @@ program transp2ids
       !? Toroidal beta, defined as the volume-averaged total perpendicular pressure 
       !? divided by (B0^2/(2*mu0)), i.e. beta_toroidal = 2 mu0 int(p dV) / V / B0^2
       call rpscalar('BTEQ',scdata,nsctime,iret,ier)
-      if(ier.ne.0) call transp2ids_error('rpscalar',ier)
+      if(ier.ne.0) call transp2imas_error('rpscalar',ier)
       if(iret.ne.nsctime) &
-         call transp2ids_exit(' ?? BTEQ read error')
-      call transp2ids_echo('BTEQ',scdata,1,nsctime)
+         call transp2imas_exit(' ?? BTEQ read error')
+      call transp2imas_echo('BTEQ',scdata,1,nsctime)
 
          eq%time_slice(:)%global_quantities%beta_tor = scdata(:)
 
 !      write(iout,*) ' '
 !      call rpscalar('X',scdata,nsctime,iret,ier)
-!      if(ier.ne.0) call transp2ids_error('rpscalar',ier)
+!      if(ier.ne.0) call transp2imas_error('rpscalar',ier)
 !      if(iret.ne.nsctime) &
-!         call transp2ids_exit(' ?? X read error')
-!      call transp2ids_echo('X',scdata,1,nsctime)
+!         call transp2imas_exit(' ?? X read error')
+!      call transp2imas_echo('X',scdata,1,nsctime)
 
 
 !
@@ -954,10 +959,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('X',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(XI)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(XI)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? XI read error')
-      call transp2ids_echo('XI',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? XI read error')
+      call transp2imas_echo('XI',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -974,10 +979,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('XB',prdata,nprtime*xsizes(2),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(XB)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(XB)',ier)
       if(iret.ne.nprtime*xsizes(2)) &
-         call transp2ids_exit(' ?? XB read error')
-      call transp2ids_echo('XB',prdata,xsizes(2),nprtime)
+         call transp2imas_exit(' ?? XB read error')
+      call transp2imas_echo('XB',prdata,xsizes(2),nprtime)
 
          offset=xsizes(2)
          allocate(XB(offset,nprtime))
@@ -987,10 +992,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('NE',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(NE)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(NE)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? NE read error')
-      call transp2ids_echo('NE',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? NE read error')
+      call transp2imas_echo('NE',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1001,10 +1006,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('TE',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(TE)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(TE)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? TE read error')
-      call transp2ids_echo('TE',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? TE read error')
+      call transp2imas_echo('TE',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1015,21 +1020,21 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('NI',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(NI)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(NI)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? NI read error')
-      call transp2ids_echo('NI',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? NI read error')
+      call transp2imas_echo('NI',prdata,xsizes(1),nprtime)
       ! ids doesn't has field for NI
       !only has ni_over_ne
       write(iout,*) ' '
       call rpcalc('NI/NE',prdata,nprtime*xsizes(1),iret, istype, &
          iwarn,ier)
-      if(ier.ne.0) call transp2ids_error('rpcalc(NI/NE) ier',ier)
-      if(iwarn.ne.0) call transp2ids_error('rpcalc(NI/NE) iwarn',iwarn)
+      if(ier.ne.0) call transp2imas_error('rpcalc(NI/NE) ier',ier)
+      if(iwarn.ne.0) call transp2imas_error('rpcalc(NI/NE) iwarn',iwarn)
       write(iout,*) ' rpcalc call OK, returned istype = ',istype
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? NI/NE calc size result error')
-      call transp2ids_echo('NI/NE (rpcalc)',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? NI/NE calc size result error')
+      call transp2imas_echo('NI/NE (rpcalc)',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1040,10 +1045,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('TI',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(TI)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(TI)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? TI read error')
-      call transp2ids_echo('TI',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? TI read error')
+      call transp2imas_echo('TI',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1057,10 +1062,10 @@ program transp2ids
       ! ZEFFP                PLASMA COMPOSITION ZEFF PROFILE
       ! ZEFFI                ZEFF DATA (UNCONSTRAINED)
       call rprofile('ZEFFP',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(ZEFFP)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(ZEFFP)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? ZEFFP read error')
-      call transp2ids_echo('ZEFFP',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? ZEFFP read error')
+      call transp2imas_echo('ZEFFP',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1071,10 +1076,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('Q',prdata,nprtime*xsizes(2),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(Q)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(Q)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? Q read error')
-      call transp2ids_echo('Q',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? Q read error')
+      call transp2imas_echo('Q',prdata,xsizes(1),nprtime)
 
          !Q(XB)  == > Q(X)
          offset=xsizes(2)
@@ -1089,10 +1094,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('CURBS',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(CURBS)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(CURBS)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? CURBS read error')
-      call transp2ids_echo('CURBS',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? CURBS read error')
+      call transp2imas_echo('CURBS',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1103,10 +1108,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('CUROH',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(CUROH)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(CUROH)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? CUROH read error')
-      call transp2ids_echo('CUROH',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? CUROH read error')
+      call transp2imas_echo('CUROH',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1124,10 +1129,10 @@ program transp2ids
       ! PLCURTOT(XB)      TOTAL POLOIDAL CUR TO WALL   AMPS
       !call rprofile('CURGP',prdata,nprtime*xsizes(1),iret,ier)
       call rprofile('CUR',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(CUR)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(CUR)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? CUR read error')
-      call transp2ids_echo('CUR',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? CUR read error')
+      call transp2imas_echo('CUR',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1138,10 +1143,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('SHAT',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(SHAT)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(SHAT)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? SHAT read error')
-      call transp2ids_echo('SHAT',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? SHAT read error')
+      call transp2imas_echo('SHAT',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1152,10 +1157,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('PLFLX2PI',prdata,nprtime*xsizes(2),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(PLFLX2PI)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(PLFLX2PI)',ier)
       if(iret.ne.nprtime*xsizes(2)) &
-         call transp2ids_exit(' ?? PLFLX2PI read error')
-      call transp2ids_echo('PLFLX2PI',prdata,xsizes(2),nprtime)
+         call transp2imas_exit(' ?? PLFLX2PI read error')
+      call transp2imas_echo('PLFLX2PI',prdata,xsizes(2),nprtime)
 
          ! function of XB coordinate
          ! ITER requires poloidal flux decreases from magnetic axis to
@@ -1173,10 +1178,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('TRFLX',prdata,nprtime*xsizes(2),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(TRFLX)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(TRFLX)',ier)
       if(iret.ne.nprtime*xsizes(2)) &
-         call transp2ids_exit(' ?? TRFLX read error')
-      call transp2ids_echo('TRFLX',prdata,xsizes(2),nprtime)
+         call transp2imas_exit(' ?? TRFLX read error')
+      call transp2imas_echo('TRFLX',prdata,xsizes(2),nprtime)
 
          offset=xsizes(2)
          do it=1,nprtime
@@ -1191,10 +1196,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('DVOL',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(DVOL)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(DVOL)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? DVOL read error')
-      call transp2ids_echo('DVOL',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? DVOL read error')
+      call transp2imas_echo('DVOL',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1205,10 +1210,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('DAREA',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(DAREA)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(DAREA)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? DAREA read error')
-      call transp2ids_echo('DAREA',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? DAREA read error')
+      call transp2imas_echo('DAREA',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1219,54 +1224,54 @@ program transp2ids
 
       !write(iout,*) ' '
       !call rprofile('NT',prdata,nprtime*xsizes(1),iret,ier)
-      !if(ier.ne.0) call transp2ids_error('rprofile(NT)',ier)
+      !if(ier.ne.0) call transp2imas_error('rprofile(NT)',ier)
       !if(iret.ne.nprtime*xsizes(1)) &
-      !   call transp2ids_exit(' ?? NT read error')
-      !call transp2ids_echo('NT',prdata,xsizes(1),nprtime)
+      !   call transp2imas_exit(' ?? NT read error')
+      !call transp2imas_echo('NT',prdata,xsizes(1),nprtime)
 
       !write(iout,*) ' '
       !call rprofile('ND',prdata,nprtime*xsizes(1),iret,ier)
-      !if(ier.ne.0) call transp2ids_error('rprofile(ND)',ier)
+      !if(ier.ne.0) call transp2imas_error('rprofile(ND)',ier)
       !if(iret.ne.nprtime*xsizes(1)) &
-      !   call transp2ids_exit(' ?? ND read error')
-      !call transp2ids_echo('ND',prdata,xsizes(1),nprtime)
+      !   call transp2imas_exit(' ?? ND read error')
+      !call transp2imas_echo('ND',prdata,xsizes(1),nprtime)
 
       !write(iout,*) ' '
       !call rprofile('NH',prdata,nprtime*xsizes(1),iret,ier)
-      !if(ier.ne.0) call transp2ids_error('rprofile(NH)',ier)
+      !if(ier.ne.0) call transp2imas_error('rprofile(NH)',ier)
       !if(iret.ne.nprtime*xsizes(1)) &
-      !   call transp2ids_exit(' ?? NH read error')
-      !call transp2ids_echo('NH',prdata,xsizes(1),nprtime)
+      !   call transp2imas_exit(' ?? NH read error')
+      !call transp2imas_echo('NH',prdata,xsizes(1),nprtime)
 
       !write(iout,*) ' '
       !call rprofile('NHE3',prdata,nprtime*xsizes(1),iret,ier)
-      !if(ier.ne.0) call transp2ids_error('rprofile(NHE3)',ier)
+      !if(ier.ne.0) call transp2imas_error('rprofile(NHE3)',ier)
       !if(iret.ne.nprtime*xsizes(1)) &
-      !   call transp2ids_exit(' ?? NHE3 read error')
-      !call transp2ids_echo('NHE3',prdata,xsizes(1),nprtime)
+      !   call transp2imas_exit(' ?? NHE3 read error')
+      !call transp2imas_echo('NHE3',prdata,xsizes(1),nprtime)
 
       !write(iout,*) ' '
       !call rprofile('NHE4',prdata,nprtime*xsizes(1),iret,ier)
-      !if(ier.ne.0) call transp2ids_error('rprofile(NHE4)',ier)
+      !if(ier.ne.0) call transp2imas_error('rprofile(NHE4)',ier)
       !if(iret.ne.nprtime*xsizes(1)) &
-      !   call transp2ids_exit(' ?? NHE4 read error')
-      !call transp2ids_echo('NHE4',prdata,xsizes(1),nprtime)
+      !   call transp2imas_exit(' ?? NHE4 read error')
+      !call transp2imas_echo('NHE4',prdata,xsizes(1),nprtime)
 
       !write(iout,*) ' '
       !call rprofile('NLITH',prdata,nprtime*xsizes(1),iret,ier)
-      !if(ier.ne.0) call transp2ids_error('rprofile(NLITH)',ier)
+      !if(ier.ne.0) call transp2imas_error('rprofile(NLITH)',ier)
       !if(iret.ne.nprtime*xsizes(1)) &
-      !   call transp2ids_exit(' ?? NLITH read error')
-      !call transp2ids_echo('NLITH',prdata,xsizes(1),nprtime)
+      !   call transp2imas_exit(' ?? NLITH read error')
+      !call transp2imas_echo('NLITH',prdata,xsizes(1),nprtime)
 
       ! fill ids_equilibrium
 
       write(iout,*) ' '
       call rprofile('PLFLX2PI',prdata,nprtime*xsizes(2),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(PLFLX2PI)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(PLFLX2PI)',ier)
       if(iret.ne.nprtime*xsizes(2)) &
-         call transp2ids_exit(' ?? PLFLX2PI read error')
-      call transp2ids_echo('PLFLX2PI',prdata,xsizes(2),nprtime)
+         call transp2imas_exit(' ?? PLFLX2PI read error')
+      call transp2imas_echo('PLFLX2PI',prdata,xsizes(2),nprtime)
 
          ! iter needs poloidal flux decrease from R0 to edge
          ! to be used as ids_eq coordinate
@@ -1327,10 +1332,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('TRFLX',prdata,nprtime*xsizes(2),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(TRFLX)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(TRFLX)',ier)
       if(iret.ne.nprtime*xsizes(2)) &
-         call transp2ids_exit(' ?? TRFLX read error')
-      call transp2ids_echo('TRFLX',prdata,xsizes(2),nprtime)
+         call transp2imas_exit(' ?? TRFLX read error')
+      call transp2imas_echo('TRFLX',prdata,xsizes(2),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1345,10 +1350,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('PPLAS',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(PPLAS)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(PPLAS)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? PPLAS read error')
-      call transp2ids_echo('PPLAS',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? PPLAS read error')
+      call transp2imas_echo('PPLAS',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1400,10 +1405,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('ELONG',prdata,nprtime*xsizes(2),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(ELONG)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(ELONG)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? ELONG read error')
-      call transp2ids_echo('ELONG',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? ELONG read error')
+      call transp2imas_echo('ELONG',prdata,xsizes(1),nprtime)
 
          offset=xsizes(2)
          do it=1,nprtime
@@ -1418,10 +1423,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('TRIANGU',prdata,nprtime*xsizes(2),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(TRIANGU)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(TRIANGU)',ier)
       if(iret.ne.nprtime*xsizes(2)) &
-         call transp2ids_exit(' ?? TRIANGU read error')
-      call transp2ids_echo('TRIANGU',prdata,xsizes(2),nprtime)
+         call transp2imas_exit(' ?? TRIANGU read error')
+      call transp2imas_echo('TRIANGU',prdata,xsizes(2),nprtime)
 
          offset=xsizes(2)
          do it=1,nprtime
@@ -1437,10 +1442,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('TRIANGL',prdata,nprtime*xsizes(2),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(TRIANGL)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(TRIANGL)',ier)
       if(iret.ne.nprtime*xsizes(2)) &
-         call transp2ids_exit(' ?? TRIANGL read error')
-      call transp2ids_echo('TRIANGL',prdata,xsizes(2),nprtime)
+         call transp2imas_exit(' ?? TRIANGL read error')
+      call transp2imas_echo('TRIANGL',prdata,xsizes(2),nprtime)
 
          offset=xsizes(2)
          do it=1,nprtime
@@ -1456,10 +1461,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('DVOL',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(DVOL)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(DVOL)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? DVOL read error')
-      call transp2ids_echo('DVOL',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? DVOL read error')
+      call transp2imas_echo('DVOL',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1470,10 +1475,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('DAREA',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(DAREA)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(DAREA)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? DAREA read error')
-      call transp2ids_echo('DAREA',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? DAREA read error')
+      call transp2imas_echo('DAREA',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1484,10 +1489,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('SURF',prdata,nprtime*xsizes(2),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(SURF)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(SURF)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? SURF read error')
-      call transp2ids_echo('SURF',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? SURF read error')
+      call transp2imas_echo('SURF',prdata,xsizes(1),nprtime)
 
          offset=xsizes(2)
          do it=1,nprtime
@@ -1502,10 +1507,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('Q',prdata,nprtime*xsizes(2),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(Q)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(Q)',ier)
       if(iret.ne.nprtime*xsizes(2)) &
-         call transp2ids_exit(' ?? Q read error')
-      call transp2ids_echo('Q',prdata,xsizes(2),nprtime)
+         call transp2imas_exit(' ?? Q read error')
+      call transp2imas_echo('Q',prdata,xsizes(2),nprtime)
 
          offset=xsizes(2)
          do it=1,nprtime
@@ -1521,10 +1526,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('SHAT',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(SHAT)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(SHAT)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? SHAT read error')
-      call transp2ids_echo('SHAT',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? SHAT read error')
+      call transp2imas_echo('SHAT',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1535,10 +1540,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('GRI',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(GRI)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(GRI)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? GRI read error')
-      call transp2ids_echo('GRI',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? GRI read error')
+      call transp2imas_echo('GRI',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1549,10 +1554,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('GR2I',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(GR2I)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(GR2I)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? GR2I read error')
-      call transp2ids_echo('GR2I',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? GR2I read error')
+      call transp2imas_echo('GR2I',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1567,10 +1572,10 @@ program transp2ids
       ! The grad has terms like dxi/dR,dxi/dZ
       ! ==>> diffetent from gm2, redo it!!!!
       call rprofile('GX2R2I',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(GX2R2I)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(GX2R2I)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? GX2R2I read error')
-      call transp2ids_echo('GX2R2I',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? GX2R2I read error')
+      call transp2imas_echo('GX2R2I',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1584,10 +1589,10 @@ program transp2ids
       ! The grad has terms like dxi/dR,dxi/dZ
       ! ==>> diffetent from gm2, redo it!!!!
       call rprofile('GXI2',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(GXI2)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(GXI2)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? GXI2 read error')
-      call transp2ids_echo('GXI2',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? GXI2 read error')
+      call transp2imas_echo('GXI2',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1601,10 +1606,10 @@ program transp2ids
       ! The grad has terms like dxi/dR,dxi/dZ
       ! ==>> diffetent from gm2, redo it!!!!
       call rprofile('GXI',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(GXI)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(GXI)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? GXI read error')
-      call transp2ids_echo('GXI',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? GXI read error')
+      call transp2imas_echo('GXI',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1615,10 +1620,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('GB2I',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(GB2I)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(GB2I)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? GB2I read error')
-      call transp2ids_echo('GB2I',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? GB2I read error')
+      call transp2imas_echo('GB2I',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1629,10 +1634,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('GB2',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(GB2)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(GB2)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? GB2 read error')
-      call transp2ids_echo('GB2',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? GB2 read error')
+      call transp2imas_echo('GB2',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1643,10 +1648,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('GB1',prdata,nprtime*xsizes(1),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(GB1)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(GB1)',ier)
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? GB1 read error')
-      call transp2ids_echo('GB1',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? GB1 read error')
+      call transp2imas_echo('GB1',prdata,xsizes(1),nprtime)
 
          offset=xsizes(1)
          do it=1,nprtime
@@ -1658,10 +1663,10 @@ program transp2ids
       write(iout,*) ' '
       !? how to calculate ffprime, pprime
       call rprofile('GFUN',prdata,nprtime*xsizes(2),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(GFUN)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(GFUN)',ier)
       if(iret.ne.nprtime*xsizes(2)) &
-         call transp2ids_exit(' ?? GFUN read error')
-      call transp2ids_echo('GFUN',prdata,xsizes(2),nprtime)
+         call transp2imas_exit(' ?? GFUN read error')
+      call transp2imas_echo('GFUN',prdata,xsizes(2),nprtime)
 
          offset=xsizes(2)
          do it=1,nprtime
@@ -1729,10 +1734,10 @@ program transp2ids
          ! or can get it from dumped g-eqdsk file 'eqdskin'
       write(iout,*) ' '
       call rprofile('ILIM',prdata,nprtime*xsizes(LIMtype),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(ILIM)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(ILIM)',ier)
       if(iret.ne.nprtime*xsizes(LIMtype)) &
-         call transp2ids_exit(' ?? ILIM read error')
-      call transp2ids_echo('ILIM',prdata,xsizes(LIMtype),nprtime)
+         call transp2imas_exit(' ?? ILIM read error')
+      call transp2imas_echo('ILIM',prdata,xsizes(LIMtype),nprtime)
 
          offset=xsizes(LIMtype)
          nlimiter=offset
@@ -1741,10 +1746,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('RLIM',prdata,nprtime*xsizes(LIMtype),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(RLIM)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(RLIM)',ier)
       if(iret.ne.nprtime*xsizes(LIMtype)) &
-         call transp2ids_exit(' ?? RLIM read error')
-      call transp2ids_echo('RLIM',prdata,xsizes(LIMtype),nprtime)
+         call transp2imas_exit(' ?? RLIM read error')
+      call transp2imas_echo('RLIM',prdata,xsizes(LIMtype),nprtime)
 
          offset=xsizes(LIMtype)
          allocate(rlimiter(offset))
@@ -1752,10 +1757,10 @@ program transp2ids
 
       write(iout,*) ' '
       call rprofile('YLIM',prdata,nprtime*xsizes(LIMtype),iret,ier)
-      if(ier.ne.0) call transp2ids_error('rprofile(YLIM)',ier)
+      if(ier.ne.0) call transp2imas_error('rprofile(YLIM)',ier)
       if(iret.ne.nprtime*xsizes(LIMtype)) &
-         call transp2ids_exit(' ?? YLIM read error')
-      call transp2ids_echo('YLIM',prdata,xsizes(LIMtype),nprtime)
+         call transp2imas_exit(' ?? YLIM read error')
+      call transp2imas_echo('YLIM',prdata,xsizes(LIMtype),nprtime)
 
          offset=xsizes(LIMtype)
          allocate(ylimiter(offset))
@@ -1780,28 +1785,28 @@ program transp2ids
       write(iout,*) ' '
       call rpcalc('NE*TE',prdata,nprtime*xsizes(1),iret, istype, &
          iwarn,ier)
-      if(ier.ne.0) call transp2ids_error('rpcalc(NE*TE) ier',ier)
-      if(iwarn.ne.0) call transp2ids_error('rpcalc(NE*TE) iwarn',iwarn)
+      if(ier.ne.0) call transp2imas_error('rpcalc(NE*TE) ier',ier)
+      if(iwarn.ne.0) call transp2imas_error('rpcalc(NE*TE) iwarn',iwarn)
       write(iout,*) ' rpcalc call OK, returned istype = ',istype
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? NE*TE calc size result error')
-      call transp2ids_echo('NE*TE (rpcalc)',prdata,xsizes(1),nprtime)
+         call transp2imas_exit(' ?? NE*TE calc size result error')
+      call transp2imas_echo('NE*TE (rpcalc)',prdata,xsizes(1),nprtime)
 
       write(iout,*) ' '
       write(iout,*) ' call RPCAL0("TMP=NE*TE", iwarn,ier)'
       call RPCAL0('TMP=NE*TE', iwarn,ier)
-      if(ier.ne.0) call transp2ids_error('rpcal0(NE*TE) ier',ier)
-      if(iwarn.ne.0) call transp2ids_error('rpcal0(NE*TE) iwarn',iwarn)
+      if(ier.ne.0) call transp2imas_error('rpcal0(NE*TE) ier',ier)
+      if(iwarn.ne.0) call transp2imas_error('rpcal0(NE*TE) iwarn',iwarn)
 
       write(iout,*) ' call RPCALC("TMP+NI*TI", ..., iwarn,ier)'
       call rpcalc('TMP + NI*TI',prdata,nprtime*xsizes(1),iret, istype, &
          iwarn,ier)
-      if(ier.ne.0) call transp2ids_error('rpcalc(...) ier',ier)
-      if(iwarn.ne.0) call transp2ids_error('rpcalc(...) iwarn',iwarn)
+      if(ier.ne.0) call transp2imas_error('rpcalc(...) ier',ier)
+      if(iwarn.ne.0) call transp2imas_error('rpcalc(...) iwarn',iwarn)
       write(iout,*) ' rpcalc call OK, returned istype = ',istype
       if(iret.ne.nprtime*xsizes(1)) &
-         call transp2ids_exit(' ?? TMP+NI*TI calc size result error')
-      call transp2ids_echo('NE*TE+NI*TI (rpcal0,rpcalc)', &
+         call transp2imas_exit(' ?? TMP+NI*TI calc size result error')
+      call transp2imas_echo('NE*TE+NI*TI (rpcal0,rpcalc)', &
          prdata,xsizes(1),nprtime)
 
 !
@@ -1810,32 +1815,32 @@ program transp2ids
       write(iout,*) ' '
       call rpmulti('EEBAL',istype,label,units,infuns,mgsigns, &
                   mgnames,ier)
-      if(ier.ne.0) call transp2ids_error('rpmulti(EEBAL)',ier)
+      if(ier.ne.0) call transp2imas_error('rpmulti(EEBAL)',ier)
       write(iout,*) 'EEBAL ',label,' ',units,' istype=',istype
 
       write(iout,*) 'read the data...'
       call rpmg0cal(mgnames,mgsigns,infuns,mgdata,nmax,iret,istype, &
          iwarn,ier)
-      if(ier.ne.0) call transp2ids_error('rpmg0cal ier',ier)
-      if(iwarn.ne.0) call transp2ids_error('rpmg0cal iwarn',iwarn)
+      if(ier.ne.0) call transp2imas_error('rpmg0cal ier',ier)
+      if(iwarn.ne.0) call transp2imas_error('rpmg0cal iwarn',iwarn)
 
       write(iout,*) 'EEBAL istype=',istype,':  read results...'
       do i=1,infuns
          write(iout,*) ' '
-         call transp2ids_echo(cmgsign(mgsigns(i))//mgnames(i), &
+         call transp2imas_echo(cmgsign(mgsigns(i))//mgnames(i), &
             mgdata(1,i),xsizes(istype),nprtime)
       enddo
 
       write(iout,*) 'read volint(EEBAL members)'
       call rpmg1cal(mgnames,mgsigns,infuns,'VOLINT(@)',mgdata,nmax, &
          iret,istype,iwarn,ier)
-      if(ier.ne.0) call transp2ids_error('rpmg1cal ier',ier)
-      if(iwarn.ne.0) call transp2ids_error('rpmg1cal iwarn',iwarn)
+      if(ier.ne.0) call transp2imas_error('rpmg1cal ier',ier)
+      if(iwarn.ne.0) call transp2imas_error('rpmg1cal iwarn',iwarn)
 
       write(iout,*) 'VOLINT(EEBAL) istype=',istype,':  read results...'
       do i=1,infuns
          write(iout,*) ' '
-         call transp2ids_echo( &
+         call transp2imas_echo( &
             'VOLINT('//cmgsign(mgsigns(i))//mgnames(i)//')', &
             mgdata(1,i),xsizes(istype),nprtime)
       enddo
@@ -1848,12 +1853,12 @@ program transp2ids
       ztime=0.5*(prtime(1)+prtime(2))
       call rptimav(mgdata,nmax,infuns,istype,ztime,0.0, &
          mgslice,nxmax, ier)
-      if(ier.ne.0) call transp2ids_error('rptimav(0)',ier)
+      if(ier.ne.0) call transp2imas_error('rptimav(0)',ier)
       write(iout,*) ' '
       write(iout,*) ' rptimav test (no time averaging)'
       do i=1,infuns
          write(iout,*) ' '
-         call transp2ids_echo( &
+         call transp2imas_echo( &
             'VOLINT('//cmgsign(mgsigns(i))//mgnames(i)//')', &
             mgslice(1,i),xsizes(istype),1)
       enddo
@@ -1861,27 +1866,27 @@ program transp2ids
       dt_avg=0.5*(prtime(2)-prtime(1))
       call rptimav(mgdata,nmax,infuns,istype,ztime,dt_avg, &
          mgslice,nxmax, ier)
-      if(ier.ne.0) call transp2ids_error('rptimav(0)',ier)
+      if(ier.ne.0) call transp2imas_error('rptimav(0)',ier)
       write(iout,*) ' '
       write(iout,*) ' rptimav test (time averaging 1st time zone)'
       do i=1,infuns
          write(iout,*) ' '
-         call transp2ids_echo( &
+         call transp2imas_echo( &
             'VOLINT('//cmgsign(mgsigns(i))//mgnames(i)//')', &
             mgslice(1,i),xsizes(istype),1)
       enddo
 
       call t1scalar('RAXIS',label,units,ztime,dt_avg,zanswer,ier)
-      if(ier.ne.0) call transp2ids_error('t1scalar',ier)
+      if(ier.ne.0) call transp2imas_error('t1scalar',ier)
       write(iout,'(1x,a,1x,1pe12.5)') &
          ' t1scalar(RAXIS,...) zanswer = ',zanswer
 
       call t1profil('TE',label,units,ztime,dt_avg,istype,mgslice, &
          nxmax,iret,ier)
-      if(ier.ne.0) call transp2ids_error('t1scalar',ier)
+      if(ier.ne.0) call transp2imas_error('t1scalar',ier)
       write(iout,*) ' '
       write(iout,*) ' t1profil test...'
-      call transp2ids_echo('TE',mgslice(1,1),xsizes(istype),1)
+      call transp2imas_echo('TE',mgslice(1,1),xsizes(istype),1)
 #endif
 
 !---------------------------------
@@ -1914,16 +1919,16 @@ program transp2ids
       ilun=99
       call tr_getnl_text(ilun,ier)
       if(ier.ne.0) then
-         call transp2ids_error('tr_getnl_text',ier)
+         call transp2imas_error('tr_getnl_text',ier)
       endif
  
 !  get number of plasma species
  
       call tr_getnl_intvec('NGMAX',ngmax,1,istat)
       if(istat.ne.1) then
-         call transp2ids_exit('NGMAX not in namelist.')
+         call transp2imas_exit('NGMAX not in namelist.')
       else if(ngmax.gt.5) then
-         call transp2ids_exit('NGMAX.gt.5')
+         call transp2imas_exit('NGMAX.gt.5')
       endif
       write(iout,*) ' NAMELIST read OK:  NGMAX=',ngmax
  
@@ -1931,7 +1936,7 @@ program transp2ids
  
       call tr_getnl_r4vec('APLASM',aplasm,ngmax,istat)
       if(istat.ne.ngmax) then
-         call transp2ids_exit('APLASM missing or wrong size')
+         call transp2imas_exit('APLASM missing or wrong size')
       endif
       write(iout,3001) (aplasm(i),i=1,ngmax)
  
@@ -1939,7 +1944,7 @@ program transp2ids
  
       call tr_getnl_r4vec('BACKZ',backz,ngmax,istat)
       if(istat.ne.ngmax) then
-         call transp2ids_exit('BACKZ missing or wrong size')
+         call transp2imas_exit('BACKZ missing or wrong size')
       endif
       write(iout,3002) (backz(i),i=1,ngmax)
  
@@ -1949,9 +1954,9 @@ program transp2ids
 !
 !  save ids data
 !
-      write(*,*) ' transp2ids: save ids_cp'
+      write(*,*) ' transp2imas: save ids_cp'
       call ids_put(idsidx,"core_profiles",cp)
-      write(*,*) ' transp2ids: save ids_eq'
+      write(*,*) ' transp2imas: save ids_eq'
       call ids_put(idsidx,"equilibrium",eq)
 
       write(*,*) 'Close shot in IMAS!'
@@ -2041,15 +2046,15 @@ program transp2ids
 !
 !***
 !
-      if(ier.ne.0) call transp2ids_error('t1scalar',ier)
+      if(ier.ne.0) call transp2imas_error('t1scalar',ier)
 
       write(iout,*) ' '
       write(iout,*) ' t1mhdeq output in MKS units.'
 
       write(iout,*) ' '
-      call transp2ids_echo('Rarr on axis',Rarr,ntheta,1)
+      call transp2imas_echo('Rarr on axis',Rarr,ntheta,1)
       write(iout,*) ' '
-      call transp2ids_echo('Zarr on axis',Zarr,ntheta,1)
+      call transp2imas_echo('Zarr on axis',Zarr,ntheta,1)
       write(iout,*) ' '
       write(iout,*) ' Rarr @edge:'
       write(iout,'(6(1x,1pe12.5))') (Rarr(i,nsgot),i=1,ntheta)
@@ -2059,26 +2064,26 @@ program transp2ids
       write(iout,'(6(1x,1pe12.5))') (Zarr(i,nsgot),i=1,ntheta)
 
       write(iout,*) ' '
-      call transp2ids_echo('rho(t1mhdeq)',rho,nsgot,1)
+      call transp2imas_echo('rho(t1mhdeq)',rho,nsgot,1)
       write(iout,*) ' '
-      call transp2ids_echo('psi(t1mhdeq)',psi,nsgot,1)
+      call transp2imas_echo('psi(t1mhdeq)',psi,nsgot,1)
       write(iout,*) ' '
-      call transp2ids_echo('pmhd(t1mhdeq)',pmhd,nsgot,1)
+      call transp2imas_echo('pmhd(t1mhdeq)',pmhd,nsgot,1)
       write(iout,*) ' '
-      call transp2ids_echo('gmhd(t1mhdeq)',gmhd,nsgot,1)
+      call transp2imas_echo('gmhd(t1mhdeq)',gmhd,nsgot,1)
       write(iout,*) ' '
-      call transp2ids_echo('qmhd(t1mhdeq)',qmhd,nsgot,1)
+      call transp2imas_echo('qmhd(t1mhdeq)',qmhd,nsgot,1)
 
       write(iout,*) ' '
-      call transp2ids_echo('tflux(t1mhdeq)',tflux,1,1)
+      call transp2imas_echo('tflux(t1mhdeq)',tflux,1,1)
       write(iout,*) ' '
-      call transp2ids_echo('pcur(t1mhdeq)',pcur,1,1)
+      call transp2imas_echo('pcur(t1mhdeq)',pcur,1,1)
 
       return
       end
 
 !----------------------------------------------------
-      subroutine transp2ids_error(srname,ier)
+      subroutine transp2imas_error(srname,ier)
 !
 !  write message w/status code and exit
 !
@@ -2099,7 +2104,7 @@ program transp2ids
       end
 
 !----------------------------------------------------
-      subroutine transp2ids_exit(msg)
+      subroutine transp2imas_exit(msg)
 !
 !  write message and exit
 !
@@ -2111,15 +2116,15 @@ program transp2ids
 !
 !----------
 !
-      write(iout,*) ' transp2ids error exit:  ',msg
-      write(imsg,*) ' transp2ids error exit:  ',msg
+      write(iout,*) ' transp2imas error exit:  ',msg
+      write(imsg,*) ' transp2imas error exit:  ',msg
 
       call bad_exit
       stop
       end
 
 !----------------------------------------------------
-      subroutine transp2ids_echo(dname,ditem,idimx,idimt)
+      subroutine transp2imas_echo(dname,ditem,idimx,idimt)
 !
 !  write a few words of the data...
 !
@@ -2214,7 +2219,7 @@ program transp2ids
          run=itmp-shot*1000
        else
          write(*,*) 'transp runid must have 5 or 6 digits'
-         call transp2ids_exit(' ?? transp runid is wrong')
+         call transp2imas_exit(' ?? transp runid is wrong')
       endif
       write(*,*) '       ids shot: ',shot
       write(*,*) '       ids run: ',run

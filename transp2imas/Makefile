@@ -52,4 +52,4 @@ transp2imas.o : transp2imas.f90
 	
 .PHONY : clean
 clean :
-	rm -f transp2imas eqdskin fort.* transp2ids.* *.o *.mod *~
+	rm -f transp2imas eqdskin fort.* transp2imas.msgs *.o *.mod *~
