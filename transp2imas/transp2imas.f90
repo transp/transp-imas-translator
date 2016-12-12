@@ -523,7 +523,7 @@ program transp2imas
            '"',label,'" "',units,'"  istype=', istype
 
            if(istype.eq.1) then
-              !get charge state  densiry
+              !get charge state density
               write(iout,*) ' '
               call rprofile(trim(abray(1,iion_start+j)),prdata,nprtime*xsizes(istype),iret,ier)
               if(ier.ne.0) call transp2imas_error('rprofile(abray(1,iion_start+j))',ier)
@@ -789,7 +789,7 @@ program transp2imas
 
          allocate(eq%vacuum_toroidal_field%b0(nsctime))
          eq%vacuum_toroidal_field%b0(:) = scdata(:)
-        cp%vacuum_toroidal_field%b0(:) = eq%vacuum_toroidal_field%b0(:)
+        !cp%vacuum_toroidal_field%b0(:) = eq%vacuum_toroidal_field%b0(:)
 
       write(iout,*) ' '
       call rpscalar('BZXR',scdata,nsctime,iret,ier)
@@ -816,7 +816,7 @@ program transp2imas
             ! is measured
          eq%vacuum_toroidal_field%r0= &
          .5* ( scdata(1)+scdata(nsctime) )*1.e-2
-        cp%vacuum_toroidal_field%r0(:) = eq%vacuum_toroidal_field%r0(:)
+        !cp%vacuum_toroidal_field%r0(:) = eq%vacuum_toroidal_field%r0(:)
 
       write(iout,*) ' '
       call rpscalar('PSI0_TR',scdata,nsctime,iret,ier)
