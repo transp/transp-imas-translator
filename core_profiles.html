@@ -10,7 +10,7 @@
 
 <p>
 
-The core_profile IDS is a container object that has a single data object, a double(:) with all the timeslice values.
+The core_profile IDS is a container object that has a single data object, a double(:) with all the timeslice values for scalar data.
 The core_profile IDS also holds five container objects with data, or meta data, or other containers: 
 ids_properties, code, vacuum_toroidal_field, global_quantities and profiles_1d, respectively.
 profiles_1d holds the following containers: e_field, grid, electrons, ion(1:nion) and neutral(1:nneutral). The species containers (electron, ions and neutrals) each have a velocity container. Each neutral and ion container has four container objects: state, element, label and neutral_type, respectively. Finally, the state container holds two containers: neutral_type and velocity. The core_profile IDS has a total of 22 container objects with 470 data (or meta data) objects.

@@ -1,0 +1,585 @@
+<html>
+
+<head>
+<title>The equilibrium IDS</title>
+</head>
+
+<body>
+
+<code>[The info on this page was extracted from IMAS source code (access-layer/fortraninterface/equilibrium_put.f90, git master 08/29/2016)]</code>
+
+<p>
+
+The equilibrium IDS is a container object that has a single data object, a double(:) with all the timeslice values for scalar data.
+The equilibrium IDS also holds five container objects with data, or meta data, or other containers: 
+ids_properties, code, vacuum_toroidal_field, global_quantities and profiles_1d, respectively.
+profiles_1d holds the following containers: e_field, grid, electrons, ion(1:nion) and neutral(1:nneutral). The species containers (electron, ions and neutrals) each have a velocity container. Each neutral and ion container has four container objects: state, element, label and neutral_type, respectively. Finally, the state container holds two containers: neutral_type and velocity. The equilibrium IDS has a total of 22 container objects with 470 data (or meta data) objects.
+
+<p>
+
+Below is a table with all the equilibrium data and meta-data objects and their types:
+
+<p>
+
+<table border="1">
+
+<tr><th align="left">data container</th>	<th>data type</th>	<th>used by<br>TRANSP?</th></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time(nsctime)</td>	<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%ids_properties%comment</td>			<td>string</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%ids_properties%homogeneous_time</td>	<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%code%name</td>			<td>string</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%code%version</td>		<td>string</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%code%parameters</td>	<td>string</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%code%output_flag</td>	<td>int(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%vacuum_toroidal_field%r0</td>				<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%vacuum_toroidal_field%r0_error_upper</td>	<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%vacuum_toroidal_field%r0_error_lower</td>	<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%vacuum_toroidal_field%r0_error_index</td>	<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%vacuum_toroidal_field%b0</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%vacuum_toroidal_field%b0_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%vacuum_toroidal_field%b0_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%vacuum_toroidal_field%b0_error_index</td>	<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+
+IDS%time_slice(i1)%boundary%type int
+IDS%time_slice(i1)%boundary%b_flux_pol_norm double x4
+
+IDS%time_slice(i1)%boundary%geometric_axis%r double x4
+IDS%time_slice(i1)%boundary%geometric_axis%z double x4
+IDS%time_slice(i1)%boundary%minor_radius double x4
+IDS%time_slice(i1)%boundary%elongation double x4
+IDS%time_slice(i1)%boundary%elongation_upper double x4
+IDS%time_slice(i1)%boundary%elongation_lower double x4
+IDS%time_slice(i1)%boundary%triangularity double x4
+IDS%time_slice(i1)%boundary%triangularity_upper double x4
+IDS%time_slice(i1)%boundary%triangularity_lower double x4
+
+IDS%time_slice(i1)%boundary%outline%r double(:) x4
+IDS%time_slice(i1)%boundary%outline%z double(:) x4
+IDS%time_slice(i1)%boundary%lcfs%r double(:) x4
+IDS%time_slice(i1)%boundary%lcfs%z double(:) x4
+
+IDS%time_slice(i1)%boundary%x_point(i2)%r double x4
+IDS%time_slice(i1)%boundary%x_point(i2)%z double x4
+
+IDS%time_slice(i1)%boundary%strike_point(i2)%r double x4
+IDS%time_slice(i1)%boundary%strike_point(i2)%z double x4
+
+IDS%time_slice(i1)%boundary%active_limiter_point%r double x4
+IDS%time_slice(i1)%boundary%active_limiter_point%z double x4
+
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%ip</td>								<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%ip_error_upper</td>					<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%ip_error_lower</td>					<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%ip_error_index</td>					<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%li_3</td>								<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%li_3_error_upper</td>					<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%li_3_error_lower</td>					<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%li_3_error_index</td>					<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%beta_tor</td>							<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%beta_tor_error_upper</td>				<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%beta_tor_error_lower</td>				<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%beta_tor_error_index</td>				<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%beta_normal</td>						<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%beta_normal_error_upper</td>			<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%beta_normal_error_lower</td>			<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%beta_normal_error_index</td>			<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%beta_pol</td>							<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%beta_pol_error_upper</td>				<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%beta_pol_error_lower</td>				<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%beta_pol_error_index</td>				<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%volume</td>					<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%volume_error_upper</td>		<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%volume_error_lower</td>		<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%volume_error_index</td>		<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%area</td>						<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%area_error_upper</td>			<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%area_error_lower</td>			<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%area_error_index</td>			<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%surface</td>						<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%surface_error_upper</td>			<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%surface_error_lower</td>			<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%surface_error_index</td>			<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%length_pol</td>						<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%length_pol_error_upper</td>			<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%length_pol_error_lower</td>			<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%length_pol_error_index</td>			<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%psi_axis</td>						<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%psi_axis_error_upper</td>			<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%psi_axis_error_lower</td>			<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%psi_axis_error_index</td>			<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%psi_boundary</td>						<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%psi_boundary_error_upper</td>			<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%psi_boundary_error_lower</td>			<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%global_quantities%psi_boundary_error_index</td>			<td>int</td>		<td align="center">&#8291;</td></tr>
+IDS%time_slice(i1)%global_quantities%q_axis double x4
+IDS%time_slice(i1)%global_quantities%q_95 double x4
+IDS%time_slice(i1)%global_quantities%w_mhd double x4
+
+IDS%time_slice(i1)%global_quantities%magnetic_axis%r double x4
+IDS%time_slice(i1)%global_quantities%magnetic_axis%z double x4
+IDS%time_slice(i1)%global_quantities%magnetic_axis%b_tor double x4
+IDS%time_slice(i1)%global_quantities%magnetic_axis%b_field_tor double x4
+
+IDS%time_slice(i1)%global_quantities%q_min%value double x4
+IDS%time_slice(i1)%global_quantities%q_min%rho_tor_norm double x4
+
+
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%t_i_average</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%t_i_average_error_upper</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%t_i_average_error_lower</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%t_i_average_error_index</td>			<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%n_i_total_over_n_e</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%n_i_total_over_n_e_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%n_i_total_over_n_e_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%n_i_total_over_n_e_error_index</td>		<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%momentum_tor</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%momentum_tor_error_upper</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%momentum_tor_error_lower</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%momentum_tor_error_index</td>			<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%zeff</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%zeff_error_upper</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%zeff_error_lower</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%zeff_error_index</td>					<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%pressure_ion_total</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%pressure_ion_total_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%pressure_ion_total_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%pressure_ion_total_error_index</td>		<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%pressure_thermal</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%pressure_thermal_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%pressure_thermal_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%pressure_thermal_error_index</td>		<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%pressure_perpendicular</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%pressure_perpendicular_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%pressure_perpendicular_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%pressure_perpendicular_error_index</td>	<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%pressure_parallel</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%pressure_parallel_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%pressure_parallel_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%pressure_parallel_error_index</td>		<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_total</td>							<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_total_error_upper</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_total_error_lower</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_total_error_index</td>				<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_tor</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_tor_error_upper</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_tor_error_lower</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_tor_error_index</td>					<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_ohmic</td>							<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_ohmic_error_upper</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_ohmic_error_lower</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_ohmic_error_index</td>				<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_non_inductive</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_non_inductive_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_non_inductive_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_non_inductive_error_index</td>		<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_bootstrap</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_bootstrap_error_upper</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_bootstrap_error_lower</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%j_bootstrap_error_index</td>			<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%conductivity_parallel</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%conductivity_parallel_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%conductivity_parallel_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%conductivity_parallel_error_index</td>	<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field_parallel</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field_parallel_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field_parallel_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field_parallel_error_index</td>		<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%q</td>									<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%q_error_upper</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%q_error_lower</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%q_error_index</td>						<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%magnetic_shear</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%magnetic_shear_error_upper</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%magnetic_shear_error_lower</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%magnetic_shear_error_index</td>			<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%time</td>								<td>double</td>		<td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%radial</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%radial_error_upper</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%radial_error_lower</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%radial_error_index</td>			<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%diamagnetic</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%diamagnetic_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%diamagnetic_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%diamagnetic_error_index</td>	<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%parallel</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%parallel_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%parallel_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%parallel_error_index</td>		<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%poloidal</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%poloidal_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%poloidal_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%poloidal_error_index</td>		<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%toroidal</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%toroidal_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%toroidal_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%e_field%toroidal_error_index</td>		<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%rho_tor_norm</td>				<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%rho_tor_norm_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%rho_tor_norm_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%rho_tor_norm_error_index</td>	<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%rho_tor</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%rho_tor_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%rho_tor_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%rho_tor_error_index</td>		<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%psi</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%psi_error_upper</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%psi_error_lower</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%psi_error_index</td>			<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%volume</td>					<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%volume_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%volume_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%volume_error_index</td>		<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%area</td>						<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%area_error_upper</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%area_error_lower</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%grid%area_error_index</td>			<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%temperature</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%temperature_error_upper</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%temperature_error_lower</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%temperature_error_index</td>					<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%density</td>									<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%density_error_upper</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%density_error_lower</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%density_error_index</td>						<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%density_fast</td>								<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%density_fast_error_upper</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%density_fast_error_lower</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%density_fast_error_index</td>					<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%pressure</td>									<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%pressure_error_upper</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%pressure_error_lower</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%pressure_error_index</td>						<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%pressure_fast_perpendicular</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%pressure_fast_perpendicular_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%pressure_fast_perpendicular_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%pressure_fast_perpendicular_error_index</td>	<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%pressure_fast_parallel</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%pressure_fast_parallel_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%pressure_fast_parallel_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%pressure_fast_parallel_error_index</td>		<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity_tor</td>								<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity_tor_error_upper</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity_tor_error_lower</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity_tor_error_index</td>					<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity_pol</td>								<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity_pol_error_upper</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity_pol_error_lower</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity_pol_error_index</td>					<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%radial</td>					<td>double(:)</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%radial_error_upper</td>		<td>double(:)</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%radial_error_lower</td>		<td>double(:)</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%radial_error_index</td>		<td>int</td>			<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%diamagnetic</td>				<td>double(:)</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%diamagnetic_error_upper</td>	<td>double(:)</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%diamagnetic_error_lower</td>	<td>double(:)</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%diamagnetic_error_index</td>	<td>int</td>			<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%parallel</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%parallel_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%parallel_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%parallel_error_index</td>		<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%poloidal</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%poloidal_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%poloidal_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%poloidal_error_index</td>		<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%toroidal</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%toroidal_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%toroidal_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%electrons%velocity%toroidal_error_index</td>		<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%z_ion</td>									<td>double</td>		<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%z_ion_error_upper</td>						<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%z_ion_error_lower</td>						<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%z_ion_error_index</td>						<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%label</td>									<td>string</td>		<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%neutral_index</td>							<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%temperature</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%temperature_error_upper</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%temperature_error_lower</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%temperature_error_index</td>					<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%density</td>									<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%density_error_upper</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%density_error_lower</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%density_error_index</td>						<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%density_fast</td>								<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%density_fast_error_upper</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%density_fast_error_lower</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%density_fast_error_index</td>					<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%pressure</td>									<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%pressure_error_upper</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%pressure_error_lower</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%pressure_error_index</td>						<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%pressure_fast_perpendicular</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%pressure_fast_perpendicular_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%pressure_fast_perpendicular_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%pressure_fast_perpendicular_error_index</td>	<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%pressure_fast_parallel</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%pressure_fast_parallel_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%pressure_fast_parallel_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%pressure_fast_parallel_error_index</td>		<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity_tor</td>								<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity_tor_error_upper</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity_tor_error_lower</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity_tor_error_index</td>					<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity_pol</td>								<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity_pol_error_upper</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity_pol_error_lower</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity_pol_error_index</td>					<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%radial</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%radial_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%radial_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%radial_error_index</td>		<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%diamagnetic</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%diamagnetic_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%diamagnetic_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%diamagnetic_error_index</td>	<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%parallel</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%parallel_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%parallel_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%parallel_error_index</td>	<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%poloidal</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%poloidal_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%poloidal_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%poloidal_error_index</td>	<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%toroidal</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%toroidal_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%toroidal_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%velocity%toroidal_error_index</td>	<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%element(1)%a</td>							<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%element(1)%a_error_upper</td>				<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%element(1)%a_error_lower</td>				<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%element(1)%a_error_index</td>				<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%element(1)%z_n</td>						<td>double</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%element(1)%z_n_error_upper</td>			<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%element(1)%z_n_error_lower</td>			<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%element(1)%z_n_error_index</td>			<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%element(1)%multiplicity</td>				<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%element(1)%multiplicity_error_upper</td>	<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%element(1)%multiplicity_error_lower</td>	<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%element(1)%multiplicity_error_index</td>	<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_min</td>										<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_min_error_upper</td>							<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_min_error_lower</td>							<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_min_error_index</td>							<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_max</td>										<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_max_error_upper</td>							<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_max_error_lower</td>							<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_max_error_index</td>							<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_average</td>									<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_average_error_upper</td>						<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_average_error_lower</td>						<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_average_error_index</td>						<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_square_average</td>							<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_square_average_error_upper</td>				<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_square_average_error_lower</td>				<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_square_average_error_index</td>				<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%ionisation_potential</td>						<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%ionisation_potential_error_upper</td>			<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%ionisation_potential_error_lower</td>			<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%ionisation_potential_error_index</td>			<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%label</td>										<td>string</td>		<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%electron_configuration</td>						<td>string</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%vibrational_mode</td>							<td>string</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%vibrational_level</td>							<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%vibrational_level_error_upper</td>				<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%vibrational_level_error_lower</td>				<td>double</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%vibrational_level_error_index</td>				<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%is_neutral</td>									<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%temperature</td>								<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%temperature_error_upper</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%temperature_error_lower</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%temperature_error_index</td>					<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%density</td>									<td>double(:)</td>	<td align="center">&#x2714;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%density_error_upper</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%density_error_lower</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%density_error_index</td>						<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%density_fast</td>								<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%density_fast_error_upper</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%density_fast_error_lower</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%density_fast_error_index</td>					<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%pressure</td>									<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%pressure_error_upper</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%pressure_error_lower</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%pressure_error_index</td>						<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%pressure_fast_perpendicular</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%pressure_fast_perpendicular_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%pressure_fast_perpendicular_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%pressure_fast_perpendicular_error_index</td>	<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%pressure_fast_parallel</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%pressure_fast_parallel_error_upper</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%pressure_fast_parallel_error_lower</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%pressure_fast_parallel_error_index</td>			<td>int</td>		<td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%neutral_type%name</td>			<td>string</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%neutral_type%index</td>			<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%neutral_type%description</td>	<td>string</td>	<td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%radial</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%radial_error_upper</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%radial_error_lower</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%radial_error_index</td>			<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%diamagnetic</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%diamagnetic_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%diamagnetic_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%diamagnetic_error_index</td>	<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%parallel</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%parallel_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%parallel_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%parallel_error_index</td>		<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%poloidal</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%poloidal_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%poloidal_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%poloidal_error_index</td>		<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%toroidal</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%toroidal_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%toroidal_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%ion(nion)%state(nstate)%velocity%toroidal_error_index</td>		<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%element(1)%a</td>						<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%element(1)%a_error_upper</td>			<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%element(1)%a_error_lower</td>			<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%element(1)%a_error_index</td>			<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%element(1)%z_n</td>						<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%element(1)%z_n_error_upper</td>			<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%element(1)%z_n_error_lower</td>			<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%element(1)%z_n_error_index</td>			<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%element(1)%multiplicity</td>				<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%element(1)%multiplicity_error_upper</td>	<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%element(1)%multiplicity_error_lower</td>	<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%element(1)%multiplicity_error_index</td>	<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%label</td>									<td>string</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%ion_index</td>								<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%temperature</td>								<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%temperature_error_upper</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%temperature_error_lower</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%temperature_error_index</td>					<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%density</td>									<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%density_error_upper</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%density_error_lower</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%density_error_index</td>						<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%density_fast</td>								<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%density_fast_error_upper</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%density_fast_error_lower</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%density_fast_error_index</td>					<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%pressure</td>									<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%pressure_error_upper</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%pressure_error_lower</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%pressure_error_index</td>						<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%pressure_fast_perpendicular</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%pressure_fast_perpendicular_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%pressure_fast_perpendicular_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%pressure_fast_perpendicular_error_index</td>	<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%pressure_fast_parallel</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%pressure_fast_parallel_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%pressure_fast_parallel_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%pressure_fast_parallel_error_index</td>		<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%multiple_states_flag</td>						<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%radial</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%radial_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%radial_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%radial_error_index</td>		<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%diamagnetic</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%diamagnetic_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%diamagnetic_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%diamagnetic_error_index</td>	<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%parallel</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%parallel_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%parallel_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%parallel_error_index</td>	<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%poloidal</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%poloidal_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%poloidal_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%poloidal_error_index</td>	<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%toroidal</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%toroidal_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%toroidal_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%velocity%toroidal_error_index</td>	<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%label</td>										<td>string</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%electron_configuration</td>						<td>string</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%vibrational_mode</td>							<td>string</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%vibrational_level</td>							<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%vibrational_level_error_upper</td>				<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%vibrational_level_error_lower</td>				<td>double</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%vibrational_level_error_index</td>				<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%temperature</td>								<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%temperature_error_upper</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%temperature_error_lower</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%temperature_error_index</td>					<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%density</td>									<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%density_error_upper</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%density_error_lower</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%density_error_index</td>						<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%density_fast</td>								<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%density_fast_error_upper</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%density_fast_error_lower</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%density_fast_error_index</td>					<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%pressure</td>									<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%pressure_error_upper</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%pressure_error_lower</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%pressure_error_index</td>						<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%pressure_fast_perpendicular</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%pressure_fast_perpendicular_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%pressure_fast_perpendicular_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%pressure_fast_perpendicular_error_index</td>	<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%pressure_fast_parallel</td>						<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%pressure_fast_parallel_error_upper</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%pressure_fast_parallel_error_lower</td>			<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%pressure_fast_parallel_error_index</td>			<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%neutral_type%name</td>					<td>string</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%neutral_type%index</td>					<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%neutral_type%description</td>			<td>string</td>	<td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%radial</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%radial_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%radial_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%radial_error_index</td>		<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%diamagnetic</td>				<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%diamagnetic_error_upper</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%diamagnetic_error_lower</td>	<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%diamagnetic_error_index</td>	<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%parallel</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%parallel_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%parallel_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%parallel_error_index</td>		<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%poloidal</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%poloidal_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%poloidal_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%poloidal_error_index</td>		<td>int</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%toroidal</td>					<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%toroidal_error_upper</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%toroidal_error_lower</td>		<td>double(:)</td>	<td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%profiles_1d(nprtime)%neutral(nneutral)%state(nstate)%velocity%toroidal_error_index</td>		<td>int</td>	<td align="center">&#8291;</td></tr>
+
+</table>
+
+<p>
+
+<h3>Notes:</h3>
+
+<ul>
+
+<li> sctime stands for "scalar time", i.e. the times when the scalar data was dumped
+
+<li> prtime stands for "profile time", i.e. the times when the profile data was dumped
+
+</ul>
+
+</body>
+
+</html>
