@@ -1,0 +1,7 @@
+Everything here is coded to work with access-layer from git master 08/29/2016. We will update when we're told that things have settled down.
+
+o Can I get a copy of the whole core_profiles%time(nsctime) array with a single method call?
+o What data can I access before the call to getSlice()? None? Is it effectively an init() call?
+o What is "homogeneous time"?
+o What's the intended use of the "element" data container (there's multiple ones for each ion and neutral species)? We'll assume for now it's for thermal/bulk, fast/tail/beam, etc.
+o Could we get descriptive error messages instead of getting empty arrays returned (at least after setting "export ual_debug=yes").
