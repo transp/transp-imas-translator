@@ -11,9 +11,15 @@
 <p>
 
 The equilibrium IDS is a container object that has a single data object, a double(:) with all the timeslice values for scalar data.
-The equilibrium IDS also holds five container objects with data, or meta data, or other containers: 
-ids_properties, code, vacuum_toroidal_field, global_quantities and profiles_1d, respectively.
-profiles_1d holds the following containers: e_field, grid, electrons, ion(1:nion) and neutral(1:nneutral). The species containers (electron, ions and neutrals) each have a velocity container. Each neutral and ion container has four container objects: state, element, label and neutral_type, respectively. Finally, the state container holds two containers: neutral_type and velocity. The equilibrium IDS has a total of 22 container objects with 470 data (or meta data) objects.
+The equilibrium IDS also holds 4 container objects with data, or meta data, or other containers: ids_properties, code, vacuum_toroidal_field and time_slice(i1), respectively.
+Each time_slice(i1) container holds a single data object, a scalar with the time value, and the 6 containers global_quantities, boundary, profiles_1d, profiles_2d(i2), coordinate_system, ggd(i2).
+global_quantities has the containers magnetic_axis and q_min. boundary has the containers geometric_axis, outline, lcfs, x_point(i2), strike_point(i2) and active_limiter_point.
+profiles_2d(i2) has the containers grid_type and grid. coordinate_system also has containers grid_type and grid.
+ggd(i2) has containers r(i3), z(i3), psi(i3), phi(i3), theta(i3), j_tor(i3), j_parallel(i3), b_field_r(i3), b_field_z(i3), b_field_tor(i3) and grid. grid has containers identifier, space(i3) and grid_subset(i3). space(i3) has containers geometry_type and objects_per_dimension(i4), which has a container object(i5), which has a container boundary(i6). grid_subset(i3) has containers identifier, base(i4), metric and element(i4), which has object(i5).
+
+<p>
+
+The equilibrium IDS has a total of 42 container objects with 632 data (or meta data) objects.
 
 <p>
 
@@ -135,15 +141,6 @@ Below is a table with all the equilibrium data and meta-data objects and their t
 <tr><td align="left">equilibrium%time_slice(i1)%boundary%b_flux_pol_norm_error_upper<td>double</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%boundary%b_flux_pol_norm_error_lower<td>double</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%boundary%b_flux_pol_norm_error_index<td>int</td><td align="center">&#8291;</td></tr>
-<tr><td colspan="3">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%boundary%geometric_axis%r<td>double</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%boundary%geometric_axis%r_error_upper<td>double</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%boundary%geometric_axis%r_error_lower<td>double</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%boundary%geometric_axis%r_error_index<td>int</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%boundary%geometric_axis%z<td>double</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%boundary%geometric_axis%z_error_upper<td>double</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%boundary%geometric_axis%z_error_lower<td>double</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%boundary%geometric_axis%z_error_index<td>int</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%boundary%minor_radius<td>double</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%boundary%minor_radius_error_upper<td>double</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%boundary%minor_radius_error_lower<td>double</td><td align="center">&#8291;</td></tr>
@@ -173,6 +170,15 @@ Below is a table with all the equilibrium data and meta-data objects and their t
 <tr><td align="left">equilibrium%time_slice(i1)%boundary%triangularity_lower_error_lower<td>double</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%boundary%triangularity_lower_error_index<td>int</td><td align="center">&#8291;</td></tr>
 <tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%boundary%geometric_axis%r<td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%boundary%geometric_axis%r_error_upper<td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%boundary%geometric_axis%r_error_lower<td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%boundary%geometric_axis%r_error_index<td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%boundary%geometric_axis%z<td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%boundary%geometric_axis%z_error_upper<td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%boundary%geometric_axis%z_error_lower<td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%boundary%geometric_axis%z_error_index<td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%boundary%outline%r<td>double(:)</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%boundary%outline%r_error_upper<td>double(:)</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%boundary%outline%r_error_lower<td>double(:)</td><td align="center">&#8291;</td></tr>
@@ -181,6 +187,7 @@ Below is a table with all the equilibrium data and meta-data objects and their t
 <tr><td align="left">equilibrium%time_slice(i1)%boundary%outline%z_error_upper<td>double(:)</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%boundary%outline%z_error_lower<td>double(:)</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%boundary%outline%z_error_index<td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%boundary%lcfs%r<td>double(:)</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%boundary%lcfs%r_error_upper<td>double(:)</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%boundary%lcfs%r_error_lower<td>double(:)</td><td align="center">&#8291;</td></tr>
@@ -382,19 +389,6 @@ Below is a table with all the equilibrium data and meta-data objects and their t
 <tr><td align="left">equilibrium%time_slice(i1)%profiles_1d%b_field_max_error_lower<td>double(:)</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%profiles_1d%b_field_max_error_index<td>int</td><td align="center">&#8291;</td></tr>
 <tr><td colspan="3">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid_type%name<td>string</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid_type%index<td>int</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid_type%description<td>string</td><td align="center">&#8291;</td></tr>
-<tr><td colspan="3">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid%dim1<td>double(:)</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid%dim1_error_upper<td>double(:)</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid%dim1_error_lower<td>double(:)</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid%dim1_error_index<td>int</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid%dim2<td>double(:)</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid%dim2_error_upper<td>double(:)</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid%dim2_error_lower<td>double(:)</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid%dim2_error_index<td>int</td><td align="center">&#8291;</td></tr>
-<tr><td colspan="3">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%r<td>double(:,:)</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%r_error_upper<td>double(:,:)</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%r_error_lower<td>double(:,:)</td><td align="center">&#8291;</td></tr>
@@ -447,6 +441,19 @@ Below is a table with all the equilibrium data and meta-data objects and their t
 <tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%b_field_tor_error_upper<td>double(:,:)</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%b_field_tor_error_lower<td>double(:,:)</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%b_field_tor_error_index<td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid_type%name<td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid_type%index<td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid_type%description<td>string</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid%dim1<td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid%dim1_error_upper<td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid%dim1_error_lower<td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid%dim1_error_index<td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid%dim2<td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid%dim2_error_upper<td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid%dim2_error_lower<td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%profiles_2d(i2)%grid%dim2_error_index<td>int</td><td align="center">&#8291;</td></tr>
 <tr><td colspan="3">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%coordinate_system%r<td>double(:,:)</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%coordinate_system%r_error_upper<td>double(:,:)</td><td align="center">&#8291;</td></tr>
@@ -665,9 +672,6 @@ Below is a table with all the equilibrium data and meta-data objects and their t
 <tr><td align="left">equilibrium%time_slice(i1)%ggd(i2)%grid%space(i3)%objects_per_dimension(i4)%object(i5)%measure_error_index<td>int</td><td align="center">&#8291;</td></tr>
 <tr><td colspan="3">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%ggd(i2)%grid%grid_subset(i3)%dimension<td>int</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%ggd(i2)%grid%grid_subset(i3)%element(i4)%object(i5)%space<td>int</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%ggd(i2)%grid%grid_subset(i3)%element(i4)%object(i5)%dimension<td>int</td><td align="center">&#8291;</td></tr>
-<tr><td align="left">equilibrium%time_slice(i1)%ggd(i2)%grid%grid_subset(i3)%element(i4)%object(i5)%index<td>int</td><td align="center">&#8291;</td></tr>
 <tr><td colspan="3">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%ggd(i2)%grid%grid_subset(i3)%identifier%name<td>string</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%ggd(i2)%grid%grid_subset(i3)%identifier%index<td>int</td><td align="center">&#8291;</td></tr>
@@ -698,6 +702,10 @@ Below is a table with all the equilibrium data and meta-data objects and their t
 <tr><td align="left">equilibrium%time_slice(i1)%ggd(i2)%grid%grid_subset(i3)%metric%tensor_contravariant_error_upper<td>double(:,:,:)</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%ggd(i2)%grid%grid_subset(i3)%metric%tensor_contravariant_error_lower<td>double(:,:,:)</td><td align="center">&#8291;</td></tr>
 <tr><td align="left">equilibrium%time_slice(i1)%ggd(i2)%grid%grid_subset(i3)%metric%tensor_contravariant_error_index<td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%ggd(i2)%grid%grid_subset(i3)%element(i4)%object(i5)%space<td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%ggd(i2)%grid%grid_subset(i3)%element(i4)%object(i5)%dimension<td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">equilibrium%time_slice(i1)%ggd(i2)%grid%grid_subset(i3)%element(i4)%object(i5)%index<td>int</td><td align="center">&#8291;</td></tr>
 
 </table>
 
