@@ -1,4 +1,3 @@
-1. add index.html to root dir
-2. correctly implement impurity ions
-3. check were profiles are evaluated (cell center vs. boundary), esp. on-axis and edge
-4. implement some of other IDS (pf_active, pf_passive, tf, actuator, atomic_data, controllers, core_sources, core_transport, em_coupling, magnetics, schedule, sdn, simulation, temporary)
+1. correctly implement impurity ions
+2. check were profiles are evaluated (cell center vs. boundary), esp. on-axis and edge
+3. implement some of other IDS (pf_active, pf_passive, tf, actuator, atomic_data, controllers, core_sources, core_transport, em_coupling, magnetics, schedule, sdn, simulation, temporary)
