@@ -490,7 +490,7 @@ program transp2imas
 
          ! construct the name of charge state in species j
          ! from each category of impurities i
-         !write(int2strng,*) j
+         write(int2strng,*) j
          tmps1=adjustl(int2strng) ! delete the leading blank
          tmps2=names(i)(6:)
          lentmps2=len_trim((tmps2)) ! delete the trailing blank
@@ -500,6 +500,7 @@ program transp2imas
             ' name: ', trim(tmpstrng), &
             ' tmps2: ', tmps2, &
             ' lentmps2: ', lentmps2
+         ! rprofile() is called with first argument 'NIMP_AR_1', which doesn't exist, but 'NIMP_AR_18' does
          call rprofile(trim(tmpstrng),prdata,nprtime*xsizes(istype),iret,ier)
          if(ier.ne.0) call transp2imas_error('rprofile(tmpstrng)',ier)
          if(iret.ne.nprtime*xsizes(istype)) &
