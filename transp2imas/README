@@ -1,0 +1,11 @@
+The application transp2imas converts a TRANSP NetCDF output file to data 
+in an IMAS tree. To use it, do the following:
+
+1. Edit Makefile
+2. Type "make"
+3. Type "./transp2imas 38601I02"
+
+In this case transp2imas uses the namelist 38530B10TR.DAT to convert the 
+output data in 38601I02.CDF to the files ids_3860001.tree, 
+ids_3860001.datafile and ids_3860001.characteristics in the directory 
+$treename/0 .
