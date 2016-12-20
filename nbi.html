@@ -1,0 +1,63 @@
+<html>
+
+<head>
+<title>The nbi IDS</title>
+</head>
+
+<body>
+
+<code>[The info on this page was extracted from IMAS source code (access-layer/fortraninterface/nbi_put.f90, git master 08/29/2016)]</code>
+
+<p>
+
+The nbi IDS is a container object that has a single data object, a double(:) with all the timeslice values for scalar data.
+The nbi IDS also holds five container objects with data, or meta data, or other containers: 
+ids_properties, code, vacuum_toroidal_field, global_quantities and profiles_1d, respectively.
+profiles_1d holds the following containers: e_field, grid, electrons, ion(1:nion) and neutral(1:nneutral). The species containers (electron, ions and neutrals) each have a velocity container. Each neutral and ion container has four container objects: state, element, label and neutral_type, respectively. Finally, the state container holds two containers: neutral_type and velocity. The nbi IDS has a total of 22 container objects with 470 data (or meta data) objects.
+
+<p>
+
+Below is a table with all the nbi data and meta-data objects and their types:
+
+<p>
+
+<table border="1">
+
+<tr><th align="left">data container</th><th>data type</th><th>used by<br>TRANSP?</th></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">nbi%time(nsctime)</td><td>double(:)</td><td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">nbi%ids_properties%comment</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">nbi%ids_properties%homogeneous_time</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">nbi%code%name</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">nbi%code%version</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">nbi%code%parameters</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">nbi%code%output_flag</td><td>int(:)</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">nbi%vacuum_toroidal_field%r0</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">nbi%vacuum_toroidal_field%r0_error_upper</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">nbi%vacuum_toroidal_field%r0_error_lower</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">nbi%vacuum_toroidal_field%r0_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">nbi%vacuum_toroidal_field%b0</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">nbi%vacuum_toroidal_field%b0_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">nbi%vacuum_toroidal_field%b0_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">nbi%vacuum_toroidal_field%b0_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+
+</table>
+
+<p>
+
+<h3>Notes:</h3>
+
+<ul>
+
+<li> sctime stands for "scalar time", i.e. the times when the scalar data was dumped
+
+<li> prtime stands for "profile time", i.e. the times when the profile data was dumped
+
+</ul>
+
+</body>
+
+</html>

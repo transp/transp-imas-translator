@@ -1732,7 +1732,11 @@ program transp2imas
          write(314,*) xbbuf(ir), xibuf(ir), inbuf(ir), outbuf(ir), doutbuf(ir)
       enddo
    enddo
-
+#if 0
+   offset=xsizes(2)
+   do it = 1, nprtime
+      allocate(eq%time_slice(it)%boundary%lcfs%r(offset))
+#endif
    ! fetch limiter data and write it into file
    ! or can get it from dumped g-eqdsk file 'eqdskin'
    write(iout,*) ' '

@@ -6,15 +6,21 @@ from netCDF4 import Dataset
 
 plt.rcParams.update({'font.size': 16})
 
-dtst = Dataset("38601I02.CDF", "r", format = "NETCDF3") # load whole dataset from dump file
-print dtst.data_model, '\n'
-print dtst, '\n'
+#dtst = Dataset("38601I02.CDF", "r", format = "NETCDF3") # load whole dataset from dump file
+dtst = Dataset("38530B10.CDF", "r", format = "NETCDF3")
+#print dtst.data_model, '\n'
+#print dtst, '\n'
 dtstvars = [var for var in dtst.variables]  # list of all variables in data set
 print 'Number of output variables: ', len(dtstvars), '\n'
 #sys.exit(0)
 
 #for var in dtstvars:
 #  print var, " ,", dtst.variables[var].dimensions, " ,", dtst.variables[var].size
+
+for var in dtstvars:
+  print dtst.variables[var]
+
+sys.exit(0)
 
 #print 'dtst.variables[\'ZIMP\']:\n', dtst.variables['ZIMP']
 #print 'dtst.variables[\'ZIMP\'][:] =', dtst.variables['ZIMP'][:], '\n\n'
