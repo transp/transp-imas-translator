@@ -484,80 +484,84 @@ program transp2imas
          enddo
       enddo
 
-      ! loop through each charge state
-      do j=1,nstate
+      ! loop through each charge state for all impurity species
+      do j = 1, nstate
+
          write(iout,*) ' '
 
-         ! construct the name of charge state in species j
-         ! from each category of impurities i
-         write(int2strng,*) j
-         tmps1=adjustl(int2strng) ! delete the leading blank
-         tmps2=names(i)(6:)
-         lentmps2=len_trim((tmps2)) ! delete the trailing blank
-         tmpstrng= names(i)(1:4)//names(i)(6:6+lentmps2-1)//'_'//tmps1
-         write(iout,*) ' cj3 ', i,'th impurity', &
-            ' charge_state: ', trim(tmps1), &
-            ' name: ', trim(tmpstrng), &
-            ' tmps2: ', tmps2, &
-            ' lentmps2: ', lentmps2
-         ! rprofile() is called with first argument 'NIMP_AR_1', which doesn't exist, but 'NIMP_AR_18' does
-         call rprofile(trim(tmpstrng),prdata,nprtime*xsizes(istype),iret,ier)
-         if(ier.ne.0) call transp2imas_error('rprofile(tmpstrng)',ier)
-         if(iret.ne.nprtime*xsizes(istype)) &
-            call transp2imas_exit(' ?? '//tmpstrng//' read error')
-         call transp2imas_echo(tmpstrng,prdata,xsizes(istype),nprtime)
-         !allocate(cp%profiles_1d(it)%ion(n_thi+i)%charge_state(nstate)%n_z=prdata
-         write(iout,*) ' ion',iion,'position in n_species ',&
-            iion_start+j, ' named ', abray(1,iion_start+j), abray(2,iion_start+j)
+         ! Split each TRANSP impurity species into a separate IMAS ion species for each charge state
+         ! Instead of guessing charge numbers from names, we'll loop from 1 to 100 and create a species only when we get a hit
+         do k = 1, 100
+            write(int2strng,*) k
+            tmps1=adjustl(int2strng) ! delete the leading blank
+            tmps2=names(i)(6:)
+            lentmps2=len_trim((tmps2)) ! delete the trailing blank
+            tmpstrng= names(i)(1:4)//names(i)(6:6+lentmps2-1)//'_'//tmps1
+            ! rprofile() is called with first argument 'NIMP_AR_1', which doesn't exist, but 'NIMP_AR_18' does
+            call rprofile(trim(tmpstrng),prdata,nprtime*xsizes(istype),iret,ier)
+            if (ier.eq.0) then
+	            write(iout,*) ' cj3 ', i, 'th impurity', &
+	               ' charge_state: ', trim(tmps1), &
+	               ' name: ', trim(tmpstrng), &
+	               ' tmps2: ', tmps2, &
+	               ' lentmps2: ', lentmps2
+	            if (iret.ne.nprtime*xsizes(istype)) &
+             	  call transp2imas_exit(' ?? '//tmpstrng//' read error')
+            	call transp2imas_echo(tmpstrng,prdata,xsizes(istype),nprtime)
+            	!cp%profiles_1d(it)%ion(iion)%state(j)%n_z=prdata
+    	        write(iout,*) ' ion',iion,'position in n_species ',&
+        	       iion_start+j, ' named ', abray(1,iion_start+j), abray(2,iion_start+j)
 
-         do it=1,nprtime
-            cp%profiles_1d(it)%ion(iion)%element(1)%a=aa(iion_start+j)
-            cp%profiles_1d(it)%ion(iion)%z_ion=zz(iion_start+j)
-            cp%profiles_1d(it)%ion(iion)%element(1)%z_n=izc(iion_start+j)
-            cp%profiles_1d(it)%ion(iion)%label(1)=label
-            cp%profiles_1d(it)%ion(iion)%state(j)%label(1)=zlbla(iion_start+j) ! Johan
-         enddo
+        	    do it = 1, nprtime
+        	       cp%profiles_1d(it)%ion(iion)%element(1)%a=aa(iion_start+j)
+        	       cp%profiles_1d(it)%ion(iion)%z_ion=zz(iion_start+j)
+        	       cp%profiles_1d(it)%ion(iion)%element(1)%z_n=izc(iion_start+j)
+        	       cp%profiles_1d(it)%ion(iion)%label(1)=label
+        	       cp%profiles_1d(it)%ion(iion)%state(j)%label(1)=zlbla(iion_start+j)
+        	    end do
 
-         call rplabel(abray(1,iion_start+j),label,units,imulti,istype)
-         if(imulti.ne.0) call transp2imas_exit(' ?? imulti.ne.0')
-         write(iout,*) ' ',i,abray(1,i),abray(2,i),&
-            '"',label,'" "',units,'"  istype=', istype
+	            call rplabel(abray(1,iion_start+j),label,units,imulti,istype)
+	            if (imulti.ne.0) call transp2imas_exit(' ?? imulti.ne.0')
+	            write(iout,*) ' ',i,abray(1,i),abray(2,i),&
+    	           '"',label,'" "',units,'"  istype=', istype
 
-         if(istype.eq.1) then
-            !get charge state density
-            write(iout,*) ' '
-            call rprofile(trim(abray(1,iion_start+j)),prdata,nprtime*xsizes(istype),iret,ier)
-            if(ier.ne.0) call transp2imas_error('rprofile(abray(1,iion_start+j))',ier)
-            if(iret.ne.nprtime*xsizes(istype)) &
-               call transp2imas_exit(' ?? '//abray(1,iion_start+j)//' read error')
-            call transp2imas_echo(abray(1,iion_start+j),prdata,xsizes(istype),nprtime)
+    	        if (istype.eq.1) then
+	               !get charge state density
+	               write(iout,*) ' '
+	               call rprofile(trim(abray(1,iion_start+j)),prdata,nprtime*xsizes(istype),iret,ier)
+	               if (ier.ne.0) call transp2imas_error('rprofile(abray(1,iion_start+j))',ier)
+	               if (iret.ne.nprtime*xsizes(istype)) &
+	                  call transp2imas_exit(' ?? '//abray(1,iion_start+j)//' read error')
+    	           call transp2imas_echo(abray(1,iion_start+j),prdata,xsizes(istype),nprtime)
 
-            offset=xsizes(istype)
-            do it=1,nprtime
-               allocate(cp%profiles_1d(it)%ion(iion)%state(j)%density(offset))
-               cp%profiles_1d(it)%ion(iion)%state(j)%density(1:offset)=&
-                  prdata(1+(it-1)*offset:it*offset)*1.e6
-            enddo
+    	           offset=xsizes(istype)
+    	           do it = 1, nprtime
+	                  allocate(cp%profiles_1d(it)%ion(iion)%state(j)%density(offset))
+    	              cp%profiles_1d(it)%ion(iion)%state(j)%density(1:offset)=&
+    	                 prdata(1+(it-1)*offset:it*offset)*1.e6
+    	           end do
 
-            !get charge state temperature
-            write(iout,*) ' '
-            call rprofile(trim(abray(2,iion_start+j)),prdata,nprtime*xsizes(istype),iret,ier)
-            if(ier.ne.0) call transp2imas_error('rprofile(abray(2,iion_start+j))',ier)
-            if(iret.ne.nprtime*xsizes(istype)) &
-               call transp2imas_exit(' ?? '//abray(2,iion_start+j)//' read error')
-            call transp2imas_echo(abray(2,iion_start+j),prdata,xsizes(istype),nprtime)
+    	           !get charge state temperature
+    	           write(iout,*) ' '
+    	           call rprofile(trim(abray(2,iion_start+j)),prdata,nprtime*xsizes(istype),iret,ier)
+    	           if (ier.ne.0) call transp2imas_error('rprofile(abray(2,iion_start+j))',ier)
+    	           if (iret.ne.nprtime*xsizes(istype)) &
+    	              call transp2imas_exit(' ?? '//abray(2,iion_start+j)//' read error')
+    	           call transp2imas_echo(abray(2,iion_start+j),prdata,xsizes(istype),nprtime)
 
-            offset=xsizes(istype)
-            do it=1,nprtime
-               allocate(cp%profiles_1d(it)%ion(iion)%state(j)%temperature(offset))
-               cp%profiles_1d(it)%ion(iion)%state(j)%temperature(1:offset)=&
-                  prdata(1+(it-1)*offset:it*offset)
-            enddo
-         endif
-      enddo
-      iion_start=iion_start+nstate  ! position in n_species
-   enddo
-   if(allocated(names)) deallocate(names)
+    	           offset=xsizes(istype)
+    	           do it = 1, nprtime
+    	              allocate(cp%profiles_1d(it)%ion(iion)%state(j)%temperature(offset))
+    	              cp%profiles_1d(it)%ion(iion)%state(j)%temperature(1:offset)=&
+    	                 prdata(1+(it-1)*offset:it*offset)
+    	           end do
+		        end if
+            end if
+         end do
+      end do
+      iion_start = iion_start+nstate ! position in n_species
+   end do
+   if (allocated(names)) deallocate(names)
 
 !
 !---------------------------------

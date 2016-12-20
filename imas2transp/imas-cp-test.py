@@ -66,12 +66,8 @@ print 'core_profiles%profiles_1d[-1]%ion[4]%state[0]%label =', ids.profiles_1d[-
 print 'core_profiles%profiles_1d[-1]%ion[4]%state[0]%temperature =', ids.profiles_1d[-1].ion[4].state[0].temperature
 print 'core_profiles%profiles_1d[-1]%ion[4]%state[0]%density =', ids.profiles_1d[-1].ion[4].state[0].density
 
-print '***'
-print ids.profiles_1d[-1].ion[0].label
-print ids.profiles_1d[-1].ion[1].label
-print ids.profiles_1d[-1].ion[2].label
-print ids.profiles_1d[-1].ion[3].label
-print ids.profiles_1d[-1].ion[4].label
-print ids.profiles_1d[-1].ion[5].label
+print '\nIon species:'
+for i in range(len(ids.profiles_1d[-1].ion)):
+  print ids.profiles_1d[-1].ion[i].label
 
 itm.close()
