@@ -5,8 +5,9 @@ module transp2imas_module
 
 	type (ids_core_profiles) :: cp ! Declaration of the empty core_profiles ids to be filled
 	type (ids_equilibrium) :: eq
-	type (ids_pf_active) :: pf
+	type (ids_nbi) :: nbi
 
+	type (ids_pf_active) :: pf
 	type (ids_actuator) :: actuator
 	type (ids_atomic_data) :: atomic
 	type (ids_controllers) :: controllers

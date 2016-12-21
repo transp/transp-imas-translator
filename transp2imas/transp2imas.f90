@@ -29,6 +29,8 @@ program transp2imas
    integer ier,iwarn,istat           ! subroutine completion codes
 
    character*32 rlabel               ! run label
+   character*32 zlabel
+   character*16 zunits
 !
 !  sizes:  scalar & profile databases, max x axis, max item over
 !
@@ -85,9 +87,10 @@ program transp2imas
 
    integer :: nstate     ! number of each category of impurity species
    integer :: nion     ! number of ids ions
+   integer :: nbeam, nbgr
    character*20 tmpstrng, int2strng
    character*20 tmps1, tmps2, tmps3, tmps4
-   integer :: lentmps2
+   integer :: lentmps2, ktype, kerr
 !
 !  namelist test...
 !
@@ -199,6 +202,27 @@ program transp2imas
    allocate(cp%time(nsctime))
    allocate(eq%time_slice(nprtime))
    allocate(eq%time(nsctime))
+
+! Count the number of beams
+   nbeam = 0
+   do k = 1, 9
+      write(int2strng, *) k
+      tmps1 = adjustl(int2strng) ! delete the leading blanks
+      tmpstrng = 'BDC0'//tmps1(1:1)
+      !write(*, *) '.', trim(tmpstrng), '.'
+      ! Now check if BDC01, BDC02, ..., BDC09 exist
+      kerr = -99 ! if MDS+ tree is opened, leave open
+      call rplabel(trim(tmpstrng), zlabel, zunits, ktype, kerr)
+      !write(*, *) 'x', ktype, 'x'
+      !write(*, *) 'y', kerr, 'y'
+      if (kerr.gt.0) nbeam = nbeam + 1
+   end do
+   !write(*, *) 'nbeam =', nbeam
+   !stop
+   allocate(nbi%unit(nbeam))
+   do k = 1, nbeam
+      allocate(nbi%unit(k)%beamlets_group(1))
+   end do
 
 !---------------------------------
 !  get the x axis info for profiles f(x,t)
@@ -1732,6 +1756,7 @@ program transp2imas
          write(314,*) xbbuf(ir), xibuf(ir), inbuf(ir), outbuf(ir), doutbuf(ir)
       enddo
    enddo
+! TRANSP does not have data on LCFS. Need to think about how to provide it. Johan 12/21/16
 #if 0
    offset=xsizes(2)
    do it = 1, nprtime
