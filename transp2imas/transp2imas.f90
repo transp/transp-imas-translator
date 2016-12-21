@@ -760,6 +760,13 @@ program transp2imas
    write(*,*) 'fill ids prtime'
    cp%profiles_1d(:)%time = prtime
    eq%time_slice(:)%time = prtime
+   !if (allocated(nbi%unit)) then
+      do k = 1, nbeam
+         nbi%unit(k)%power%time = prtime
+         nbi%unit(k)%energy%time = prtime
+         nbi%unit(k)%beam_power_fraction%time = prtime
+      end do
+   !end if
 
 !
 ! rpscalar get scalar data
