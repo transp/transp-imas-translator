@@ -208,7 +208,8 @@ program transp2imas
    do k = 1, 9
       write(int2strng, *) k
       tmps1 = adjustl(int2strng) ! delete the leading blanks
-      tmpstrng = 'BDC0'//tmps1(1:1)
+      !tmpstrng = 'BDC0'//tmps1(1:1)
+      tmpstrng = 'PINJ0'//tmps1(1:1)
       !write(*, *) '.', trim(tmpstrng), '.'
       ! Now check if BDC01, BDC02, ..., BDC09 exist
       kerr = -99 ! if MDS+ tree is opened, leave open
@@ -217,12 +218,14 @@ program transp2imas
       !write(*, *) 'y', kerr, 'y'
       if (kerr.gt.0) nbeam = nbeam + 1
    end do
-   !write(*, *) 'nbeam =', nbeam
-   !stop
-   allocate(nbi%unit(nbeam))
-   do k = 1, nbeam
-      allocate(nbi%unit(k)%beamlets_group(1))
-   end do
+   write(*, *) 'nbeam =', nbeam
+   stop
+   if (nbeam.gt.0) then
+      allocate(nbi%unit(nbeam))
+      do k = 1, nbeam
+         allocate(nbi%unit(k)%beamlets_group(1))
+      end do
+   end if
 
 !---------------------------------
 !  get the x axis info for profiles f(x,t)
@@ -760,19 +763,17 @@ program transp2imas
    write(*,*) 'fill ids prtime'
    cp%profiles_1d(:)%time = prtime
    eq%time_slice(:)%time = prtime
-   !if (allocated(nbi%unit)) then
-      do k = 1, nbeam
-         nbi%unit(k)%power%time = prtime
-         nbi%unit(k)%energy%time = prtime
-         nbi%unit(k)%beam_power_fraction%time = prtime
-      end do
-   !end if
+   do k = 1, nbeam
+      nbi%unit(k)%power%time = prtime
+      nbi%unit(k)%energy%time = prtime
+      nbi%unit(k)%beam_power_fraction%time = prtime
+   end do
 
 !
 ! rpscalar get scalar data
 !
 
-   ! fill ids_core_profiles
+   ! fill core_profiles IDS
 
    write(iout,*) ' '
    ! Inductance Definition for LI_3: source/doc/beta.doc
@@ -812,7 +813,7 @@ program transp2imas
    allocate(cp%global_quantities%beta_pol(nsctime))
    cp%global_quantities%beta_pol(:)= scdata(:)
 
-   ! fill ids_equilibrium
+   ! fill equilibrium IDS
 
    write(iout,*) ' '
    call rpscalar('BZ',scdata,nsctime,iret,ier)
@@ -977,6 +978,53 @@ program transp2imas
 !      if(iret.ne.nsctime) &
 !         call transp2imas_exit(' ?? X read error')
 !      call transp2imas_echo('X',scdata,1,nsctime)
+
+
+   ! fill nbi IDS
+   if (nbeam.gt.0) then
+
+      call rplabel('PINJ_D', zlabel, zunits, ktype, kerr)
+      if (kerr.gt.0) then ! Assume all beams are deuterium
+         do k = 1, nbeam
+            write(iout,*) ' '
+            !? Beam power
+            nbi%unit(k)%species%a = 2.01410178
+            nbi%unit(k)%species%z_n = 1.0
+         end do
+      end if
+
+      do k = 1, nbeam
+         write(iout,*) ' '
+         !? Beam power
+         write(int2strng, *) k
+         tmps1 = adjustl(int2strng) ! delete the leading blanks
+         tmpstrng = 'PINJ0'//tmps1(1:1)
+         call rpscalar(trim(tmpstrng),scdata,nsctime,iret,ier)
+         if (ier.ne.0) call transp2imas_error('rpscalar',ier)
+         if (iret.ne.nsctime) &
+            call transp2imas_exit(' ?? '//trim(tmpstrng)//' read error')
+         call transp2imas_echo(trim(tmpstrng),scdata,1,nsctime)
+         nbi%unit(k)%power%data = scdata(:)
+         nbi%unit(k)%beam_power_fraction%data = scdata(:)
+      end do
+
+      do k = 1, nbeam
+         write(iout,*) ' '
+         !? Beam energy
+         write(int2strng, *) k
+         tmps1 = adjustl(int2strng) ! delete the leading blanks
+         tmpstrng = 'EINJ0'//tmps1(1:1)//'_E1'
+         write(*, *) 'x', trim(tmpstrng), 'x'
+         stop
+         call rpscalar(trim(tmpstrng),scdata,nsctime,iret,ier)
+         if (ier.ne.0) call transp2imas_error('rpscalar',ier)
+         if (iret.ne.nsctime) &
+            call transp2imas_exit(' ?? '//trim(tmpstrng)//' read error')
+         call transp2imas_echo(trim(tmpstrng),scdata,1,nsctime)
+         nbi%unit(k)%energy%data = scdata(:)
+      end do
+
+   end if
 
 
 !
