@@ -1,15 +1,4 @@
-! progran to translate iter imas ids into transp ufile, write g-eqdsk file & ! gindex file
-! then use scrunch2 to write additional equilibrim moments input for transp
-! syntax :
-! /home/ITER/chenj4/imas_transp/pf2eq/ids2transp shotnumber runnumber
-! example usage :
-! /home/ITER/chenj4/imas_transp/pf2eq/ids2transp 20 107
-! 2015-may-01
-! Jin Chen PPPL
-
-! This program gets dummy data from ITER Data Model v3.0.3 and displays it
-
-program ids2transp
+program imas2transp
 
 	use ids_schemas              !! These are the Fortran type definitions for the Physics Data Model
 	use ids_routines             !! These are the Access Layer routines + management of IDS structures
@@ -68,8 +57,8 @@ program ids2transp
 	crun = ' '
 	call get_arg_count(nargs)
 	if(nargs.lt.2) then
-		write(*,*) 'ids2transp should be given shot and run number'
-		write(*,*) 'syntax: ids2transp shotnumber runnumber'
+		write(*,*) 'imas2transp should be given shot and run number'
+		write(*,*) 'syntax: ./imas2transp shotnumber runnumber'
 		write(*,*) 'shotnumber and runnumber are <3 digits integers'
 	endif
 	iarg=1
@@ -78,7 +67,7 @@ program ids2transp
 	iarg=2
 	call get_arg(iarg,args(iarg))
 	crun=args(iarg)
-	write(*,*) 'ids2transp runid=',trim(cshot), trim(crun)
+	write(*,*) 'imas2transp runid=',trim(cshot), trim(crun)
 	!convert string into integer
 	read(cshot,*,iostat=ierr) shot
 	read(crun,*,iostat=ierr) run
@@ -1586,7 +1575,7 @@ endif
 
 	stop
 
-end program ids2transp
+end program imas2transp
 
 !write transp ufile comment
 subroutine write_omment(comment)

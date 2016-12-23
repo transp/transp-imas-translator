@@ -1,0 +1,12 @@
+The application imas2transp converts data in an IMAS tree into TRANSP 
+input (ufile and g-eqdsk file). scrunch2 can then be used to create 
+additional equilibrium moments from the g-eqdsk file. To use it, do the 
+following:
+
+1. Edit Makefile
+2. Type "make"
+3. Type "./imas2transp 386 1"
+
+In this case imas2transp reads the files ids_3860001.tree, 
+ids_3860001.datafile and ids_3860001.characteristics from the directory 
+$treename/0 and creates...
