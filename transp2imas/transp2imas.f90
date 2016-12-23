@@ -225,6 +225,12 @@ program transp2imas
       allocate(nbi%unit(nbeam))
       do k = 1, nbeam
          allocate(nbi%unit(k)%beamlets_group(1))
+         allocate(nbi%unit(k)%power%time(nprtime))
+         allocate(nbi%unit(k)%power%data(nprtime))
+         allocate(nbi%unit(k)%energy%time(nprtime))
+         allocate(nbi%unit(k)%energy%data(nprtime))
+         allocate(nbi%unit(k)%beam_power_fraction%time(nprtime))
+         !allocate(nbi%unit(k)%beam_power_fraction%data(nprtime:?))
       end do
    end if
 
