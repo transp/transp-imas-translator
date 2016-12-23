@@ -225,11 +225,11 @@ program transp2imas
       allocate(nbi%unit(nbeam))
       do k = 1, nbeam
          allocate(nbi%unit(k)%beamlets_group(1))
-         allocate(nbi%unit(k)%power%time(nprtime))
-         allocate(nbi%unit(k)%power%data(nprtime))
-         allocate(nbi%unit(k)%energy%time(nprtime))
-         allocate(nbi%unit(k)%energy%data(nprtime))
-         allocate(nbi%unit(k)%beam_power_fraction%time(nprtime))
+         allocate(nbi%unit(k)%power%time(nsctime))
+         allocate(nbi%unit(k)%power%data(nsctime))
+         allocate(nbi%unit(k)%energy%time(nsctime))
+         allocate(nbi%unit(k)%energy%data(nsctime))
+         !allocate(nbi%unit(k)%beam_power_fraction%time(nprtime))
          !allocate(nbi%unit(k)%beam_power_fraction%data(nprtime:?))
       end do
    end if
@@ -756,6 +756,10 @@ program transp2imas
    write(*,*) 'fill ids sctime time'
    cp%time = sctime
    eq%time = sctime
+   do k = 1, nbeam
+      nbi%unit(k)%power%time = sctime
+      nbi%unit(k)%energy%time = sctime
+   end do
 
 !
 ! rptime_p get timebase for f(X,t)
@@ -771,9 +775,7 @@ program transp2imas
    cp%profiles_1d(:)%time = prtime
    eq%time_slice(:)%time = prtime
    do k = 1, nbeam
-      nbi%unit(k)%power%time = prtime
-      nbi%unit(k)%energy%time = prtime
-      nbi%unit(k)%beam_power_fraction%time = prtime
+      !nbi%unit(k)%beam_power_fraction%time = prtime
    end do
 
 !
@@ -1022,8 +1024,8 @@ program transp2imas
          write(int2strng, *) k
          tmps1 = adjustl(int2strng) ! delete the leading blanks
          tmpstrng = 'EINJ0'//tmps1(1:1)//'_E1'
-         write(*, *) 'x', trim(tmpstrng), 'x'
-         stop
+         !write(*, *) 'x', trim(tmpstrng), 'x'
+         !stop
          call rpscalar(trim(tmpstrng),scdata,nsctime,iret,ier)
          if (ier.ne.0) call transp2imas_error('rpscalar',ier)
          if (iret.ne.nsctime) &
