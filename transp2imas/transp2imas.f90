@@ -216,10 +216,11 @@ program transp2imas
       call rplabel(trim(tmpstrng), zlabel, zunits, ktype, kerr)
       !write(*, *) 'x', ktype, 'x'
       !write(*, *) 'y', kerr, 'y'
-      if (kerr.gt.0) nbeam = nbeam + 1
+      !if (kerr.gt.0) nbeam = nbeam + 1
+      if (kerr.eq.-1) nbeam = nbeam + 1
    end do
-   write(*, *) 'nbeam =', nbeam
-   stop
+   !write(*, *) 'nbeam =', nbeam
+   !stop
    if (nbeam.gt.0) then
       allocate(nbi%unit(nbeam))
       do k = 1, nbeam
@@ -1005,7 +1006,8 @@ program transp2imas
             call transp2imas_exit(' ?? '//trim(tmpstrng)//' read error')
          call transp2imas_echo(trim(tmpstrng),scdata,1,nsctime)
          nbi%unit(k)%power%data = scdata(:)
-         nbi%unit(k)%beam_power_fraction%data = scdata(:)
+         ! This is a 2D vector...
+         !nbi%unit(k)%beam_power_fraction%data = scdata(:)
       end do
 
       do k = 1, nbeam
