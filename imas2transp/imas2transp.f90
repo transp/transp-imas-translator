@@ -238,7 +238,7 @@ program imas2transp
        go to 101
     endif
     write(*,*) "cp time t1=", cp%time(1), "cp time tn=", cp%time(tlen)
-    write(*,*) "cp b0 t1 tn=", cp%vacuum_toroidal_field%b0(1), cp%vacuum_toroidal_field%b0(tlen)
+    !write(*,*) "cp b0 t1 tn=", cp%vacuum_toroidal_field%b0(1), cp%vacuum_toroidal_field%b0(tlen)
     write(*,*) "eq time t1=", eq%time(1), "eq time tn=", eq%time(tlen), "size of b0=", tmplen
     write(*,*) "eq r0=",eq%vacuum_toroidal_field%r0
     write(*,*) "eq b0 t1 tn=", eq%vacuum_toroidal_field%b0(1), eq%vacuum_toroidal_field%b0(tlen)
