@@ -1727,16 +1727,18 @@ do jj=1, nt
       allocate(x1(n1), f1(n1))
       x1(:) = (eq%time_slice(jj)%profiles_1d%psi(:)  - eq%time_slice(jj)%profiles_1d%psi(1)) / &
               (eq%time_slice(jj)%profiles_1d%psi(n1) - eq%time_slice(jj)%profiles_1d%psi(1))
-!              do i=1,n1
-!              if (i.lt.3 .or. i.gt.(n1-3)) write(*,*) 'debug: x1 ',jj,i,x1(i)
-!              enddo
+      do i = 1, n1
+         x1(i) = x1(i) + 1.0e-32 * i ! pspline demands a STRICTLY monotonic profile
+         !if (i.lt.3 .or. i.gt.(n1-3)) write(*,*) 'debug: x1 ',jj,i,x1(i)
+      enddo
+
       n1_new=nw
       deltax_new=(x1(n1)-x1(1))/real(n1_new-1)
       allocate(x1_new(n1_new), f1_new(n1_new))
       x1_new = (/ (real(i-1) *deltax_new, i=1, n1_new) /)
-!              do i=1,n1_new
-!              if (i.lt.3 .or. i.gt.(n1_new-3)) write(*,*) 'debug: x1_new ', jj,i,x1_new(i)
-!              enddo
+      !do i = 1, n1_new
+      !   if (i.lt.3 .or. i.gt.(n1_new-3)) write(*,*) 'debug: x1_new ', jj,i,x1_new(i)
+      !end do
 
 !old grid : n1(number of grid), x1(grid), f1(data to be interpolated)
 !new grid : n1_new(number of new grid), x1_new(new grid), f1_new(new data on new grid)
