@@ -1,3 +1,4 @@
 1. implement translation of all data needed to run NUBEAM
 2. check were profiles are evaluated (cell center vs. boundary), esp. on-axis and edge
 3. add imas2transp README
+4. Replace XPLASMA with Plasma State
