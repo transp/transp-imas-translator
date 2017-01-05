@@ -399,7 +399,7 @@ subroutine t1mhdeq_geq(runid, time)
   call eq_gfnum('pmhd',id_pmhd)
   call eq_gfnum('q',id_q)
 
-  ! temprorarily set to zero
+  ! temporarily set to zero
   zcur = 0._r8
   nh_geqdsk=nZ
   nv_geqdsk=nR
@@ -2977,7 +2977,32 @@ subroutine t1mhdeqi_geqdsk(lun_geqdsk,geqdsk_lbl, &
         if(associated(eq%time_slice(it)%profiles_1d%dpressure_dpsi)) &
         eq%time_slice(it)%profiles_1d%dpressure_dpsi(:)= pprime(:)
 
-  !  that is all
+! To do: merge EQDSK (rlim, zlim) & (rbdy, zbdy) into unified IMAS "outline"
+
+! This is how I expected things to work...
+#if 0
+        allocate(eq%time_slice(it)%boundary%active_limiter_point%r(nblim))
+        eq%time_slice(it)%boundary%active_limiter_point%r(:) = rlim(:)
+
+        allocate(eq%time_slice(it)%boundary%active_limiter_point%z(nblim))
+        eq%time_slice(it)%boundary%active_limiter_point%z(:) = zlim(:)
+
+        allocate(eq%time_slice(it)%boundary%outline%r(nb))
+        eq%time_slice(it)%boundary%outline%r(:) = rbdy(:)
+
+        allocate(eq%time_slice(it)%boundary%outline%z(nb))
+        eq%time_slice(it)%boundary%outline%z(:) = zbdy(:)
+
+! Since that didn't work, here's a kluge
+#else
+        allocate(eq%time_slice(it)%boundary%outline%r(nblim))
+        eq%time_slice(it)%boundary%outline%r(:) = rlim(:)
+
+        allocate(eq%time_slice(it)%boundary%outline%z(nblim))
+        eq%time_slice(it)%boundary%outline%z(:) = zlim(:)
+#endif
+
+!  that is all
 
   ierr=0
 

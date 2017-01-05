@@ -146,7 +146,7 @@ program imas2transp
 
 !todo: sign and name 3. A38601.PFC : Free boundary poloidal field coil currents
     !  *PFC(TIM,-) { 'PFC currents', 'A' }
-    ! pfc Ampre(time second, ccindex) it=1,358, ind=1,12
+    ! pfc Ampere(time second, ccindex) it=1,358, ind=1,12
     ! pf_active coil(1...N)/current
     !           coil(1...N)/current/data (coil(:)/current/time)
     !           coil(1...N)/current/time

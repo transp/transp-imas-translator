@@ -180,7 +180,7 @@ program transp2imas
    write(iout,*) ' kconnect:  run label (rlabel) = "',rlabel,'"'
    write(iout,*) ' '
    write(iout,*) '   #scalar time pts (nsctime)  =  ',nsctime
-   write(iout,*) '   #scalar time pts (nprtime)  =  ',nprtime
+   write(iout,*) '   #profile time pts (nprtime)  =  ',nprtime
    write(iout,*) '   max x axis size (nxmax)     =  ',nxmax
    write(iout,*) '   max data item size (nmax)   =  ',nmax
    write(iout,*) ' '
