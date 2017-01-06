@@ -2979,28 +2979,27 @@ subroutine t1mhdeqi_geqdsk(lun_geqdsk,geqdsk_lbl, &
 
 ! To do: merge EQDSK (rlim, zlim) & (rbdy, zbdy) into unified IMAS "outline"
 
-! This is how I expected things to work...
+! This guy is an array, not a scalar. Not sure what it's intended for? Johan 01/05/17
 #if 0
         allocate(eq%time_slice(it)%boundary%active_limiter_point%r(nblim))
         eq%time_slice(it)%boundary%active_limiter_point%r(:) = rlim(:)
 
         allocate(eq%time_slice(it)%boundary%active_limiter_point%z(nblim))
         eq%time_slice(it)%boundary%active_limiter_point%z(:) = zlim(:)
+#endif
+        allocate(eq%time_slice(it)%boundary%lcfs%r(nb))
+        eq%time_slice(it)%boundary%lcfs%r(:) = rbdy(:)
 
-        allocate(eq%time_slice(it)%boundary%outline%r(nb))
-        eq%time_slice(it)%boundary%outline%r(:) = rbdy(:)
+        allocate(eq%time_slice(it)%boundary%lcfs%z(nb))
+        eq%time_slice(it)%boundary%lcfs%z(:) = zbdy(:)
 
-        allocate(eq%time_slice(it)%boundary%outline%z(nb))
-        eq%time_slice(it)%boundary%outline%z(:) = zbdy(:)
+! Stuff the limiter coords in outline for now. Johan 01/05/17
 
-! Since that didn't work, here's a kluge
-#else
         allocate(eq%time_slice(it)%boundary%outline%r(nblim))
         eq%time_slice(it)%boundary%outline%r(:) = rlim(:)
 
         allocate(eq%time_slice(it)%boundary%outline%z(nblim))
         eq%time_slice(it)%boundary%outline%z(:) = zlim(:)
-#endif
 
 !  that is all
 
