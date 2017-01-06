@@ -2910,7 +2910,7 @@ subroutine t1mhdeqi_geqdsk(lun_geqdsk,geqdsk_lbl, &
 
   !-------------------------------------------------------
      ! write out in ids eq%timeslice%profiles_2d
-     write(*,*) " --- feed ids%eq at time"!, whichtimeslice, whichprofile, timeofinterest
+     write(*,*) " --- feed ids%eq at time", whichtimeslice, whichprofile, timeofinterest
 
      it=whichtimeslice
      iprofile=whichprofile
@@ -2969,7 +2969,7 @@ subroutine t1mhdeqi_geqdsk(lun_geqdsk,geqdsk_lbl, &
 
         ! ids needs poloidal flux decreases when move from R0 to R0+a
         if(associated(cp%profiles_1d(it)%grid%psi)) &
-        cp%profiles_1d(it)%grid%psi(:)= cp%profiles_1d(it)%grid%psi(:) - zpsimag * twopi 
+        cp%profiles_1d(it)%grid%psi(:)= cp%profiles_1d(it)%grid%psi(:) - zpsimag * twopi
 
         ! todo use ezspline to interpolate
         if(associated(eq%time_slice(it)%profiles_1d%f_df_dpsi)) &
@@ -2980,13 +2980,13 @@ subroutine t1mhdeqi_geqdsk(lun_geqdsk,geqdsk_lbl, &
 ! To do: merge EQDSK (rlim, zlim) & (rbdy, zbdy) into unified IMAS "outline"
 
 ! This guy is an array, not a scalar. Not sure what it's intended for? Johan 01/05/17
-#if 0
-        allocate(eq%time_slice(it)%boundary%active_limiter_point%r(nblim))
-        eq%time_slice(it)%boundary%active_limiter_point%r(:) = rlim(:)
 
-        allocate(eq%time_slice(it)%boundary%active_limiter_point%z(nblim))
-        eq%time_slice(it)%boundary%active_limiter_point%z(:) = zlim(:)
-#endif
+        !allocate(eq%time_slice(it)%boundary%active_limiter_point%r(nblim))
+        !eq%time_slice(it)%boundary%active_limiter_point%r(:) = rlim(:)
+
+        !allocate(eq%time_slice(it)%boundary%active_limiter_point%z(nblim))
+        !eq%time_slice(it)%boundary%active_limiter_point%z(:) = zlim(:)
+
         allocate(eq%time_slice(it)%boundary%lcfs%r(nb))
         eq%time_slice(it)%boundary%lcfs%r(:) = rbdy(:)
 
@@ -3016,6 +3016,7 @@ subroutine t1mhdeqi_geqdsk(lun_geqdsk,geqdsk_lbl, &
   call xplasma_errmsg_append(sp,' ?data lookup error in eqi_geqdsk (xplasma).')
 
 1000 continue
+
   return
 
 end subroutine t1mhdeqi_geqdsk

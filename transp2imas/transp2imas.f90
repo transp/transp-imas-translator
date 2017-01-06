@@ -126,6 +126,9 @@ program transp2imas
 
    type(ezspline1_r8) :: spln1
 
+   real :: rvdum(10)
+   integer :: ivdum(10)
+
 !----------------------------------------------------------------
 !
    cmgsign(-1)='-'
@@ -2002,6 +2005,7 @@ program transp2imas
          call t1mhdeq_geq(trim(rpfile),r8ztime)
       enddo
    enddo
+   !stop
    !   call t1mhdeq_test(ztime,dt_avg,xsizes(1)+1,50)
    !   t1mhdeq_geq
    !      t1mhdeq_compgeq
@@ -2048,17 +2052,34 @@ program transp2imas
 3001 format(' OK APLASM:  ',5(1x,1pe12.5))
 3002 format(' OK BACKZ:   ',5(1x,1pe12.5))
 
+!  get beam data from namelist
+
+   if (nbeam.gt.0) then
+      ivdum(1) = 0
+      call tr_getnl_intvec('NBEAM', ivdum, 1, istat)
+      !write(*,*) 'istat =', istat
+      !stop
+      if ((istat.ne.1).or.(ivdum(1).ne.nbeam)) call transp2imas_exit('NBEAM.neq.nbeam...')
+      call tr_getnl_r4vec('RTCENA', rvdum, nbeam, istat)
+      write(*,*) 'istat =', istat, nbeam, rvdum(1), rvdum(2)
+   endif
+
 !
 !  save ids data
 !
-   write(*,*) ' transp2imas: save ids_cp'
-   call ids_put(idsidx,"core_profiles",cp)
-   write(*,*) ' transp2imas: save ids_eq'
+   write(*,*) ' transp2imas: save eq ids'
    call ids_put(idsidx,"equilibrium",eq)
+   write(*,*) ' transp2imas: save cp ids'
+   call ids_put(idsidx,"core_profiles",cp)
+   stop
+   write(*,*) ' transp2imas: save nbi ids'
+   call ids_put(idsidx,"core_profiles",nbi)
 
    write(*,*) 'Close shot in IMAS!'
+   stop
+   call ids_deallocate(eq)
    call ids_deallocate(cp)
-!      call ids_deallocate(eq)
+   call ids_deallocate(nbi)
    call imas_close(idsidx)
 
 !
