@@ -228,6 +228,7 @@ program transp2imas
       allocate(nbi%unit(nbeam))
       do k = 1, nbeam
          allocate(nbi%unit(k)%beamlets_group(1))
+         allocate(nbi%unit(k)%beamlets_group(1)%beamlets%tangency_radii(1))
          allocate(nbi%unit(k)%power%time(nsctime))
          allocate(nbi%unit(k)%power%data(nsctime))
          allocate(nbi%unit(k)%energy%time(nsctime))
@@ -2061,8 +2062,13 @@ program transp2imas
       !stop
       if ((istat.ne.1).or.(ivdum(1).ne.nbeam)) call transp2imas_exit('NBEAM.neq.nbeam...')
       call tr_getnl_r4vec('RTCENA', rvdum, nbeam, istat)
-      write(*,*) 'istat =', istat, nbeam, rvdum(1), rvdum(2)
+      !write(*,*) 'istat =', istat, nbeam, rvdum(1), rvdum(2)
+      do i = 1, nbeam
+         nbi%unit(i)%beamlets_group(1)%beamlets%tangency_radii(1) = rvdum(i)
+      enddo
    endif
+! XLBTNA(2)   =  3.200620E+03 ! distance, ion source to beam tang radius
+! XYBSCA(2)   =  1.442000E+02 ! elevation of beam ion source above/below midplane
 
 !
 !  save ids data
