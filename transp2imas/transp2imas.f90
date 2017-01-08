@@ -2066,6 +2066,19 @@ program transp2imas
       do i = 1, nbeam
          nbi%unit(i)%beamlets_group(1)%beamlets%tangency_radii(1) = rvdum(i)
       enddo
+      call tr_getnl_r4vec('XYBSCA', rvdum, nbeam, istat)
+      do i = 1, nbeam
+         nbi%unit(i)%beamlets_group(1)%beamlets%positions%z = rvdum(i)
+      enddo
+      call tr_getnl_r4vec('XLBTNA', rvdum, nbeam, istat)
+      do i = 1, nbeam
+         nbi%unit(i)%beamlets_group(1)%beamlets%positions%r = sqrt(rvdum(i)**2 - &
+         nbi%unit(i)%beamlets_group(1)%beamlets%positions%z**2)
+      enddo
+      ! Direction must be calculated from sign of plasma current?
+      do i = 1, nbeam
+         nbi%unit(i)%beamlets_group(1)%direction = 1
+      enddo
    endif
 ! XLBTNA(2)   =  3.200620E+03 ! distance, ion source to beam tang radius
 ! XYBSCA(2)   =  1.442000E+02 ! elevation of beam ion source above/below midplane
