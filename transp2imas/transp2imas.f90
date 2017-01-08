@@ -229,6 +229,8 @@ program transp2imas
       do k = 1, nbeam
          allocate(nbi%unit(k)%beamlets_group(1))
          allocate(nbi%unit(k)%beamlets_group(1)%beamlets%tangency_radii(1))
+         allocate(nbi%unit(k)%beamlets_group(1)%beamlets%positions%r(1))
+         allocate(nbi%unit(k)%beamlets_group(1)%beamlets%positions%z(1))
          allocate(nbi%unit(k)%power%time(nsctime))
          allocate(nbi%unit(k)%power%data(nsctime))
          allocate(nbi%unit(k)%energy%time(nsctime))
@@ -2068,12 +2070,12 @@ program transp2imas
       enddo
       call tr_getnl_r4vec('XYBSCA', rvdum, nbeam, istat)
       do i = 1, nbeam
-         nbi%unit(i)%beamlets_group(1)%beamlets%positions%z = rvdum(i)
+         nbi%unit(i)%beamlets_group(1)%beamlets%positions%z(1) = rvdum(i)
       enddo
       call tr_getnl_r4vec('XLBTNA', rvdum, nbeam, istat)
       do i = 1, nbeam
-         nbi%unit(i)%beamlets_group(1)%beamlets%positions%r = sqrt(rvdum(i)**2 - &
-         nbi%unit(i)%beamlets_group(1)%beamlets%positions%z**2)
+         nbi%unit(i)%beamlets_group(1)%beamlets%positions%r(1) = sqrt(rvdum(i)**2 - &
+         nbi%unit(i)%beamlets_group(1)%beamlets%positions%z(1)**2)
       enddo
       ! Direction must be calculated from sign of plasma current?
       do i = 1, nbeam
