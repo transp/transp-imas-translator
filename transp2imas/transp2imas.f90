@@ -2057,7 +2057,8 @@ program transp2imas
       call tr_getnl_r4vec('FHALFA', rvdum, nbeam, istat)
       do i = 1, nbeam
          nbi%unit(i)%beam_power_fraction%data(:, 2) = rvdum(i) ! Fraction at 1/2 of full power
-         nbi%unit(i)%beam_power_fraction%data(:, 3) = 0.0      ! Fraction at 1/3 of full power
+         nbi%unit(i)%beam_power_fraction%data(:, 3) = &
+         1.0 - rvdum(i) - nbi%unit(i)%beam_power_fraction%data(:, 1) ! Fraction at 1/3 of full power
       enddo
       call tr_getnl_r4vec('RTCENA', rvdum, nbeam, istat)
       !write(*,*) 'istat =', istat, nbeam, rvdum(1), rvdum(2)
