@@ -225,6 +225,7 @@ program transp2imas
    !write(*, *) 'nbeam =', nbeam
    !stop
    if (nbeam.gt.0) then
+      allocate(nbi%time(nsctime))
       allocate(nbi%unit(nbeam))
       do k = 1, nbeam
          allocate(nbi%unit(k)%beamlets_group(1))
@@ -762,8 +763,9 @@ program transp2imas
    write(*,*) 'fill ids sctime time'
    cp%time = sctime
    eq%time = sctime
+   if (nbeam.gt.0) nbi%time = sctime
    do k = 1, nbeam
-      nbi%unit(k)%power%time = sctime
+      nbi%unit(k)%power%time(:) = sctime(:)
       nbi%unit(k)%energy%time = sctime
       nbi%unit(k)%beam_power_fraction%time = sctime
    end do
@@ -2085,15 +2087,14 @@ program transp2imas
 !  save ids data
 !
    write(*,*) ' transp2imas: save eq ids'
-   call ids_put(idsidx,"equilibrium",eq)
+   call ids_put(idsidx, "equilibrium", eq)
    write(*,*) ' transp2imas: save cp ids'
-   call ids_put(idsidx,"core_profiles",cp)
-   stop
+   call ids_put(idsidx, "core_profiles", cp)
    write(*,*) ' transp2imas: save nbi ids'
-   call ids_put(idsidx,"core_profiles",nbi)
+   call ids_put(idsidx, "nbi", nbi)
 
    write(*,*) 'Close shot in IMAS!'
-   stop
+
    call ids_deallocate(eq)
    call ids_deallocate(cp)
    call ids_deallocate(nbi)
