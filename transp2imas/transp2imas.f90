@@ -235,8 +235,8 @@ program transp2imas
          allocate(nbi%unit(k)%power%data(nsctime))
          allocate(nbi%unit(k)%energy%time(nsctime))
          allocate(nbi%unit(k)%energy%data(nsctime))
-         !allocate(nbi%unit(k)%beam_power_fraction%time(nprtime))
-         !allocate(nbi%unit(k)%beam_power_fraction%data(nprtime:?))
+         allocate(nbi%unit(k)%beam_power_fraction%time(nsctime))
+         allocate(nbi%unit(k)%beam_power_fraction%data(nsctime, 3))
       end do
    end if
 
@@ -765,6 +765,7 @@ program transp2imas
    do k = 1, nbeam
       nbi%unit(k)%power%time = sctime
       nbi%unit(k)%energy%time = sctime
+      nbi%unit(k)%beam_power_fraction%time = sctime
    end do
 
 !
@@ -780,9 +781,6 @@ program transp2imas
    write(*,*) 'fill ids prtime'
    cp%profiles_1d(:)%time = prtime
    eq%time_slice(:)%time = prtime
-   do k = 1, nbeam
-      !nbi%unit(k)%beam_power_fraction%time = prtime
-   end do
 
 !
 ! rpscalar get scalar data
@@ -998,16 +996,6 @@ program transp2imas
    ! fill nbi IDS
    if (nbeam.gt.0) then
 
-      call rplabel('PINJ_D', zlabel, zunits, ktype, kerr)
-      if (kerr.gt.0) then ! Assume all beams are deuterium
-         do k = 1, nbeam
-            write(iout,*) ' '
-            !? Beam power
-            nbi%unit(k)%species%a = 2.01410178
-            nbi%unit(k)%species%z_n = 1.0
-         end do
-      end if
-
       do k = 1, nbeam
          write(iout,*) ' '
          !? Beam power
@@ -1020,8 +1008,6 @@ program transp2imas
             call transp2imas_exit(' ?? '//trim(tmpstrng)//' read error')
          call transp2imas_echo(trim(tmpstrng),scdata,1,nsctime)
          nbi%unit(k)%power%data = scdata(:)
-         ! This is a 2D vector...
-         !nbi%unit(k)%beam_power_fraction%data = scdata(:)
       end do
 
       do k = 1, nbeam
@@ -1041,7 +1027,6 @@ program transp2imas
       end do
 
    end if
-
 
 !
 ! rprofile get profile data f(X,t)
@@ -2063,6 +2048,15 @@ program transp2imas
       !write(*,*) 'istat =', istat
       !stop
       if ((istat.ne.1).or.(ivdum(1).ne.nbeam)) call transp2imas_exit('NBEAM.neq.nbeam...')
+      call tr_getnl_r4vec('FFULLA', rvdum, nbeam, istat)
+      do i = 1, nbeam
+         nbi%unit(i)%beam_power_fraction%data(%, 1) = rvdum(i) ! Fraction at full power
+      enddo
+      call tr_getnl_r4vec('FHALFA', rvdum, nbeam, istat)
+      do i = 1, nbeam
+         nbi%unit(i)%beam_power_fraction%data(%, 2) = rvdum(i) ! Fraction at 1/2 of full power
+         nbi%unit(i)%beam_power_fraction%data(%, 3) = 0.0      ! Fraction at 1/3 of full power
+      enddo
       call tr_getnl_r4vec('RTCENA', rvdum, nbeam, istat)
       !write(*,*) 'istat =', istat, nbeam, rvdum(1), rvdum(2)
       do i = 1, nbeam
@@ -2081,10 +2075,12 @@ program transp2imas
       do i = 1, nbeam
          nbi%unit(i)%beamlets_group(1)%direction = 1
       enddo
+      call tr_getnl_r4vec('ABEAMA', rvdum, nbeam, istat)
+      do i = 1, nbeam
+         nbi%unit(i)%species%a = rvdum(i)
+         nbi%unit(i)%species%z_n = 1.0
+      enddo
    endif
-! XLBTNA(2)   =  3.200620E+03 ! distance, ion source to beam tang radius
-! XYBSCA(2)   =  1.442000E+02 ! elevation of beam ion source above/below midplane
-
 !
 !  save ids data
 !
