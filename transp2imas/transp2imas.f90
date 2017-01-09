@@ -2050,12 +2050,12 @@ program transp2imas
       if ((istat.ne.1).or.(ivdum(1).ne.nbeam)) call transp2imas_exit('NBEAM.neq.nbeam...')
       call tr_getnl_r4vec('FFULLA', rvdum, nbeam, istat)
       do i = 1, nbeam
-         nbi%unit(i)%beam_power_fraction%data(%, 1) = rvdum(i) ! Fraction at full power
+         nbi%unit(i)%beam_power_fraction%data(:, 1) = rvdum(i) ! Fraction at full power
       enddo
       call tr_getnl_r4vec('FHALFA', rvdum, nbeam, istat)
       do i = 1, nbeam
-         nbi%unit(i)%beam_power_fraction%data(%, 2) = rvdum(i) ! Fraction at 1/2 of full power
-         nbi%unit(i)%beam_power_fraction%data(%, 3) = 0.0      ! Fraction at 1/3 of full power
+         nbi%unit(i)%beam_power_fraction%data(:, 2) = rvdum(i) ! Fraction at 1/2 of full power
+         nbi%unit(i)%beam_power_fraction%data(:, 3) = 0.0      ! Fraction at 1/3 of full power
       enddo
       call tr_getnl_r4vec('RTCENA', rvdum, nbeam, istat)
       !write(*,*) 'istat =', istat, nbeam, rvdum(1), rvdum(2)
