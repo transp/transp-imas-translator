@@ -126,7 +126,7 @@ program transp2imas
 
    type(ezspline1_r8) :: spln1
 
-   real :: rvdum(10)
+   real :: rdum, rvdum(10), rvdum2(10)
    integer :: ivdum(10)
 
 !----------------------------------------------------------------
@@ -812,7 +812,7 @@ program transp2imas
    if(iret.ne.nsctime) &
       call transp2imas_exit(' ?? VSURC read error')
    call transp2imas_echo('VSURC',scdata,1,nsctime)
-   write(*, *) ' VSURC', nsctime, scdata(nsctime)
+   !write(*, *) ' VSURC', nsctime, scdata(nsctime)
    !stop
    allocate(cp%global_quantities%v_loop(nsctime))
    cp%global_quantities%v_loop(:)= scdata(:)
@@ -934,7 +934,7 @@ program transp2imas
    if(iret.ne.nsctime) &
       call transp2imas_exit(' ?? PCURC read error')
    call transp2imas_echo('PCURC',scdata,1,nsctime)
-   write(*, *) ' PCURC', nsctime, scdata(nsctime)
+   !write(*, *) ' PCURC', nsctime, scdata(nsctime)
 
    eq%time_slice(:)%global_quantities%ip = scdata(1:)
 
@@ -2051,17 +2051,28 @@ program transp2imas
       !stop
       if ((istat.ne.1).or.(ivdum(1).ne.nbeam)) call transp2imas_exit('NBEAM.neq.nbeam...')
       call tr_getnl_r4vec('FFULLA', rvdum, nbeam, istat)
+      call tr_getnl_r4vec('FHALFA', rvdum2, nbeam, istat)
       do i = 1, nbeam
-         nbi%unit(i)%beam_power_fraction%data(:, 1) = rvdum(i) ! Fraction at full power
-      enddo
-      call tr_getnl_r4vec('FHALFA', rvdum, nbeam, istat)
-      do i = 1, nbeam
-         nbi%unit(i)%beam_power_fraction%data(:, 2) = rvdum(i) ! Fraction at 1/2 of full power
-         nbi%unit(i)%beam_power_fraction%data(:, 3) = &
-         1.0 - rvdum(i) - nbi%unit(i)%beam_power_fraction%data(:, 1) ! Fraction at 1/3 of full power
+         do k = 1, nsctime
+            if (nbi%unit(i)%power%data(k) .gt. 0.0) then ! Is beam on?
+               rdum = & ! Normalization constant
+               nbi%unit(i)%energy%data(k) * rvdum(i) + &
+               nbi%unit(i)%energy%data(k) / 2.0 * rvdum2(i) + &
+               nbi%unit(i)%energy%data(k) / 3.0 * (1.0 - rvdum(i) - rvdum2(i))
+               nbi%unit(i)%beam_power_fraction%data(k, 1) = &
+               (nbi%unit(i)%energy%data(k) * rvdum(i)) / rdum ! Fraction of power at full energy
+               nbi%unit(i)%beam_power_fraction%data(k, 2) = &
+               (nbi%unit(i)%energy%data(k) / 2.0 * rvdum2(i)) / rdum ! Fraction of power at 1/2 energy
+               nbi%unit(i)%beam_power_fraction%data(k, 3) = &
+               (nbi%unit(i)%energy%data(k) / 3.0 * (1.0 - rvdum(i) - rvdum2(i))) / rdum ! Fraction of power at 1/3 energy
+            else ! Beam is off
+               nbi%unit(i)%beam_power_fraction%data(k, 1) = 0.0
+               nbi%unit(i)%beam_power_fraction%data(k, 2) = 0.0
+               nbi%unit(i)%beam_power_fraction%data(k, 3) = 0.0
+            endif
+         enddo
       enddo
       call tr_getnl_r4vec('RTCENA', rvdum, nbeam, istat)
-      !write(*,*) 'istat =', istat, nbeam, rvdum(1), rvdum(2)
       do i = 1, nbeam
          nbi%unit(i)%beamlets_group(1)%beamlets%tangency_radii(1) = rvdum(i)
       enddo
