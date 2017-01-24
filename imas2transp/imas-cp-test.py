@@ -29,7 +29,7 @@ print 'core_profiles%global_quantities%v_loop[-1] =', ids.global_quantities.v_lo
 print 'core_profiles%global_quantities%li[-1] =', ids.global_quantities.li
 print 'core_profiles%global_quantities%beta_pol[-1] =', ids.global_quantities.beta_pol
 
-print '\nMembers of container object core_profiles.profiles_1d[-] are:\n', dir(ids.profiles_1d[-1])
+print '\nMembers of container object core_profiles.profiles_1d[-1] are:\n', dir(ids.profiles_1d[-1])
 print 'core_profiles%profiles_1d[-1]%t_i_average =', ids.profiles_1d[-1].t_i_average
 print 'core_profiles%profiles_1d[-1]%n_i_total_over_n_e =', ids.profiles_1d[-1].n_i_total_over_n_e
 print 'core_profiles%profiles_1d[-1]%zeff =', ids.profiles_1d[-1].zeff
@@ -40,28 +40,28 @@ print 'core_profiles%profiles_1d[-1]%q =', ids.profiles_1d[-1].q
 print 'core_profiles%profiles_1d[-1]%magnetic_shear =', ids.profiles_1d[-1].magnetic_shear
 print 'core_profiles%profiles_1d[-1]%time =', ids.profiles_1d[-1].time
 
-print '\nMembers of container object core_profiles.profiles_1d[-].grid are:\n', dir(ids.profiles_1d[-1].grid)
+print '\nMembers of container object core_profiles.profiles_1d[-1].grid are:\n', dir(ids.profiles_1d[-1].grid)
 print 'core_profiles%profiles_1d[-1]%grid%rho_tor_norm =', ids.profiles_1d[-1].grid.rho_tor_norm
 print 'core_profiles%profiles_1d[-1]%grid%rho_tor =', ids.profiles_1d[-1].grid.rho_tor
 print 'core_profiles%profiles_1d[-1]%grid%psi =', ids.profiles_1d[-1].grid.psi
 print 'core_profiles%profiles_1d[-1]%grid%volume =', ids.profiles_1d[-1].grid.volume
 print 'core_profiles%profiles_1d[-1]%grid%area =', ids.profiles_1d[-1].grid.area
 
-print '\nMembers of container object core_profiles.profiles_1d[-].electrons are:\n', dir(ids.profiles_1d[-1].electrons)
+print '\nMembers of container object core_profiles.profiles_1d[-1].electrons are:\n', dir(ids.profiles_1d[-1].electrons)
 print 'core_profiles%profiles_1d[-1]%electrons%temperature =', ids.profiles_1d[-1].electrons.temperature
 print 'core_profiles%profiles_1d[-1]%electrons%density =', ids.profiles_1d[-1].electrons.density
 
-print '\nMembers of container object core_profiles.profiles_1d[-].ion[0] are:\n', dir(ids.profiles_1d[-1].ion[0])
+print '\nMembers of container object core_profiles.profiles_1d[-1].ion[0] are:\n', dir(ids.profiles_1d[-1].ion[0])
 print 'core_profiles%profiles_1d[-1]%ion[0]%z_ion =', ids.profiles_1d[-1].ion[0].z_ion
 print 'core_profiles%profiles_1d[-1]%ion[0]%label =', ids.profiles_1d[-1].ion[0].label
 print 'core_profiles%profiles_1d[-1]%ion[0]%temperature =', ids.profiles_1d[-1].ion[0].temperature
 print 'core_profiles%profiles_1d[-1]%ion[0]%density =', ids.profiles_1d[-1].ion[0].density
 
-print '\nMembers of container object core_profiles.profiles_1d[-].ion[0].element[0] are:\n', dir(ids.profiles_1d[-1].ion[0].element[0])
+print '\nMembers of container object core_profiles.profiles_1d[-1].ion[0].element[0] are:\n', dir(ids.profiles_1d[-1].ion[0].element[0])
 print 'core_profiles%profiles_1d[-1]%ion[0]%element[0]%a =', ids.profiles_1d[-1].ion[0].element[0].a
 print 'core_profiles%profiles_1d[-1]%ion[0]%element[0]%z_n =', ids.profiles_1d[-1].ion[0].element[0].z_n
 
-print '\nMembers of container object core_profiles.profiles_1d[-].ion[4].state[0] are:\n', dir(ids.profiles_1d[-1].ion[4].state[0])
+print '\nMembers of container object core_profiles.profiles_1d[-1].ion[4].state[0] are:\n', dir(ids.profiles_1d[-1].ion[4].state[0])
 print 'core_profiles%profiles_1d[-1]%ion[4]%state[0]%label =', ids.profiles_1d[-1].ion[4].state[0].label
 print 'core_profiles%profiles_1d[-1]%ion[4]%state[0]%temperature =', ids.profiles_1d[-1].ion[4].state[0].temperature
 print 'core_profiles%profiles_1d[-1]%ion[4]%state[0]%density =', ids.profiles_1d[-1].ion[4].state[0].density
