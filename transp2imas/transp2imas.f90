@@ -2092,15 +2092,15 @@ program transp2imas
       enddo
       call tr_getnl_r4vec('RTCENA', rvdum, nbeam, istat)
       do i = 1, nbeam
-         nbi%unit(i)%beamlets_group(1)%beamlets%tangency_radii(1) = rvdum(i)
+         nbi%unit(i)%beamlets_group(1)%beamlets%tangency_radii(1) = 1.0e-2 * rvdum(i)
       enddo
       call tr_getnl_r4vec('XYBSCA', rvdum, nbeam, istat)
       do i = 1, nbeam
-         nbi%unit(i)%beamlets_group(1)%beamlets%positions%z(1) = rvdum(i)
+         nbi%unit(i)%beamlets_group(1)%beamlets%positions%z(1) = 1.0e-2 * rvdum(i)
       enddo
       call tr_getnl_r4vec('XLBTNA', rvdum, nbeam, istat)
       do i = 1, nbeam
-         nbi%unit(i)%beamlets_group(1)%beamlets%positions%r(1) = sqrt(rvdum(i)**2 - &
+         nbi%unit(i)%beamlets_group(1)%beamlets%positions%r(1) = sqrt(1.0e-4 * rvdum(i)**2 - &
          nbi%unit(i)%beamlets_group(1)%beamlets%positions%z(1)**2)
       enddo
       ! Direction must be calculated from sign of plasma current?
