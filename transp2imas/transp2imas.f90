@@ -237,7 +237,7 @@ program transp2imas
          allocate(nbi%unit(k)%energy%time(nsctime))
          allocate(nbi%unit(k)%energy%data(nsctime))
          allocate(nbi%unit(k)%beam_power_fraction%time(nsctime))
-         allocate(nbi%unit(k)%beam_power_fraction%data(nsctime, 3))
+         allocate(nbi%unit(k)%beam_power_fraction%data(3, nsctime))
       end do
    end if
 
@@ -1104,6 +1104,20 @@ program transp2imas
    enddo
 
    write(iout,*) ' '
+   call rprofile('OMEGA',prdata,nprtime*xsizes(1),iret,ier)
+   if(ier.ne.0) call transp2imas_error('rprofile(OMEGA)',ier)
+   if(iret.ne.nprtime*xsizes(1)) &
+      call transp2imas_exit(' ?? OMEGA read error')
+   call transp2imas_echo('OMEGA',prdata,xsizes(1),nprtime)
+
+   offset=xsizes(1)
+   do it=1,nprtime
+      allocate(cp%profiles_1d(it)%electrons%velocity_tor(offset))
+      cp%profiles_1d(it)%electrons%velocity_tor(1:offset)=&
+         eq%vacuum_toroidal_field%r0 * prdata(1+(it-1)*offset:it*offset)
+   enddo
+
+   write(iout,*) ' '
    call rprofile('NI',prdata,nprtime*xsizes(1),iret,ier)
    if(ier.ne.0) call transp2imas_error('rprofile(NI)',ier)
    if(iret.ne.nprtime*xsizes(1)) &
@@ -1407,6 +1421,10 @@ program transp2imas
       PLFLX(:,it)=outbuf(:)
       dPLFLXdXI(:,it)=doutbuf(:)
       eq%time_slice(it)%profiles_1d%psi(1:offset)=outbuf(:)
+      ! Make psi a STRICTLY monotonic profile
+      do i = 1, offset
+         eq%time_slice(it)%profiles_1d%psi(i) = eq%time_slice(it)%profiles_1d%psi(i) * (1.0 + 1.0e-6 * (i - offset))
+      enddo
       write(312,*) 'poloidal flux at', it
       write(312,*) 'size', size(inbuf), size(outbuf), size(xibuf), size(xbbuf)
       do ir=1,offset
@@ -2059,16 +2077,16 @@ program transp2imas
                nbi%unit(i)%energy%data(k) * rvdum(i) + &
                nbi%unit(i)%energy%data(k) / 2.0 * rvdum2(i) + &
                nbi%unit(i)%energy%data(k) / 3.0 * (1.0 - rvdum(i) - rvdum2(i))
-               nbi%unit(i)%beam_power_fraction%data(k, 1) = &
+               nbi%unit(i)%beam_power_fraction%data(1, k) = &
                (nbi%unit(i)%energy%data(k) * rvdum(i)) / rdum ! Fraction of power at full energy
-               nbi%unit(i)%beam_power_fraction%data(k, 2) = &
+               nbi%unit(i)%beam_power_fraction%data(2, k) = &
                (nbi%unit(i)%energy%data(k) / 2.0 * rvdum2(i)) / rdum ! Fraction of power at 1/2 energy
-               nbi%unit(i)%beam_power_fraction%data(k, 3) = &
+               nbi%unit(i)%beam_power_fraction%data(3, k) = &
                (nbi%unit(i)%energy%data(k) / 3.0 * (1.0 - rvdum(i) - rvdum2(i))) / rdum ! Fraction of power at 1/3 energy
             else ! Beam is off
-               nbi%unit(i)%beam_power_fraction%data(k, 1) = 0.0
-               nbi%unit(i)%beam_power_fraction%data(k, 2) = 0.0
-               nbi%unit(i)%beam_power_fraction%data(k, 3) = 0.0
+               nbi%unit(i)%beam_power_fraction%data(1, k) = 0.0
+               nbi%unit(i)%beam_power_fraction%data(2, k) = 0.0
+               nbi%unit(i)%beam_power_fraction%data(3, k) = 0.0
             endif
          enddo
       enddo
