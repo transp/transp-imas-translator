@@ -2097,11 +2097,13 @@ program transp2imas
       call tr_getnl_r4vec('XYBSCA', rvdum, nbeam, istat)
       do i = 1, nbeam
          nbi%unit(i)%beamlets_group(1)%beamlets%positions%z(1) = 1.0e-2 * rvdum(i)
+         nbi%unit(i)%beamlets_group(1)%position%z = nbi%unit(i)%beamlets_group(1)%beamlets%positions%z(1)
       enddo
       call tr_getnl_r4vec('XLBTNA', rvdum, nbeam, istat)
       do i = 1, nbeam
          nbi%unit(i)%beamlets_group(1)%beamlets%positions%r(1) = sqrt(1.0e-4 * rvdum(i)**2 - &
          nbi%unit(i)%beamlets_group(1)%beamlets%positions%z(1)**2)
+            nbi%unit(i)%beamlets_group(1)%position%r = nbi%unit(i)%beamlets_group(1)%beamlets%positions%r(1)
       enddo
       ! Direction must be calculated from sign of plasma current?
       do i = 1, nbeam
@@ -2112,6 +2114,14 @@ program transp2imas
          nbi%unit(i)%species%a = rvdum(i)
          nbi%unit(i)%species%z_n = 1.0
       enddo
+      ! Toroidal angle in degrees (the default is zero)
+      call tr_getnl_r4vec('XBZETA', rvdum, nbeam, istat)
+      if (istat.eq.nbeam) then
+         do i = 1, nbeam ! Switch sign and convert to radians (Johan 01/25/2017)
+            nbi%unit(i)%beamlets_group(1)%beamlets%positions%phi(1) = -3.14159 * rvdum(i) / 180.
+            nbi%unit(i)%beamlets_group(1)%position%phi = nbi%unit(i)%beamlets_group(1)%beamlets%positions%phi(1)
+         enddo
+      endif
    endif
 !
 !  save ids data
