@@ -2090,6 +2090,7 @@ program transp2imas
             endif
          enddo
       enddo
+      ! Distances are converted from cm to m below
       call tr_getnl_r4vec('RTCENA', rvdum, nbeam, istat)
       do i = 1, nbeam
          nbi%unit(i)%beamlets_group(1)%beamlets%tangency_radii(1) = 1.0e-2 * rvdum(i)
@@ -2122,6 +2123,22 @@ program transp2imas
             nbi%unit(i)%beamlets_group(1)%position%phi = nbi%unit(i)%beamlets_group(1)%beamlets%positions%phi(1)
          enddo
       endif
+      call tr_getnl_r4vec('FOCLR', rvdum, nbeam, istat)
+      do i = 1, nbeam
+         nbi%unit(i)%beamlets_group(1)%focus%focal_length_horizontal = 1.0e-2 * rvdum(i)
+      enddo
+      call tr_getnl_r4vec('FOCLZ', rvdum, nbeam, istat)
+      do i = 1, nbeam
+         nbi%unit(i)%beamlets_group(1)%focus%focal_length_vertical = 1.0e-2 * rvdum(i)
+      enddo
+      call tr_getnl_r4vec('DIVR', rvdum, nbeam, istat)
+      do i = 1, nbeam
+         nbi%unit(i)%beamlets_group(1)%focus%width_min_horizontal = 1.0e-2 * rvdum(i)
+      enddo
+      call tr_getnl_r4vec('DIVZ', rvdum, nbeam, istat)
+      do i = 1, nbeam
+         nbi%unit(i)%beamlets_group(1)%focus%width_min_vertical = 1.0e-2 * rvdum(i)
+      enddo
    endif
 !
 !  save ids data
