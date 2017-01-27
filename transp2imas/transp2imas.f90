@@ -232,6 +232,7 @@ program transp2imas
          allocate(nbi%unit(k)%beamlets_group(1)%beamlets%tangency_radii(1))
          allocate(nbi%unit(k)%beamlets_group(1)%beamlets%positions%r(1))
          allocate(nbi%unit(k)%beamlets_group(1)%beamlets%positions%z(1))
+         allocate(nbi%unit(k)%beamlets_group(1)%beamlets%positions%phi(1))
          allocate(nbi%unit(k)%power%time(nsctime))
          allocate(nbi%unit(k)%power%data(nsctime))
          allocate(nbi%unit(k)%energy%time(nsctime))
@@ -2094,6 +2095,7 @@ program transp2imas
       call tr_getnl_r4vec('RTCENA', rvdum, nbeam, istat)
       do i = 1, nbeam
          nbi%unit(i)%beamlets_group(1)%beamlets%tangency_radii(1) = 1.0e-2 * rvdum(i)
+         nbi%unit(i)%beamlets_group(1)%tangency_radius = nbi%unit(i)%beamlets_group(1)%beamlets%tangency_radii(1)
       enddo
       call tr_getnl_r4vec('XYBSCA', rvdum, nbeam, istat)
       do i = 1, nbeam
@@ -2138,6 +2140,26 @@ program transp2imas
       call tr_getnl_r4vec('DIVZ', rvdum, nbeam, istat)
       do i = 1, nbeam
          nbi%unit(i)%beamlets_group(1)%focus%width_min_vertical = 1.0e-2 * rvdum(i)
+      enddo
+      call tr_getnl_r4vec('BMWIDRA', rvdum, nbeam, istat)
+      do i = 1, nbeam
+         nbi%unit(i)%beamlets_group(1)%width_horizontal = 1.0e-2 * rvdum(i)
+      enddo
+      call tr_getnl_r4vec('BMWIDZA', rvdum, nbeam, istat)
+      do i = 1, nbeam
+         nbi%unit(i)%beamlets_group(1)%width_vertical = 1.0e-2 * rvdum(i)
+      enddo
+      call tr_getnl_r4vec('XYBSCA', rvdum, nbeam, istat)
+      call tr_getnl_r4vec('XLBTNA', rvdum2, nbeam, istat)
+      do i = 1, nbeam
+         nbi%unit(i)%beamlets_group(1)%angle = asin(rvdum(i) / rvdum2(i))
+      enddo
+      do i = 1, nbeam
+         ! Set both components to 7.e-3 / (math.sqrt(2.) * 180. / math.pi)
+         nbi%unit(i)%beamlets_group(1)%divergence_component%horizontal = 8.638939046419044e-05
+         nbi%unit(i)%beamlets_group(1)%divergence_component%vertical = &
+            nbi%unit(i)%beamlets_group(1)%divergence_component%horizontal
+         nbi%unit(i)%beamlets_group(1)%divergence_component%particles_fraction = 1.0
       enddo
    endif
 !
