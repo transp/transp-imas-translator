@@ -233,6 +233,7 @@ program transp2imas
          allocate(nbi%unit(k)%beamlets_group(1)%beamlets%positions%r(1))
          allocate(nbi%unit(k)%beamlets_group(1)%beamlets%positions%z(1))
          allocate(nbi%unit(k)%beamlets_group(1)%beamlets%positions%phi(1))
+         !allocate(nbi%unit(k)%beamlets_group(1)%divergence_component)
          allocate(nbi%unit(k)%power%time(nsctime))
          allocate(nbi%unit(k)%power%data(nsctime))
          allocate(nbi%unit(k)%energy%time(nsctime))
@@ -2154,6 +2155,10 @@ program transp2imas
       do i = 1, nbeam
          nbi%unit(i)%beamlets_group(1)%angle = asin(rvdum(i) / rvdum2(i))
       enddo
+      ! I don't know how to get stuff in nbi%unit(i)%beamlets_group(1)%divergence_component allocated
+#if 0
+      write(*, *) 'Here -->', nbi%unit(1)%beamlets_group(1)%divergence_component%horizontal
+      stop
       do i = 1, nbeam
          ! Set both components to 7.e-3 / (math.sqrt(2.) * 180. / math.pi)
          nbi%unit(i)%beamlets_group(1)%divergence_component%horizontal = 8.638939046419044e-05
@@ -2161,6 +2166,7 @@ program transp2imas
             nbi%unit(i)%beamlets_group(1)%divergence_component%horizontal
          nbi%unit(i)%beamlets_group(1)%divergence_component%particles_fraction = 1.0
       enddo
+#endif
    endif
 !
 !  save ids data
