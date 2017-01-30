@@ -11,8 +11,9 @@ program imas2transp
 	implicit none
 
 	!internal variables
-	type (ids_equilibrium)   :: eq ! Declaration of the empty ids variables to be filled
-	type (ids_core_profiles) :: cp
+	type (ids_core_profiles) :: cp ! Declaration of the empty ids variables to be filled
+	type (ids_equilibrium)   :: eq
+	type (ids_nbi)           :: nbi
 	type (ids_pf_active)     :: pf
 
 	type(transp_ufiles_0d_data) :: t_uf0d
@@ -74,9 +75,10 @@ program imas2transp
 	write(*,'(a,2i3,a)') 'Open shot', shot, run, 'in MDS'
 
 	call imas_open(treename,shot,run,idx)
-	call ids_get(idx,"equilibrium",eq)
-	call ids_get(idx,"core_profiles",cp)
-	call ids_get(idx,"pf_active",pf)
+	call ids_get(idx,"core_profiles", cp)
+	call ids_get(idx,"equilibrium", eq)
+	call ids_get(idx,"nbi", nbi)
+	call ids_get(idx,"pf_active", pf)
 
 	!example test
 	!ii       = 2
