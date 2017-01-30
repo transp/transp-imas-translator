@@ -2122,7 +2122,7 @@ program transp2imas
       call tr_getnl_r4vec('XBZETA', rvdum, nbeam, istat)
       if (istat.eq.nbeam) then
          do i = 1, nbeam ! Switch sign and convert to radians (Johan 01/25/2017)
-            nbi%unit(i)%beamlets_group(1)%beamlets%positions%phi(1) = -3.14159 * rvdum(i) / 180.
+            nbi%unit(i)%beamlets_group(1)%beamlets%positions%phi(1) = -twopi * rvdum(i) / 360.
             nbi%unit(i)%beamlets_group(1)%position%phi = nbi%unit(i)%beamlets_group(1)%beamlets%positions%phi(1)
          enddo
       endif
