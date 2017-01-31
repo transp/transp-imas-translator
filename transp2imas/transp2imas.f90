@@ -2125,6 +2125,11 @@ program transp2imas
             nbi%unit(i)%beamlets_group(1)%beamlets%positions%phi(1) = -twopi * rvdum(i) / 360.
             nbi%unit(i)%beamlets_group(1)%position%phi = nbi%unit(i)%beamlets_group(1)%beamlets%positions%phi(1)
          enddo
+      else
+         do i = 1, nbeam ! Set to zero if XBZETA was not defined
+            nbi%unit(i)%beamlets_group(1)%beamlets%positions%phi(1) = 0.
+            nbi%unit(i)%beamlets_group(1)%position%phi = 0.
+         enddo
       endif
       call tr_getnl_r4vec('FOCLR', rvdum, nbeam, istat)
       do i = 1, nbeam
