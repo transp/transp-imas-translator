@@ -74,7 +74,7 @@ program transp2imas
    integer, parameter :: maxn=150
    character*20 zlbla(maxn)
    character*10 abray(4,maxn)
-   integer n_species
+   integer n, n_species
    integer itype(maxn),ifast(maxn)
    real zz(maxn),aa(maxn)
    integer izc(maxn)
@@ -86,7 +86,7 @@ program transp2imas
    integer :: n_fusi     ! no. of "fusion product" ion species.
 
    integer :: nstate     ! number of each category of impurity species
-   integer :: nion     ! number of ids ions
+   integer :: nion       ! number of ids ions
    integer :: nbeam, nbgr
    character*20 tmpstrng, int2strng
    character*20 tmps1, tmps2, tmps3, tmps4
@@ -377,7 +377,7 @@ program transp2imas
       nlist, ' of them are impurity'
 
    !
-   ! work on ion first ...
+   ! work on ions first ...
    ! the default iion is 0
    !
 
@@ -430,6 +430,35 @@ program transp2imas
                allocate(cp%profiles_1d(it)%ion(iion)%temperature(offset))
                cp%profiles_1d(it)%ion(iion)%temperature(1:offset)=&
                   prdata(1+(it-1)*offset:it*offset)
+            enddo
+         endif
+      endif
+   enddo
+
+   ! add density contribution from fast ions
+
+   do n = 1, n_species
+      if (itype(n) .ge. 4) then
+         call rplabel(abray(1,n),label,units,imulti,istype)
+         if (imulti.ne.0) call transp2imas_exit(' ?? imulti.ne.0')
+         if (istype.eq.1) then
+            !get ion density
+            write(iout,*) ' '
+            call rprofile(trim(abray(1,n)),prdata,nprtime*xsizes(istype),iret,ier)
+            if(ier.ne.0) call transp2imas_error('rprofile(abray(1,n))',ier)
+            if(iret.ne.nprtime*xsizes(istype)) &
+               call transp2imas_exit(' ?? '//abray(1,n)//' read error')
+            call transp2imas_echo(abray(1,n),prdata,xsizes(istype),nprtime)
+            offset=xsizes(istype)
+            do it = 1, nprtime
+               do i = 1, iion ! Add density contribution from fast ions of same species [ion(i)]
+                  if ((aa(n)  .eq. cp%profiles_1d(it)%ion(i)%element(1)%a) .and. &
+                      (zz(n)  .eq. cp%profiles_1d(it)%ion(i)%z_ion)        .and. &
+                      (izc(n) .eq. cp%profiles_1d(it)%ion(i)%element(1)%z_n))    &
+                         cp%profiles_1d(it)%ion(i)%density(1:offset) =           &
+                            cp%profiles_1d(it)%ion(i)%density(1:offset) +        &
+                            prdata(1+(it-1)*offset:it*offset)*1.e6
+               enddo
             enddo
          endif
       endif
@@ -2133,19 +2162,21 @@ program transp2imas
       endif
       call tr_getnl_r4vec('FOCLR', rvdum, nbeam, istat)
       do i = 1, nbeam
-         nbi%unit(i)%beamlets_group(1)%focus%focal_length_horizontal = 1.0e-2 * rvdum(i)
+         nbi%unit(i)%beamlets_group(1)%focus%focal_length_horizontal = 1.0e-2 * rvdum(1) ! Not an index bug
       enddo
       call tr_getnl_r4vec('FOCLZ', rvdum, nbeam, istat)
       do i = 1, nbeam
-         nbi%unit(i)%beamlets_group(1)%focus%focal_length_vertical = 1.0e-2 * rvdum(i)
+         nbi%unit(i)%beamlets_group(1)%focus%focal_length_vertical = 1.0e-2 * rvdum(1) ! Not an index bug
       enddo
       call tr_getnl_r4vec('DIVR', rvdum, nbeam, istat)
       do i = 1, nbeam
-         nbi%unit(i)%beamlets_group(1)%focus%width_min_horizontal = 1.0e-2 * rvdum(i)
+         !nbi%unit(i)%beamlets_group(1)%focus%width_min_horizontal = 1.0e-2 * rvdum(i)
+         nbi%unit(i)%beamlets_group(1)%focus%width_min_horizontal = 0.
       enddo
       call tr_getnl_r4vec('DIVZ', rvdum, nbeam, istat)
       do i = 1, nbeam
-         nbi%unit(i)%beamlets_group(1)%focus%width_min_vertical = 1.0e-2 * rvdum(i)
+         !nbi%unit(i)%beamlets_group(1)%focus%width_min_vertical = 1.0e-2 * rvdum(i)
+         nbi%unit(i)%beamlets_group(1)%focus%width_min_vertical = 0.
       enddo
       call tr_getnl_r4vec('BMWIDRA', rvdum, nbeam, istat)
       do i = 1, nbeam
