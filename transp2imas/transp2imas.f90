@@ -377,7 +377,7 @@ program transp2imas
       nlist, ' of them are impurity'
 
    !
-   ! work on ions first ...
+   ! work on thermal ions first ...
    ! the default iion is 0
    !
 
@@ -435,7 +435,7 @@ program transp2imas
       endif
    enddo
 
-   ! add density contribution from fast ions
+   ! now handle the fast ions
 
    do n = 1, n_species
       if (itype(n) .ge. 4) then
@@ -454,10 +454,70 @@ program transp2imas
                do i = 1, iion ! Add density contribution from fast ions of same species [ion(i)]
                   if ((aa(n)  .eq. cp%profiles_1d(it)%ion(i)%element(1)%a) .and. &
                       (zz(n)  .eq. cp%profiles_1d(it)%ion(i)%z_ion)        .and. &
-                      (izc(n) .eq. cp%profiles_1d(it)%ion(i)%element(1)%z_n))    &
-                         cp%profiles_1d(it)%ion(i)%density(1:offset) =           &
-                            cp%profiles_1d(it)%ion(i)%density(1:offset) +        &
-                            prdata(1+(it-1)*offset:it*offset)*1.e6
+                      (izc(n) .eq. cp%profiles_1d(it)%ion(i)%element(1)%z_n)) then
+                         if (associated(cp%profiles_1d(it)%ion(i)%density_fast)) then
+                            cp%profiles_1d(it)%ion(i)%density_fast(1:offset) = &
+                               cp%profiles_1d(it)%ion(i)%density_fast(1:offset) + &
+                               prdata(1+(it-1)*offset:it*offset) * 1.0e6
+                         else
+                            allocate(cp%profiles_1d(it)%ion(i)%density_fast(offset))
+                            cp%profiles_1d(it)%ion(i)%density_fast(1:offset) = &
+                               prdata(1+(it-1)*offset:it*offset) * 1.0e6
+                         endif
+                         cp%profiles_1d(it)%ion(i)%density(1:offset) =      &
+                            cp%profiles_1d(it)%ion(i)%density(1:offset) +   &
+                            prdata(1+(it-1)*offset:it*offset) * 1.0e6
+                  endif
+               enddo
+            enddo
+            !get ion perpendicular energy density
+            write(iout,*) ' '
+            call rprofile(trim(abray(3,i)),prdata,nprtime*xsizes(istype),iret,ier)
+            if(ier.ne.0) call transp2imas_error('rprofile(abray(3,i))',ier)
+            if(iret.ne.nprtime*xsizes(istype)) &
+               call transp2imas_exit(' ?? '//abray(3,i)//' read error')
+            call transp2imas_echo(abray(3,i),prdata,xsizes(istype),nprtime)
+            offset=xsizes(istype)
+            do it=1,nprtime
+               do i = 1, iion
+                  if ((aa(n)  .eq. cp%profiles_1d(it)%ion(i)%element(1)%a) .and. &
+                      (zz(n)  .eq. cp%profiles_1d(it)%ion(i)%z_ion)        .and. &
+                      (izc(n) .eq. cp%profiles_1d(it)%ion(i)%element(1)%z_n)) then
+                         if (associated(cp%profiles_1d(it)%ion(i)%pressure_fast_perpendicular)) then
+                            cp%profiles_1d(it)%ion(i)%pressure_fast_perpendicular(1:offset) = &
+                               cp%profiles_1d(it)%ion(i)%pressure_fast_perpendicular(1:offset) + &
+                               prdata(1+(it-1)*offset:it*offset) * 1.0e6 ! J/cm^3 to Pa
+                         else
+                            allocate(cp%profiles_1d(it)%ion(i)%pressure_fast_perpendicular(offset))
+                            cp%profiles_1d(it)%ion(i)%pressure_fast_perpendicular(1:offset) = &
+                               prdata(1+(it-1)*offset:it*offset) * 1.0e6 ! J/cm^3 to Pa
+                         endif
+                  endif
+               enddo
+            enddo
+            !get ion parallel energy density
+            write(iout,*) ' '
+            call rprofile(trim(abray(4,i)),prdata,nprtime*xsizes(istype),iret,ier)
+            if(ier.ne.0) call transp2imas_error('rprofile(abray(4,i))',ier)
+            if(iret.ne.nprtime*xsizes(istype)) &
+               call transp2imas_exit(' ?? '//abray(4,i)//' read error')
+            call transp2imas_echo(abray(4,i),prdata,xsizes(istype),nprtime)
+            offset=xsizes(istype)
+            do it=1,nprtime
+               do i = 1, iion
+                  if ((aa(n)  .eq. cp%profiles_1d(it)%ion(i)%element(1)%a) .and. &
+                      (zz(n)  .eq. cp%profiles_1d(it)%ion(i)%z_ion)        .and. &
+                      (izc(n) .eq. cp%profiles_1d(it)%ion(i)%element(1)%z_n)) then
+                         if (associated(cp%profiles_1d(it)%ion(i)%pressure_fast_parallel)) then
+                            cp%profiles_1d(it)%ion(i)%pressure_fast_parallel(1:offset) = &
+                               cp%profiles_1d(it)%ion(i)%pressure_fast_parallel(1:offset) + &
+                               prdata(1+(it-1)*offset:it*offset) * 1.0e6 ! J/cm^3 to Pa
+                         else
+                            allocate(cp%profiles_1d(it)%ion(i)%pressure_fast_parallel(offset))
+                            cp%profiles_1d(it)%ion(i)%pressure_fast_parallel(1:offset) = &
+                               prdata(1+(it-1)*offset:it*offset) * 1.0e6 ! J/cm^3 to Pa
+                         endif
+                  endif
                enddo
             enddo
          endif
