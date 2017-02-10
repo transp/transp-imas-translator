@@ -472,7 +472,6 @@ program transp2imas
             enddo
             !get ion perpendicular energy density
             write(iout,*) ' '
-            !write(*,*) n, abray(3,n)
             call rprofile(trim(abray(3,n)),prdata,nprtime*xsizes(istype),iret,ier)
             if(ier.ne.0) call transp2imas_error('rprofile(abray(3,n))',ier)
             if(iret.ne.nprtime*xsizes(istype)) &
@@ -493,6 +492,10 @@ program transp2imas
                             cp%profiles_1d(it)%ion(i)%pressure_fast_perpendicular(1:offset) = &
                                prdata(1+(it-1)*offset:it*offset) * 1.0e6 ! J/cm^3 to Pa
                          endif
+                     !if (it .eq. nprtime) then
+                     !   write(*,*) n, abray(3,n)
+                     !   write(*,*) i, cp%profiles_1d(it)%ion(i)%pressure_fast_perpendicular(1:offset)
+                     !endif
                   endif
                enddo
             enddo

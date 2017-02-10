@@ -17,10 +17,10 @@ print 'Number of output variables: ', len(dtstvars), '\n'
 #for var in dtstvars:
 #  print var, " ,", dtst.variables[var].dimensions, " ,", dtst.variables[var].size
 
-for var in dtstvars:
-  print dtst.variables[var]
+#for var in dtstvars:
+#  print dtst.variables[var]
 
-sys.exit(0)
+#sys.exit(0)
 
 #print 'dtst.variables[\'ZIMP\']:\n', dtst.variables['ZIMP']
 #print 'dtst.variables[\'ZIMP\'][:] =', dtst.variables['ZIMP'][:], '\n\n'
@@ -37,13 +37,13 @@ print 'dtst.variables[\'XZIMP\'][:] =', dtst.variables['XZIMP'][:], '\n\n'
 print 'dtst.variables[\'NIMP_BE_4\']:\n', dtst.variables['NIMP_BE_4']
 print 'dtst.variables[\'NIMP_BE_4\'][:] =', dtst.variables['NIMP_BE_4'][:], '\n\n'
 
-sys.exit(0)
+#sys.exit(0)
 
 #plt.plot(dtst.variables['TIME'], dtst.variables['GSERROR'])
 #plt.show()
 
-print dtst.variables['LHCUR'].shape
-print dtst.variables['LHCUR']
+print dtst.variables['UFPRP_4'].shape
+print dtst.variables['UFPRP_4']
 #print dtst.variables['CUR'][:, :]
 print dtst.variables['X'].shape
 print dtst.variables['X']
@@ -58,13 +58,13 @@ print dtst.variables['X']
 #for n in range(718):
 #  plt.plot(dtst.variables['X'][n, :], dtst.variables['LHCUR'][n, :])
 for j in range(-1, -7, -1):
-  plt.plot(dtst.variables['X'][j, :], dtst.variables['LHCUR'][j, :])
+  plt.plot(dtst.variables['X'][j, :], dtst.variables['UFPRP_4'][j, :])
 #plt.plot(dtst.variables['X'][-1, :], dtst.variables['LHCUR'][-1, :])
 
 plt.xlabel('X')
-plt.ylabel('LHCUR')
+plt.ylabel('UFPRP_4')
 plt.grid(True)
 plt.tight_layout()
-plt.savefig('lhcur-final6.png', format = 'png')
+plt.savefig('ufprp_4-final6.png', format = 'png')
 plt.show()
 plt.close()
