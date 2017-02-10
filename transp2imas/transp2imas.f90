@@ -472,11 +472,12 @@ program transp2imas
             enddo
             !get ion perpendicular energy density
             write(iout,*) ' '
-            call rprofile(trim(abray(3,i)),prdata,nprtime*xsizes(istype),iret,ier)
-            if(ier.ne.0) call transp2imas_error('rprofile(abray(3,i))',ier)
+            !write(*,*) n, abray(3,n)
+            call rprofile(trim(abray(3,n)),prdata,nprtime*xsizes(istype),iret,ier)
+            if(ier.ne.0) call transp2imas_error('rprofile(abray(3,n))',ier)
             if(iret.ne.nprtime*xsizes(istype)) &
-               call transp2imas_exit(' ?? '//abray(3,i)//' read error')
-            call transp2imas_echo(abray(3,i),prdata,xsizes(istype),nprtime)
+               call transp2imas_exit(' ?? '//abray(3,n)//' read error')
+            call transp2imas_echo(abray(3,n),prdata,xsizes(istype),nprtime)
             offset=xsizes(istype)
             do it=1,nprtime
                do i = 1, iion
@@ -497,11 +498,11 @@ program transp2imas
             enddo
             !get ion parallel energy density
             write(iout,*) ' '
-            call rprofile(trim(abray(4,i)),prdata,nprtime*xsizes(istype),iret,ier)
-            if(ier.ne.0) call transp2imas_error('rprofile(abray(4,i))',ier)
+            call rprofile(trim(abray(4,n)),prdata,nprtime*xsizes(istype),iret,ier)
+            if(ier.ne.0) call transp2imas_error('rprofile(abray(4,n))',ier)
             if(iret.ne.nprtime*xsizes(istype)) &
-               call transp2imas_exit(' ?? '//abray(4,i)//' read error')
-            call transp2imas_echo(abray(4,i),prdata,xsizes(istype),nprtime)
+               call transp2imas_exit(' ?? '//abray(4,n)//' read error')
+            call transp2imas_echo(abray(4,n),prdata,xsizes(istype),nprtime)
             offset=xsizes(istype)
             do it=1,nprtime
                do i = 1, iion
