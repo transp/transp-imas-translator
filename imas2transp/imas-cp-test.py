@@ -1,7 +1,8 @@
 import imas
 
-shot = 386; run = 1
+#shot = 386; run = 1
 #shot = 120; run = 28
+shot = 385; run = 30
 itm = imas.ids(shot, run)
 itm.open()
 
@@ -51,15 +52,18 @@ print '\nMembers of container object core_profiles.profiles_1d[-1].electrons are
 print 'core_profiles%profiles_1d[-1]%electrons%temperature =', ids.profiles_1d[-1].electrons.temperature
 print 'core_profiles%profiles_1d[-1]%electrons%density =', ids.profiles_1d[-1].electrons.density
 
-print '\nMembers of container object core_profiles.profiles_1d[-1].ion[0] are:\n', dir(ids.profiles_1d[-1].ion[0])
-print 'core_profiles%profiles_1d[-1]%ion[0]%z_ion =', ids.profiles_1d[-1].ion[0].z_ion
-print 'core_profiles%profiles_1d[-1]%ion[0]%label =', ids.profiles_1d[-1].ion[0].label
-print 'core_profiles%profiles_1d[-1]%ion[0]%temperature =', ids.profiles_1d[-1].ion[0].temperature
-print 'core_profiles%profiles_1d[-1]%ion[0]%density =', ids.profiles_1d[-1].ion[0].density
+print '\nMembers of container object core_profiles.profiles_1d[-1].ion[1] are:\n', dir(ids.profiles_1d[-1].ion[1])
+print 'core_profiles%profiles_1d[-1]%ion[1]%z_ion =', ids.profiles_1d[-1].ion[1].z_ion
+print 'core_profiles%profiles_1d[-1]%ion[1]%label =', ids.profiles_1d[-1].ion[1].label
+print 'core_profiles%profiles_1d[-1]%ion[1]%temperature =', ids.profiles_1d[-1].ion[1].temperature
+print 'core_profiles%profiles_1d[-1]%ion[1]%density =', ids.profiles_1d[-1].ion[1].density
+print 'core_profiles%profiles_1d[-1]%ion[2]%density_fast =', ids.profiles_1d[-1].ion[2].density_fast
+print 'core_profiles%profiles_1d[-1]%ion[2]%pressure_fast_perpendicular =', ids.profiles_1d[-1].ion[2].pressure_fast_perpendicular
+print 'core_profiles%profiles_1d[-1]%ion[2]%pressure_fast_parallel =', ids.profiles_1d[-1].ion[2].pressure_fast_parallel
 
-print '\nMembers of container object core_profiles.profiles_1d[-1].ion[0].element[0] are:\n', dir(ids.profiles_1d[-1].ion[0].element[0])
-print 'core_profiles%profiles_1d[-1]%ion[0]%element[0]%a =', ids.profiles_1d[-1].ion[0].element[0].a
-print 'core_profiles%profiles_1d[-1]%ion[0]%element[0]%z_n =', ids.profiles_1d[-1].ion[0].element[0].z_n
+print '\nMembers of container object core_profiles.profiles_1d[-1].ion[1].element[0] are:\n', dir(ids.profiles_1d[-1].ion[1].element[0])
+print 'core_profiles%profiles_1d[-1]%ion[1]%element[0]%a =', ids.profiles_1d[-1].ion[1].element[0].a
+print 'core_profiles%profiles_1d[-1]%ion[1]%element[0]%z_n =', ids.profiles_1d[-1].ion[1].element[0].z_n
 
 print '\nMembers of container object core_profiles.profiles_1d[-1].ion[4].state[0] are:\n', dir(ids.profiles_1d[-1].ion[4].state[0])
 print 'core_profiles%profiles_1d[-1]%ion[4]%state[0]%label =', ids.profiles_1d[-1].ion[4].state[0].label
