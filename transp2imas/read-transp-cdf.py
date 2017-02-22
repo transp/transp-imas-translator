@@ -28,14 +28,16 @@ print 'Number of output variables: ', len(dtstvars), '\n'
 #print 'dtst.variables[\'CZIMP\']:\n', dtst.variables['CZIMP']
 #print 'dtst.variables[\'CZIMP\'][:] =', dtst.variables['CZIMP'][:], '\n\n'
 
-print 'dtst.variables[\'AIMP\']:\n', dtst.variables['AIMP']
-print 'dtst.variables[\'AIMP\'][:] =', dtst.variables['AIMP'][:], '\n\n'
+print 'dtst.variables[\'X\']:\n', dtst.variables['X']
+print 'dtst.variables[\'X\'][0, :] =', dtst.variables['X'][0, :], '\n\n'
 
-print 'dtst.variables[\'XZIMP\']:\n', dtst.variables['XZIMP']
-print 'dtst.variables[\'XZIMP\'][:] =', dtst.variables['XZIMP'][:], '\n\n'
+print 'dtst.variables[\'XB\']:\n', dtst.variables['XB']
+print 'dtst.variables[\'XB\'][0, :] =', dtst.variables['XB'][0, :], '\n\n'
 
-print 'dtst.variables[\'NIMP_BE_4\']:\n', dtst.variables['NIMP_BE_4']
-print 'dtst.variables[\'NIMP_BE_4\'][:] =', dtst.variables['NIMP_BE_4'][:], '\n\n'
+sys.exit(0)
+
+#print 'dtst.variables[\'NIMP_BE_4\']:\n', dtst.variables['NIMP_BE_4']
+#print 'dtst.variables[\'NIMP_BE_4\'][:] =', dtst.variables['NIMP_BE_4'][:], '\n\n'
 
 #sys.exit(0)
 

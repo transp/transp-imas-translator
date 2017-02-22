@@ -1129,13 +1129,11 @@ program transp2imas
 ! rprofile get profile data f(X,t)
 !
 
-   ! fill ids_core_profiels
+   ! fill core_profiles ids
 
    ! first define the profile X coordinate
-   ! X zone center
-   ! XB zone boundary
-   ! right now X is used.
-   ! X=0 is magnetic axis; X=1 is core plasma boundary
+   ! X (formerly called XI) zone center
+   ! XB zone boundary (excluding magnetic axis)
 
    write(iout,*) ' '
    call rprofile('X',prdata,nprtime*xsizes(1),iret,ier)
@@ -1145,16 +1143,11 @@ program transp2imas
    call transp2imas_echo('XI',prdata,xsizes(1),nprtime)
 
    offset=xsizes(1)
-   do it=1,nprtime
-      allocate(cp%profiles_1d(it)%grid%rho_tor_norm(offset))
-      cp%profiles_1d(it)%grid%rho_tor_norm(1:offset)=&
-         prdata(1+(it-1)*offset:it*offset)
-   enddo
-
    allocate(XI(offset,nprtime))
    do it=1,nprtime
-      XI(1:offset,it)=prdata(1+(it-1)*offset:it*offset) * &
-         prdata(1+(it-1)*offset:it*offset)
+      XI(1:offset,it) = prdata(1+(it-1)*offset:it*offset)
+      allocate(cp%profiles_1d(it)%grid%rho_tor_norm(offset))
+      cp%profiles_1d(it)%grid%rho_tor_norm(1:offset) = XI(1:offset,it) * XI(1:offset,it)
    enddo
 
    write(iout,*) ' '
