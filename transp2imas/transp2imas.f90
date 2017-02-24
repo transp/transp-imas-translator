@@ -1851,9 +1851,9 @@ program transp2imas
       ! Multiply to get F...
       inbuf(:) = prdata(1+(it-1)*offset:it*offset) * bzxr(it) * 1.0e-2 ! T * cm -> T * m
       allocate(eq%time_slice(it)%profiles_1d%f(offset))
+      eq%time_slice(it)%profiles_1d%f(1:offset) = inbuf(:)
       
       ! Calculate dF/dXB and put result in outbuf.
-      eq%time_slice(it)%profiles_1d%f(1:offset) = inbuf(:)
       xbbuf(:) = XB(:, it)
 
       call ezspline_init(spln1, offset, (/0, 0/), ier)
@@ -1873,9 +1873,9 @@ program transp2imas
       call ezspline_derivative(spln1, 1, offset, xbbuf, outbuf, ier)
       call ezspline_error(ier)
 
-      ! dF/dPLFLX = dF/dXB * dXB/dPLFLX
+      ! F' = dF/dPLFLX = dF/dXB * dXB/dPLFLX => FF' = F * dF/dXB * dXB/dPLFLX
       allocate(eq%time_slice(it)%profiles_1d%f_df_dpsi(offset))
-      eq%time_slice(it)%profiles_1d%f_df_dpsi(1:offset) = outbuf(:) * dXBdPLFLX(:, it)
+      eq%time_slice(it)%profiles_1d%f_df_dpsi(1:offset) = inbuf(:) * outbuf(:) * dXBdPLFLX(:, it)
 
       call ezspline_free(spln1, ier)
       call ezspline_error(ier)
