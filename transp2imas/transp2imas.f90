@@ -5,10 +5,6 @@ program transp2imas
 !  to run:
 !     ./transp2imas <runid>
 !
-!  uses
-!
-!  this program makes calls documented in the trread.hlp
-!  uses the trread library to read transp data
 !---------------------------------------------------------------------
 
    use transp2imas_module
@@ -118,8 +114,8 @@ program transp2imas
    integer :: iion=0, iion_start
    integer :: iprofile, nprofile=1
    real, dimension(:), allocatable ::  bzxr
-   real, dimension(:,:), allocatable ::  XI, XB
-   real, dimension(:,:), allocatable ::  PLFLX, dXBdPLFLX
+   real, dimension(:, :), allocatable ::  XI, XB
+   real, dimension(:, :), allocatable ::  PLFLX, dXBdPLFLX
    real*8, dimension(:), allocatable ::  xibuf, xbbuf, inbuf, outbuf
 
    type(ezspline1_r8) :: spln1
@@ -165,7 +161,7 @@ program transp2imas
    !shot =120
    !run = 28
    refshot = 100
-   refrun =000
+   refrun = 000
    treename = 'ids'
    ! get ids shot & run number
    call getids_shotid(rpfile,shot,run)
@@ -269,7 +265,7 @@ program transp2imas
       if(aname.eq.' ') aname='scalar'
       write(iout,1001) ij,aname,irank,(idims(j),j=1,4)
 1001  format(' istype=',i4,1x,a,1x,' rank=',i1,'   dims=',4(1x,i4))
-      if(ij.gt.0) xsizes(ij)=idims(1)
+      if (ij.gt.0) xsizes(ij) = idims(1)
 
       if(trim(aname).eq.'X') XItype=ij
       if(trim(aname).eq.'XB') XBtype=ij
@@ -1040,7 +1036,7 @@ program transp2imas
 
    eq%time_slice(:)%global_quantities%q_axis = scdata(:)
 
-   !? which on to choose
+   !? which one to choose
    !BPDM                 MAGNETICS EST. BETA(DIA)
    !BPDC                 KINETIC BETA(DIA)
    !BETAE                ELECTRON BETA (POLOIDAL)
