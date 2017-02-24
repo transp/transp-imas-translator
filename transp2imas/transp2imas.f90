@@ -119,10 +119,8 @@ program transp2imas
    integer :: iprofile, nprofile=1
    real, dimension(:), allocatable ::  bzxr
    real, dimension(:,:), allocatable ::  XI, XB
-   real, dimension(:,:), allocatable ::  PLFLX, dPLFLXdXI
-   real, dimension(:,:), allocatable ::  GFUN, dGFUNdXI
-   real, dimension(:,:), allocatable ::  PPLAS, dPPLASdXI
-   real*8, dimension(:), allocatable ::  inbuf, outbuf, doutbuf, xibuf, xbbuf
+   real, dimension(:,:), allocatable ::  PLFLX, dXBdPLFLX
+   real*8, dimension(:), allocatable ::  xibuf, xbbuf, inbuf, outbuf
 
    type(ezspline1_r8) :: spln1
 
@@ -279,8 +277,8 @@ program transp2imas
    enddo
    !write(iout,*) 'cj2: ', XItype, XBtype, LIMtype
 
-   offset=xsizes(2); allocate( xbbuf(offset), inbuf(offset) )
-   offset=xsizes(1); allocate( xibuf(offset), outbuf(offset), doutbuf(offset) )
+   offset=xsizes(2); allocate(xbbuf(offset), inbuf(offset))
+   offset=xsizes(1); allocate(xibuf(offset), outbuf(offset))
 
    write(iout,*) ' '
 
@@ -1349,17 +1347,14 @@ program transp2imas
       call transp2imas_exit(' ?? PLFLX2PI read error')
    call transp2imas_echo('PLFLX2PI',prdata,xsizes(2),nprtime)
 
-   ! function of XB coordinate
-   ! ITER requires poloidal flux decreases from magnetic axis to
-   ! bdy
-   offset=xsizes(2)
-   do it=1,nprtime
+   ! Interpolate PLFLX2PI from cell boundary (XB) to cell center (X)
+   offset = xsizes(2)
+   do it = 1, nprtime
       allocate(cp%profiles_1d(it)%grid%psi(offset))
-      cp%profiles_1d(it)%grid%psi(1)= 0.
-      do ir=2,offset
-         ij=ir+(it-1)*offset
-         cp%profiles_1d(it)%grid%psi(ir)=&
-            0.5*( prdata(ij-1)+prdata(ij) )
+      cp%profiles_1d(it)%grid%psi(1) = 0.0
+      do ir = 2, offset
+         ij = ir+(it-1)*offset
+         cp%profiles_1d(it)%grid%psi(ir) = 0.5 * (prdata(ij-1) + prdata(ij))
       enddo
    enddo
 
@@ -1370,14 +1365,14 @@ program transp2imas
       call transp2imas_exit(' ?? TRFLX read error')
    call transp2imas_echo('TRFLX',prdata,xsizes(2),nprtime)
 
-   offset=xsizes(2)
-   do it=1,nprtime
+   ! Interpolate TRFLX from cell boundary (XB) to cell center (X)
+   offset = xsizes(2)
+   do it = 1, nprtime
       allocate(cp%profiles_1d(it)%grid%rho_tor(offset))
-      cp%profiles_1d(it)%grid%rho_tor(1)= 0.
-      do ir=2,offset
-         ij=ir+(it-1)*offset
-         cp%profiles_1d(it)%grid%rho_tor(ir)= &
-            .5 * ( prdata(ij-1)+prdata(ij) )
+      cp%profiles_1d(it)%grid%rho_tor(1) = 0.0
+      do ir = 2, offset
+         ij = ir+(it-1)*offset
+         cp%profiles_1d(it)%grid%rho_tor(ir) = 0.5 * (prdata(ij-1) + prdata(ij))
       enddo
    enddo
 
@@ -1460,65 +1455,50 @@ program transp2imas
       call transp2imas_exit(' ?? PLFLX2PI read error')
    call transp2imas_echo('PLFLX2PI',prdata,xsizes(2),nprtime)
 
-   ! iter needs poloidal flux decrease from R0 to edge
-   ! to be used as ids_eq coordinate
    offset=xsizes(1)
-   do it=1,nprtime
+   ! Calculate dXB/dPLFLX, it will be used later to calculate p' and FF'
+   allocate(PLFLX(offset, nprtime), dXBdPLFLX(offset, nprtime))
+   do it = 1, nprtime
+      PLFLX(:, it) = prdata(1+(it-1)*offset:it*offset)
       allocate(eq%time_slice(it)%profiles_1d%psi(offset))
-      !eq%time_slice(it)%profiles_1d%psi(1)= - 0.
-      !do ir=2,offset
-      !ij=ir+(it-1)*offset
-      !eq%time_slice(it)%profiles_1d%psi(ir)= &
-      !- .5*( prdata(ij-1)+prdata(ij) )
-      !enddo
-   enddo
+      eq%time_slice(it)%profiles_1d%psi(1:offset) = PLFLX(:, it)
+      ! Make psi a STRICTLY monotonic profile
+      do i = 1, offset
+         eq%time_slice(it)%profiles_1d%psi(i) = &
+         eq%time_slice(it)%profiles_1d%psi(i) * (1.0 + 1.0e-6 * (i - offset))
+      enddo
 
-   ! changed on 7/30/2015 to use ezspline interp
-   ! in eqboxlib/eqbox_interp.f90
-
-   !interpolate poloidal flux inbuf from XB coordinate onto XI
-   !coordinate, PLFLX, and find its derivative dPLFLXdXI on XI.
-   !save dPLFLXdXI (dPSI/dXI) for later use in calculate ffprinm
-   !and pprime
-   allocate(PLFLX(offset,nprtime), dPLFLXdXI(offset,nprtime))
-   do it=1,nprtime
-      inbuf(:)=prdata(1+(it-1)*offset:it*offset)
-      xbbuf(:)=XB(:,it)
-      xibuf(:)=XI(:,it)
-      !call eqbox_interp(xbbuf, inbuf, xibuf, ozero, ideriv, outbuf, ier, doutbuf)
+      xbbuf(:) = PLFLX(:, it)
+      inbuf(:) = XB(:, it)
 
       call ezspline_init(spln1, offset, (/0, 0/), ier)
       call ezspline_error(ier)
 
-      spln1%bcval1min = 0.
-      spln1%isHermite = 1
+      !spln1%bcval1min = 0.
+      !spln1%isHermite = 1
       spln1%x1 = xbbuf(1:offset)
 
       call ezspline_setup(spln1, inbuf(1:offset), ier)
       call ezspline_error(ier)
 
-      call ezspline_interp(spln1, offset, xibuf, outbuf, ier)
+      ! This call might be needed to init derivative calculation below?
+      call ezspline_interp(spln1, offset, xbbuf, outbuf, ier)
       call ezspline_error(ier)
 
-      call ezspline_derivative(spln1, 1, offset, xibuf, doutbuf, ier)
+      call ezspline_derivative(spln1, 1, offset, xbbuf, outbuf, ier)
       call ezspline_error(ier)
+
+      dXBdPLFLX(:, it) = outbuf(:)
 
       call ezspline_free(spln1, ier)
       call ezspline_error(ier)
 
-      PLFLX(:,it)=outbuf(:)
-      dPLFLXdXI(:,it)=doutbuf(:)
-      eq%time_slice(it)%profiles_1d%psi(1:offset)=outbuf(:)
-      ! Make psi a STRICTLY monotonic profile
-      do i = 1, offset
-         eq%time_slice(it)%profiles_1d%psi(i) = eq%time_slice(it)%profiles_1d%psi(i) * (1.0 + 1.0e-6 * (i - offset))
-      enddo
-      write(312,*) 'poloidal flux at', it
-      write(312,*) 'size', size(inbuf), size(outbuf), size(xibuf), size(xbbuf)
-      do ir=1,offset
-         write(312,*) xbbuf(ir), xibuf(ir), inbuf(ir), outbuf(ir), doutbuf(ir)
-         !write(312,*) PLFLX(ir,it), dPLFLXdXI(ir,it)
-      enddo
+      !write(312,*) 'poloidal flux at', it
+      !write(312,*) 'size', size(inbuf), size(outbuf), size(xibuf), size(xbbuf)
+      !do ir=1,offset
+      !   write(312,*) xbbuf(ir), xibuf(ir), inbuf(ir), outbuf(ir), outbuf2(ir)
+         !write(312,*) PLFLX(ir,it), dXBdPLFLX(ir,it)
+      !enddo
    enddo
 
    write(iout,*) ' '
@@ -1528,15 +1508,10 @@ program transp2imas
       call transp2imas_exit(' ?? TRFLX read error')
    call transp2imas_echo('TRFLX',prdata,xsizes(2),nprtime)
 
-   offset=xsizes(1)
-   do it=1,nprtime
+   offset = xsizes(1)
+   do it = 1, nprtime
       allocate(eq%time_slice(it)%profiles_1d%phi(offset))
-      eq%time_slice(it)%profiles_1d%phi(1)= 0.
-      do ir=2,offset
-         ij=ir+(it-1)*offset
-         eq%time_slice(it)%profiles_1d%phi(ir)= &
-            .5*( prdata(ij-1)+prdata(ij) )
-      enddo
+      eq%time_slice(it)%profiles_1d%phi(1:offset) = prdata(1+(it-1)*offset:it*offset)
    enddo
 
    write(iout,*) ' '
@@ -1546,52 +1521,62 @@ program transp2imas
       call transp2imas_exit(' ?? PPLAS read error')
    call transp2imas_echo('PPLAS',prdata,xsizes(1),nprtime)
 
-   offset=xsizes(1)
-   do it=1,nprtime
-      allocate(eq%time_slice(it)%profiles_1d%pressure(offset))
-      allocate(eq%time_slice(it)%profiles_1d%dpressure_dpsi(offset))
-      eq%time_slice(it)%profiles_1d%pressure(1:offset)= &
-         prdata(1+(it-1)*offset:it*offset)
-   enddo
+   offset = xsizes(1)
 
-   allocate(PPLAS(offset,nprtime), dPPLASdXI(offset,nprtime))
-   do it=1,nprtime
-      inbuf(:)=prdata(1+(it-1)*offset:it*offset)
-      xbbuf(:)=XI(:,it)
-      xibuf(:)=XI(:,it)
-      !call eqbox_interp(XI(:,it), inbuf, XI(:,it), 0, 0, &
-      !PPLAS(:,it), ier, dPPLASdXI(:,it))
+   ! Calculate p and p' = dp/dPLFLX on cell boundaries
+   do it = 1, nprtime
+      inbuf(:) = prdata(1+(it-1)*offset:it*offset)
+      xbbuf(:) = XB(:, it)
+      xibuf(:) = XI(:, it)
 
       call ezspline_init(spln1, offset, (/0, 0/), ier)
       call ezspline_error(ier)
 
-      spln1%bcval1min = 0.
-      spln1%isHermite = 1
+      !spln1%bcval1min = 0.
+      !spln1%isHermite = 1
+      spln1%x1 = xibuf(1:offset)
+
+      call ezspline_setup(spln1, inbuf(1:offset), ier)
+      call ezspline_error(ier)
+
+      call ezspline_interp(spln1, offset, xbbuf, outbuf, ier)
+      call ezspline_error(ier)
+      ! outbuf now has p on cell boundaries
+      allocate(eq%time_slice(it)%profiles_1d%pressure(offset))
+      eq%time_slice(it)%profiles_1d%pressure(1:offset) = outbuf(1:offset)
+      inbuf(:) = outbuf(:)
+
+      call ezspline_free(spln1, ier)
+      call ezspline_error(ier)
+
+      ! First step: calculate dp/dXB
+      call ezspline_init(spln1, offset, (/0, 0/), ier)
+      call ezspline_error(ier)
+
       spln1%x1 = xbbuf(1:offset)
 
       call ezspline_setup(spln1, inbuf(1:offset), ier)
       call ezspline_error(ier)
 
-      call ezspline_interp(spln1, offset, xibuf, outbuf, ier)
+      ! this call only made to init derivate calculation below (might be unnecessary)
+      call ezspline_interp(spln1, offset, xbbuf, outbuf, ier)
       call ezspline_error(ier)
 
-      call ezspline_derivative(spln1, 1, offset, xibuf, doutbuf, ier)
+      call ezspline_derivative(spln1, 1, offset, xbbuf, outbuf, ier)
       call ezspline_error(ier)
+
+      ! dp/dPLFLX = dp/dXB * dXB/dPLFLX
+      allocate(eq%time_slice(it)%profiles_1d%dpressure_dpsi(offset))
+      eq%time_slice(it)%profiles_1d%dpressure_dpsi(1:offset) = outbuf(:) * dXBdPLFLX(:, it)
 
       call ezspline_free(spln1, ier)
       call ezspline_error(ier)
 
-      PPLAS(:,it)=outbuf(:)
-      dPPLASdXI(:,it)=doutbuf(:)
-
-      !dpressure/dpsi = dPPLAS/dXI / dPLFLX/dXI
-      eq%time_slice(it)%profiles_1d%dpressure_dpsi(1:offset)=&
-         dPPLASdXI(:,it) / dPLFLXdXI(:,it)
-      write(313,*) 'pressure flux at', it
-      write(313,*) 'size', size(inbuf), size(outbuf), size(xibuf), size(xbbuf)
-      do ir=1,offset
-         write(313,*) xbbuf(ir), xibuf(ir), inbuf(ir), outbuf(ir), doutbuf(ir)
-      enddo
+      !write(313,*) 'pressure flux at', it
+      !write(313,*) 'size', size(inbuf), size(outbuf), size(xibuf), size(xbbuf)
+      !do ir=1,offset
+      !   write(313,*) xbbuf(ir), xibuf(ir), inbuf(ir), outbuf(ir), outbuf2(ir)
+      !enddo
    enddo
 
    write(iout,*) ' '
@@ -1852,73 +1837,54 @@ program transp2imas
    enddo
 
    write(iout,*) ' '
-   !? how to calculate ffprime, pprime
+   ! calculate Fprime on cell boundaries
+   ! GFUN(XB) is para/dia-magnetic factor, already on cell boundaries
    call rprofile('GFUN',prdata,nprtime*xsizes(2),iret,ier)
    if(ier.ne.0) call transp2imas_error('rprofile(GFUN)',ier)
    if(iret.ne.nprtime*xsizes(2)) &
       call transp2imas_exit(' ?? GFUN read error')
    call transp2imas_echo('GFUN',prdata,xsizes(2),nprtime)
 
-   offset=xsizes(2)
-   do it=1,nprtime
+   offset = xsizes(2)
+   ! Calculate dF/dPLFLX
+   do it = 1, nprtime
+      ! Multiply to get F...
+      inbuf(:) = prdata(1+(it-1)*offset:it*offset) * bzxr(it) * 1.0e-2 ! T * cm -> T * m
       allocate(eq%time_slice(it)%profiles_1d%f(offset))
-      allocate(eq%time_slice(it)%profiles_1d%f_df_dpsi(offset))
-      !eq%time_slice(it)%profiles_1d%f(1)=prdata(1+(it-1)*offset)
-      !do ir=2,offset
-      !ij=ir+(it-1)*offset
-      !eq%time_slice(it)%profiles_1d%f(ir)= &
-      !.5*( prdata(ij-1)+prdata(ij) )
-      !enddo
-      !eq%time_slice(it)%profiles_1d%f(:)= &
-
-      !!g=RB_phi
-      !eq%time_slice(it)%profiles_1d%f(:)* bzxr(it)
-   enddo
-
-   ! changed on 7/30/2015 to use ezspline intep
-   ! in eqboxlib/eqbox_interp.f90
-
-   allocate(GFUN(offset,nprtime), dGFUNdXI(offset,nprtime))
-   do it=1,nprtime
-      !g=RB_phi
-      inbuf(:)=prdata(1+(it-1)*offset:it*offset) * bzxr(it)
-      xbbuf(:)=XB(:,it)
-      xibuf(:)=XI(:,it)
-      !call eqbox_interp(XB(:,it), inbuf, XI(:,it), 0, 0, &
-      !GFUN(:,it), ier, dGFUNdXI(:,it))
+      
+      ! Calculate dF/dXB and put result in outbuf.
+      eq%time_slice(it)%profiles_1d%f(1:offset) = inbuf(:)
+      xbbuf(:) = XB(:, it)
 
       call ezspline_init(spln1, offset, (/0, 0/), ier)
       call ezspline_error(ier)
 
-      spln1%bcval1min = 0.
-      spln1%isHermite = 1
+      !spln1%bcval1min = 0.
+      !spln1%isHermite = 1
       spln1%x1 = xbbuf(1:offset)
 
       call ezspline_setup(spln1, inbuf(1:offset), ier)
       call ezspline_error(ier)
 
-      call ezspline_interp(spln1, offset, xibuf, outbuf, ier)
+      ! this call only made to init derivate calculation below (outbuf should be identical to inbuf)
+      call ezspline_interp(spln1, offset, xbbuf, outbuf, ier)
       call ezspline_error(ier)
 
-      call ezspline_derivative(spln1, 1, offset, xibuf, doutbuf, ier)
+      call ezspline_derivative(spln1, 1, offset, xbbuf, outbuf, ier)
       call ezspline_error(ier)
+
+      ! dF/dPLFLX = dF/dXB * dXB/dPLFLX
+      allocate(eq%time_slice(it)%profiles_1d%f_df_dpsi(offset))
+      eq%time_slice(it)%profiles_1d%f_df_dpsi(1:offset) = outbuf(:) * dXBdPLFLX(:, it)
 
       call ezspline_free(spln1, ier)
       call ezspline_error(ier)
 
-      GFUN(:,it)=outbuf(:)
-      dGFUNdXI(:,it)=doutbuf(:)
-      eq%time_slice(it)%profiles_1d%f(1:offset)=GFUN(:,it)
-
-      !dGFUN/dpsi = dGFUN/dXI / dPLFLX/dXI
-      eq%time_slice(it)%profiles_1d%f_df_dpsi(1:offset)=&
-         GFUN(:,it) * (dGFUNdXI(:,it) / dPLFLXdXI(:,it))
-
-      write(314,*) 'g func at', it
-      write(314,*) 'size', size(inbuf), size(outbuf), size(xibuf), size(xbbuf)
-      do ir=1,offset
-         write(314,*) xbbuf(ir), xibuf(ir), inbuf(ir), outbuf(ir), doutbuf(ir)
-      enddo
+      !write(314,*) 'F func at', it
+      !write(314,*) 'size', size(inbuf), size(outbuf), size(xbbuf)
+      !do ir=1,offset
+      !   write(314,*) xbbuf(ir), inbuf(ir), outbuf(ir), outbuf2(ir)
+      !enddo
    enddo
 ! TRANSP does not have data on LCFS. Need to think about how to provide it. Johan 12/21/16
 #if 0
@@ -2291,17 +2257,16 @@ program transp2imas
    deallocate(mgdata)
    deallocate(mgslice)
 !
-   if(allocated(bzxr)) deallocate(bzxr)
-   if(allocated(PLFLX)) deallocate(PLFLX)
-   if(allocated(dPLFLXdXI)) deallocate(dPLFLXdXI)
-   if(allocated(XI)) deallocate(XI)
-   if(allocated(XB)) deallocate(XB)
-   if(allocated(inbuf)) deallocate(inbuf)
-!      if(allocated(GFUN)) deallocate(GFUN)
-   if(allocated(dGFUNdXI)) deallocate(dGFUNdXI)
-!      if(allocated(PPLAS)) deallocate(PPLAS)
-   if(allocated(dPPLASdXI)) deallocate(dPPLASdXI)
-!
+   if (allocated(bzxr)) deallocate(bzxr)
+   if (allocated(PLFLX)) deallocate(PLFLX)
+   if (allocated(dXBdPLFLX)) deallocate(dXBdPLFLX)
+   if (allocated(XI)) deallocate(XI)
+   if (allocated(XB)) deallocate(XB)
+   if (allocated(xibuf)) deallocate(xibuf)
+   if (allocated(xbbuf)) deallocate(xbbuf)
+   if (allocated(inbuf)) deallocate(inbuf)
+   if (allocated(outbuf)) deallocate(outbuf)
+
    stop
 end
 
