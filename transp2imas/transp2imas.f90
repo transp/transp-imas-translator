@@ -1083,7 +1083,6 @@ program transp2imas
 !         call transp2imas_exit(' ?? X read error')
 !      call transp2imas_echo('X',scdata,1,nsctime)
 
-
    ! fill nbi IDS
    if (nbeam.gt.0) then
 
@@ -1154,7 +1153,7 @@ program transp2imas
    offset=xsizes(2)
    allocate(XB(offset,nprtime))
    do it=1,nprtime
-      XB(1:offset,it)=prdata(1+(it-1)*offset:it*offset)
+      XB(1:offset,it) = prdata(1+(it-1)*offset:it*offset)
    enddo
 
    write(iout,*) ' '
@@ -1262,15 +1261,19 @@ program transp2imas
       call transp2imas_exit(' ?? Q read error')
    call transp2imas_echo('Q',prdata,xsizes(1),nprtime)
 
-   !Q(XB)  == > Q(X)
-   offset=xsizes(2)
-   do it=1,nprtime
+   ! Use linear interpolation to transform Q(XB) -> Q(X),
+   ! from zone boundary (XB) to zone center (X)
+   offset = xsizes(1)
+   do it = 1, nprtime
       allocate(cp%profiles_1d(it)%q(offset))
-      cp%profiles_1d(it)%q(1)= eq%time_slice(it)%global_quantities%q_axis
-      do ir=2,offset
-         ij=ir+(it-1)*offset
-         cp%profiles_1d(it)%q(ir)= .5 * ( prdata(ij-1)+prdata(ij) )
+      cp%profiles_1d(it)%q(1:offset) = &
+         0.5 * prdata(1+(it-1)*offset:it*offset)
+      do ir = offset, 2, -1
+         cp%profiles_1d(it)%q(ir) = cp%profiles_1d(it)%q(ir) + &
+         0.5 * cp%profiles_1d(it)%q(ir-1)
       enddo
+      cp%profiles_1d(it)%q(1) = cp%profiles_1d(it)%q(1) + &
+      0.5 * eq%time_slice(it)%global_quantities%q_axis
    enddo
 
    write(iout,*) ' '
@@ -1343,16 +1346,21 @@ program transp2imas
       call transp2imas_exit(' ?? PLFLX2PI read error')
    call transp2imas_echo('PLFLX2PI',prdata,xsizes(2),nprtime)
 
-   ! Interpolate PLFLX2PI from cell boundary (XB) to cell center (X)
-   offset = xsizes(2)
+   ! Use linear interpolation to transform PLFLX2PI(XB) -> PLFLX2PI(X),
+   ! from zone boundary (XB) to zone center (X)
+   offset = xsizes(1)
    do it = 1, nprtime
       allocate(cp%profiles_1d(it)%grid%psi(offset))
-      cp%profiles_1d(it)%grid%psi(1) = 0.0
-      do ir = 2, offset
-         ij = ir+(it-1)*offset
-         cp%profiles_1d(it)%grid%psi(ir) = 0.5 * (prdata(ij-1) + prdata(ij))
+      cp%profiles_1d(it)%grid%psi(1:offset) = &
+         0.5 * prdata(1+(it-1)*offset:it*offset)
+      do ir = offset, 2, -1
+         cp%profiles_1d(it)%grid%psi(ir) = cp%profiles_1d(it)%grid%psi(ir) + &
+         0.5 * cp%profiles_1d(it)%grid%psi(ir-1)
       enddo
+      cp%profiles_1d(it)%grid%psi(1) = cp%profiles_1d(it)%grid%psi(1) + &
+      0.5 * eq%time_slice(it)%global_quantities%psi_axis
    enddo
+   ! xxx
 
    write(iout,*) ' '
    call rprofile('TRFLX',prdata,nprtime*xsizes(2),iret,ier)
@@ -1361,7 +1369,7 @@ program transp2imas
       call transp2imas_exit(' ?? TRFLX read error')
    call transp2imas_echo('TRFLX',prdata,xsizes(2),nprtime)
 
-   ! Interpolate TRFLX from cell boundary (XB) to cell center (X)
+   ! Interpolate TRFLX from zone boundary (XB) to zone center (X)
    offset = xsizes(2)
    do it = 1, nprtime
       allocate(cp%profiles_1d(it)%grid%rho_tor(offset))
@@ -1519,7 +1527,7 @@ program transp2imas
 
    offset = xsizes(1)
 
-   ! Calculate p and p' = dp/dPLFLX on cell boundaries
+   ! Calculate p and p' = dp/dPLFLX on zone boundaries
    do it = 1, nprtime
       inbuf(:) = prdata(1+(it-1)*offset:it*offset)
       xbbuf(:) = XB(:, it)
@@ -1537,7 +1545,7 @@ program transp2imas
 
       call ezspline_interp(spln1, offset, xbbuf, outbuf, ier)
       call ezspline_error(ier)
-      ! outbuf now has p on cell boundaries
+      ! outbuf now has p on zone boundaries
       allocate(eq%time_slice(it)%profiles_1d%pressure(offset))
       eq%time_slice(it)%profiles_1d%pressure(1:offset) = outbuf(1:offset)
       inbuf(:) = outbuf(:)
@@ -1833,8 +1841,8 @@ program transp2imas
    enddo
 
    write(iout,*) ' '
-   ! calculate Fprime on cell boundaries
-   ! GFUN(XB) is para/dia-magnetic factor, already on cell boundaries
+   ! calculate Fprime on zone boundaries
+   ! GFUN(XB) is para/dia-magnetic factor, already on zone boundaries
    call rprofile('GFUN',prdata,nprtime*xsizes(2),iret,ier)
    if(ier.ne.0) call transp2imas_error('rprofile(GFUN)',ier)
    if(iret.ne.nprtime*xsizes(2)) &
