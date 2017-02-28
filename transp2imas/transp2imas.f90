@@ -116,7 +116,7 @@ program transp2imas
    real, dimension(:), allocatable ::  bzxr
    real, dimension(:, :), allocatable ::  XI, XB
    real, dimension(:, :), allocatable ::  PLFLX, dXBdPLFLX
-   real*8, dimension(:), allocatable ::  xibuf, xbbuf, inbuf, outbuf
+   real*8, dimension(:), allocatable ::  xibuf1, xbbuf1, xbbuf2, xibuf2
 
    type(ezspline1_r8) :: spln1
 
@@ -273,8 +273,8 @@ program transp2imas
    enddo
    !write(iout,*) 'cj2: ', XItype, XBtype, LIMtype
 
-   offset=xsizes(2); allocate(xbbuf(offset), inbuf(offset))
-   offset=xsizes(1); allocate(xibuf(offset), outbuf(offset))
+   offset=xsizes(1); allocate(xibuf1(offset), xibuf2(offset))
+   offset=xsizes(2); allocate(xbbuf1(offset), xbbuf2(offset), xbbuf3(offset))
 
    write(iout,*) ' '
 
@@ -1360,7 +1360,6 @@ program transp2imas
       cp%profiles_1d(it)%grid%psi(1) = cp%profiles_1d(it)%grid%psi(1) + &
       0.5 * eq%time_slice(it)%global_quantities%psi_axis
    enddo
-   ! xxx
 
    write(iout,*) ' '
    call rprofile('TRFLX',prdata,nprtime*xsizes(2),iret,ier)
@@ -1369,15 +1368,18 @@ program transp2imas
       call transp2imas_exit(' ?? TRFLX read error')
    call transp2imas_echo('TRFLX',prdata,xsizes(2),nprtime)
 
-   ! Interpolate TRFLX from zone boundary (XB) to zone center (X)
-   offset = xsizes(2)
+   ! Use linear interpolation to transform TRFLX(XB) -> TRFLX(X),
+   ! from zone boundary (XB) to zone center (X)
+   offset = xsizes(1)
    do it = 1, nprtime
       allocate(cp%profiles_1d(it)%grid%rho_tor(offset))
-      cp%profiles_1d(it)%grid%rho_tor(1) = 0.0
-      do ir = 2, offset
-         ij = ir+(it-1)*offset
-         cp%profiles_1d(it)%grid%rho_tor(ir) = 0.5 * (prdata(ij-1) + prdata(ij))
+      cp%profiles_1d(it)%grid%rho_tor(1:offset) = &
+         0.5 * prdata(1+(it-1)*offset:it*offset)
+      do ir = offset, 2, -1
+         cp%profiles_1d(it)%grid%rho_tor(ir) = cp%profiles_1d(it)%grid%rho_tor(ir) + &
+         0.5 * cp%profiles_1d(it)%grid%rho_tor(ir-1)
       enddo
+      cp%profiles_1d(it)%grid%rho_tor(1) = cp%profiles_1d(it)%grid%rho_tor(1) + 0.5 * 0.0
    enddo
 
    write(iout,*) ' '
@@ -1459,7 +1461,7 @@ program transp2imas
       call transp2imas_exit(' ?? PLFLX2PI read error')
    call transp2imas_echo('PLFLX2PI',prdata,xsizes(2),nprtime)
 
-   offset=xsizes(1)
+   offset=xsizes(2)
    ! Calculate dXB/dPLFLX, it will be used later to calculate p' and FF'
    allocate(PLFLX(offset, nprtime), dXBdPLFLX(offset, nprtime))
    do it = 1, nprtime
@@ -1472,35 +1474,35 @@ program transp2imas
          eq%time_slice(it)%profiles_1d%psi(i) * (1.0 + 1.0e-6 * (i - offset))
       enddo
 
-      xbbuf(:) = PLFLX(:, it)
-      inbuf(:) = XB(:, it)
+      xbbuf1(:) = PLFLX(:, it)
+      xbbuf2(:) = XB(:, it)
 
       call ezspline_init(spln1, offset, (/0, 0/), ier)
       call ezspline_error(ier)
 
       !spln1%bcval1min = 0.
       !spln1%isHermite = 1
-      spln1%x1 = xbbuf(1:offset)
+      spln1%x1 = xbbuf1(1:offset)
 
-      call ezspline_setup(spln1, inbuf(1:offset), ier)
+      call ezspline_setup(spln1, xbbuf2(1:offset), ier)
       call ezspline_error(ier)
 
       ! This call might be needed to init derivative calculation below?
-      call ezspline_interp(spln1, offset, xbbuf, outbuf, ier)
+      !call ezspline_interp(spln1, offset, xbbuf1, xibuf2, ier)
+      !call ezspline_error(ier)
+
+      call ezspline_derivative(spln1, 1, offset, xbbuf1, xbbuf3, ier)
       call ezspline_error(ier)
 
-      call ezspline_derivative(spln1, 1, offset, xbbuf, outbuf, ier)
-      call ezspline_error(ier)
-
-      dXBdPLFLX(:, it) = outbuf(:)
+      dXBdPLFLX(:, it) = xbbuf3(:)
 
       call ezspline_free(spln1, ier)
       call ezspline_error(ier)
 
       !write(312,*) 'poloidal flux at', it
-      !write(312,*) 'size', size(inbuf), size(outbuf), size(xibuf), size(xbbuf)
+      !write(312,*) 'size', size(xbbuf2), size(xibuf2), size(xibuf1), size(xbbuf1)
       !do ir=1,offset
-      !   write(312,*) xbbuf(ir), xibuf(ir), inbuf(ir), outbuf(ir), outbuf2(ir)
+      !   write(312,*) xbbuf1(ir), xibuf1(ir), xbbuf2(ir), xibuf2(ir), xibuf22(ir)
          !write(312,*) PLFLX(ir,it), dXBdPLFLX(ir,it)
       !enddo
    enddo
@@ -1512,7 +1514,7 @@ program transp2imas
       call transp2imas_exit(' ?? TRFLX read error')
    call transp2imas_echo('TRFLX',prdata,xsizes(2),nprtime)
 
-   offset = xsizes(1)
+   offset = xsizes(2)
    do it = 1, nprtime
       allocate(eq%time_slice(it)%profiles_1d%phi(offset))
       eq%time_slice(it)%profiles_1d%phi(1:offset) = prdata(1+(it-1)*offset:it*offset)
@@ -1529,57 +1531,57 @@ program transp2imas
 
    ! Calculate p and p' = dp/dPLFLX on zone boundaries
    do it = 1, nprtime
-      inbuf(:) = prdata(1+(it-1)*offset:it*offset)
-      xbbuf(:) = XB(:, it)
-      xibuf(:) = XI(:, it)
+      xibuf1(:) = XI(:, it)
+      xibuf2(:) = prdata(1+(it-1)*offset:it*offset)
+      xbbuf1(:) = XB(:, it)
 
       call ezspline_init(spln1, offset, (/0, 0/), ier)
       call ezspline_error(ier)
 
       !spln1%bcval1min = 0.
       !spln1%isHermite = 1
-      spln1%x1 = xibuf(1:offset)
+      spln1%x1 = xibuf1(1:offset)
 
-      call ezspline_setup(spln1, inbuf(1:offset), ier)
+      call ezspline_setup(spln1, xibuf2(1:offset), ier)
       call ezspline_error(ier)
 
-      call ezspline_interp(spln1, offset, xbbuf, outbuf, ier)
+      call ezspline_interp(spln1, offset, xbbuf1, xbbuf2, ier)
+      ! xbbuf2 now has p on zone boundaries
       call ezspline_error(ier)
-      ! outbuf now has p on zone boundaries
       allocate(eq%time_slice(it)%profiles_1d%pressure(offset))
-      eq%time_slice(it)%profiles_1d%pressure(1:offset) = outbuf(1:offset)
-      inbuf(:) = outbuf(:)
+      eq%time_slice(it)%profiles_1d%pressure(1:offset) = xbbuf2(1:offset)
 
       call ezspline_free(spln1, ier)
       call ezspline_error(ier)
 
-      ! First step: calculate dp/dXB
+      ! Calculate dp/dXB
       call ezspline_init(spln1, offset, (/0, 0/), ier)
       call ezspline_error(ier)
 
-      spln1%x1 = xbbuf(1:offset)
+      spln1%x1 = xbbuf1(1:offset)
 
-      call ezspline_setup(spln1, inbuf(1:offset), ier)
+      call ezspline_setup(spln1, xbbuf2(1:offset), ier)
       call ezspline_error(ier)
 
       ! this call only made to init derivate calculation below (might be unnecessary)
-      call ezspline_interp(spln1, offset, xbbuf, outbuf, ier)
-      call ezspline_error(ier)
+      !call ezspline_interp(spln1, offset, xbbuf1, xibuf2, ier)
+      !call ezspline_error(ier)
 
-      call ezspline_derivative(spln1, 1, offset, xbbuf, outbuf, ier)
+      call ezspline_derivative(spln1, 1, offset, xbbuf1, xbbuf3, ier)
+      ! xbbuf3 now contains dp/dXB
       call ezspline_error(ier)
 
       ! dp/dPLFLX = dp/dXB * dXB/dPLFLX
       allocate(eq%time_slice(it)%profiles_1d%dpressure_dpsi(offset))
-      eq%time_slice(it)%profiles_1d%dpressure_dpsi(1:offset) = outbuf(:) * dXBdPLFLX(:, it)
+      eq%time_slice(it)%profiles_1d%dpressure_dpsi(1:offset) = xbbuf3(:) * dXBdPLFLX(:, it)
 
       call ezspline_free(spln1, ier)
       call ezspline_error(ier)
 
       !write(313,*) 'pressure flux at', it
-      !write(313,*) 'size', size(inbuf), size(outbuf), size(xibuf), size(xbbuf)
+      !write(313,*) 'size', size(xbbuf2), size(xibuf2), size(xibuf1), size(xbbuf1)
       !do ir=1,offset
-      !   write(313,*) xbbuf(ir), xibuf(ir), inbuf(ir), outbuf(ir), outbuf2(ir)
+      !   write(313,*) xbbuf1(ir), xibuf1(ir), xbbuf2(ir), xibuf2(ir), xibuf22(ir)
       !enddo
    enddo
 
@@ -1590,15 +1592,10 @@ program transp2imas
       call transp2imas_exit(' ?? ELONG read error')
    call transp2imas_echo('ELONG',prdata,xsizes(1),nprtime)
 
-   offset=xsizes(2)
-   do it=1,nprtime
+   offset = xsizes(2)
+   do it = 1, nprtime
       allocate(eq%time_slice(it)%profiles_1d%elongation(offset))
-      eq%time_slice(it)%profiles_1d%elongation(1)=prdata(1+(it-1)*offset)
-      do ir=2,offset
-         ij=ir+(it-1)*offset
-         eq%time_slice(it)%profiles_1d%elongation(ir)=&
-            .5*( prdata(ij-1)+prdata(ij) )
-      enddo
+      eq%time_slice(it)%profiles_1d%elongation(1:offset) = prdata(1+(it-1)*offset:it*offset)
    enddo
 
    write(iout,*) ' '
@@ -1608,16 +1605,10 @@ program transp2imas
       call transp2imas_exit(' ?? TRIANGU read error')
    call transp2imas_echo('TRIANGU',prdata,xsizes(2),nprtime)
 
-   offset=xsizes(2)
-   do it=1,nprtime
+   offset = xsizes(2)
+   do it = 1, nprtime
       allocate(eq%time_slice(it)%profiles_1d%triangularity_upper(offset))
-      eq%time_slice(it)%profiles_1d%triangularity_upper(1)=&
-         prdata(1+(it-1)*offset)
-      do ir=2,offset
-         ij=ir+(it-1)*offset
-         eq%time_slice(it)%profiles_1d%triangularity_upper(ir)=&
-            .5*( prdata(ij-1)+prdata(ij) )
-      enddo
+      eq%time_slice(it)%profiles_1d%triangularity_upper(1:offset) = prdata(1+(it-1)*offset:it*offset)
    enddo
 
    write(iout,*) ' '
@@ -1627,16 +1618,10 @@ program transp2imas
       call transp2imas_exit(' ?? TRIANGL read error')
    call transp2imas_echo('TRIANGL',prdata,xsizes(2),nprtime)
 
-   offset=xsizes(2)
-   do it=1,nprtime
+   offset = xsizes(2)
+   do it = 1, nprtime
       allocate(eq%time_slice(it)%profiles_1d%triangularity_lower(offset))
-      eq%time_slice(it)%profiles_1d%triangularity_lower(1)=&
-         prdata(1+(it-1)*offset)
-      do ir=2,offset
-         ij=ir+(it-1)*offset
-         eq%time_slice(it)%profiles_1d%triangularity_lower(ir)=&
-            .5*( prdata(ij-1)+prdata(ij) )
-      enddo
+      eq%time_slice(it)%profiles_1d%triangularity_lower(1:offset) = prdata(1+(it-1)*offset:it*offset)
    enddo
 
    write(iout,*) ' '
@@ -1674,15 +1659,10 @@ program transp2imas
       call transp2imas_exit(' ?? SURF read error')
    call transp2imas_echo('SURF',prdata,xsizes(1),nprtime)
 
-   offset=xsizes(2)
-   do it=1,nprtime
+   offset = xsizes(2)
+   do it = 1, nprtime
       allocate(eq%time_slice(it)%profiles_1d%surface(offset))
-      eq%time_slice(it)%profiles_1d%surface(1)=0.*1.e-4
-      do ir=2,offset
-         ij=ir+(it-1)*offset
-         eq%time_slice(it)%profiles_1d%surface(ir)=&
-            .5*( prdata(ij-1)+prdata(ij) ) * 1.e-4
-      enddo
+      eq%time_slice(it)%profiles_1d%surface(1:offset) = prdata(1+(it-1)*offset:it*offset) * 1.0e-4
    enddo
 
    write(iout,*) ' '
@@ -1692,16 +1672,10 @@ program transp2imas
       call transp2imas_exit(' ?? Q read error')
    call transp2imas_echo('Q',prdata,xsizes(2),nprtime)
 
-   offset=xsizes(2)
-   do it=1,nprtime
+   offset = xsizes(2)
+   do it = 1, nprtime
       allocate(eq%time_slice(it)%profiles_1d%q(offset))
-      eq%time_slice(it)%profiles_1d%q(1)= &
-         eq%time_slice(it)%global_quantities%q_axis
-      do ir=2,offset
-         ij=ir+(it-1)*offset
-         eq%time_slice(it)%profiles_1d%q(ir)= &
-            .5*( prdata(ij-1)+prdata(ij) )
-      enddo
+      eq%time_slice(it)%profiles_1d%q(1:offset) = prdata(1+(it-1)*offset:it*offset)
    enddo
 
    write(iout,*) ' '
@@ -1711,7 +1685,7 @@ program transp2imas
       call transp2imas_exit(' ?? SHAT read error')
    call transp2imas_echo('SHAT',prdata,xsizes(1),nprtime)
 
-   offset=xsizes(1)
+   offset=xsizes(1) ! xxx
    do it=1,nprtime
       allocate(eq%time_slice(it)%profiles_1d%magnetic_shear(offset))
       eq%time_slice(it)%profiles_1d%magnetic_shear(1:offset)= &
@@ -1853,41 +1827,41 @@ program transp2imas
    ! Calculate dF/dPLFLX
    do it = 1, nprtime
       ! Multiply to get F...
-      inbuf(:) = prdata(1+(it-1)*offset:it*offset) * bzxr(it) * 1.0e-2 ! T * cm -> T * m
+      xbbuf2(:) = prdata(1+(it-1)*offset:it*offset) * bzxr(it) * 1.0e-2 ! T * cm -> T * m
       allocate(eq%time_slice(it)%profiles_1d%f(offset))
-      eq%time_slice(it)%profiles_1d%f(1:offset) = inbuf(:)
+      eq%time_slice(it)%profiles_1d%f(1:offset) = xbbuf2(:)
       
-      ! Calculate dF/dXB and put result in outbuf.
-      xbbuf(:) = XB(:, it)
+      ! Calculate dF/dXB and put result in xbbuf3.
+      xbbuf1(:) = XB(:, it)
 
       call ezspline_init(spln1, offset, (/0, 0/), ier)
       call ezspline_error(ier)
 
       !spln1%bcval1min = 0.
       !spln1%isHermite = 1
-      spln1%x1 = xbbuf(1:offset)
+      spln1%x1 = xbbuf1(1:offset)
 
-      call ezspline_setup(spln1, inbuf(1:offset), ier)
+      call ezspline_setup(spln1, xbbuf2(1:offset), ier)
       call ezspline_error(ier)
 
-      ! this call only made to init derivate calculation below (outbuf should be identical to inbuf)
-      call ezspline_interp(spln1, offset, xbbuf, outbuf, ier)
-      call ezspline_error(ier)
+      ! this call only made to init derivate calculation below (xibuf2 should be identical to xbbuf2)
+      !call ezspline_interp(spln1, offset, xbbuf1, xibuf2, ier)
+      !call ezspline_error(ier)
 
-      call ezspline_derivative(spln1, 1, offset, xbbuf, outbuf, ier)
+      call ezspline_derivative(spln1, 1, offset, xbbuf1, xbbuf3, ier)
       call ezspline_error(ier)
 
       ! F' = dF/dPLFLX = dF/dXB * dXB/dPLFLX => FF' = F * dF/dXB * dXB/dPLFLX
       allocate(eq%time_slice(it)%profiles_1d%f_df_dpsi(offset))
-      eq%time_slice(it)%profiles_1d%f_df_dpsi(1:offset) = inbuf(:) * outbuf(:) * dXBdPLFLX(:, it)
+      eq%time_slice(it)%profiles_1d%f_df_dpsi(1:offset) = xbbuf2(:) * xbbuf3(:) * dXBdPLFLX(:, it)
 
       call ezspline_free(spln1, ier)
       call ezspline_error(ier)
 
       !write(314,*) 'F func at', it
-      !write(314,*) 'size', size(inbuf), size(outbuf), size(xbbuf)
+      !write(314,*) 'size', size(xbbuf2), size(xibuf2), size(xbbuf1)
       !do ir=1,offset
-      !   write(314,*) xbbuf(ir), inbuf(ir), outbuf(ir), outbuf2(ir)
+      !   write(314,*) xbbuf1(ir), xbbuf2(ir), xibuf2(ir), xibuf22(ir)
       !enddo
    enddo
 ! TRANSP does not have data on LCFS. Need to think about how to provide it. Johan 12/21/16
@@ -2266,10 +2240,11 @@ program transp2imas
    if (allocated(dXBdPLFLX)) deallocate(dXBdPLFLX)
    if (allocated(XI)) deallocate(XI)
    if (allocated(XB)) deallocate(XB)
-   if (allocated(xibuf)) deallocate(xibuf)
-   if (allocated(xbbuf)) deallocate(xbbuf)
-   if (allocated(inbuf)) deallocate(inbuf)
-   if (allocated(outbuf)) deallocate(outbuf)
+   if (allocated(xibuf1)) deallocate(xibuf1)
+   if (allocated(xibuf2)) deallocate(xibuf2)
+   if (allocated(xbbuf1)) deallocate(xbbuf1)
+   if (allocated(xbbuf2)) deallocate(xbbuf2)
+   if (allocated(xbbuf3)) deallocate(xbbuf3)
 
    stop
 end
