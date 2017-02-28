@@ -116,7 +116,7 @@ program transp2imas
    real, dimension(:), allocatable ::  bzxr
    real, dimension(:, :), allocatable ::  XI, XB
    real, dimension(:, :), allocatable ::  PLFLX, dXBdPLFLX
-   real*8, dimension(:), allocatable ::  xibuf1, xbbuf1, xbbuf2, xibuf2
+   real*8, dimension(:), allocatable ::  xibuf1, xibuf2, xbbuf1, xbbuf2, xbbuf3
 
    type(ezspline1_r8) :: spln1
 
@@ -1269,10 +1269,12 @@ program transp2imas
       cp%profiles_1d(it)%q(1:offset) = &
          0.5 * prdata(1+(it-1)*offset:it*offset)
       do ir = offset, 2, -1
-         cp%profiles_1d(it)%q(ir) = cp%profiles_1d(it)%q(ir) + &
-         0.5 * cp%profiles_1d(it)%q(ir-1)
+         cp%profiles_1d(it)%q(ir) = &
+         cp%profiles_1d(it)%q(ir) + &
+         cp%profiles_1d(it)%q(ir-1)
       enddo
-      cp%profiles_1d(it)%q(1) = cp%profiles_1d(it)%q(1) + &
+      cp%profiles_1d(it)%q(1) = &
+      cp%profiles_1d(it)%q(1) + &
       0.5 * eq%time_slice(it)%global_quantities%q_axis
    enddo
 
@@ -1354,10 +1356,12 @@ program transp2imas
       cp%profiles_1d(it)%grid%psi(1:offset) = &
          0.5 * prdata(1+(it-1)*offset:it*offset)
       do ir = offset, 2, -1
-         cp%profiles_1d(it)%grid%psi(ir) = cp%profiles_1d(it)%grid%psi(ir) + &
-         0.5 * cp%profiles_1d(it)%grid%psi(ir-1)
+         cp%profiles_1d(it)%grid%psi(ir) = &
+         cp%profiles_1d(it)%grid%psi(ir) + &
+         cp%profiles_1d(it)%grid%psi(ir-1)
       enddo
-      cp%profiles_1d(it)%grid%psi(1) = cp%profiles_1d(it)%grid%psi(1) + &
+      cp%profiles_1d(it)%grid%psi(1) = &
+      cp%profiles_1d(it)%grid%psi(1) + &
       0.5 * eq%time_slice(it)%global_quantities%psi_axis
    enddo
 
@@ -1376,10 +1380,13 @@ program transp2imas
       cp%profiles_1d(it)%grid%rho_tor(1:offset) = &
          0.5 * prdata(1+(it-1)*offset:it*offset)
       do ir = offset, 2, -1
-         cp%profiles_1d(it)%grid%rho_tor(ir) = cp%profiles_1d(it)%grid%rho_tor(ir) + &
-         0.5 * cp%profiles_1d(it)%grid%rho_tor(ir-1)
+         cp%profiles_1d(it)%grid%rho_tor(ir) = &
+         cp%profiles_1d(it)%grid%rho_tor(ir) + &
+         cp%profiles_1d(it)%grid%rho_tor(ir-1)
       enddo
-      cp%profiles_1d(it)%grid%rho_tor(1) = cp%profiles_1d(it)%grid%rho_tor(1) + 0.5 * 0.0
+      cp%profiles_1d(it)%grid%rho_tor(1) = &
+      cp%profiles_1d(it)%grid%rho_tor(1) + &
+      0.5 * 0.0
    enddo
 
    write(iout,*) ' '
@@ -1685,11 +1692,23 @@ program transp2imas
       call transp2imas_exit(' ?? SHAT read error')
    call transp2imas_echo('SHAT',prdata,xsizes(1),nprtime)
 
-   offset=xsizes(1) ! xxx
-   do it=1,nprtime
+   ! Use linear interpolation to transform SHAT(X) -> SHAT(XB),
+   ! from zone center (X) to zone boundary (XB)
+   offset = xsizes(2)
+   do it = 1, nprtime
       allocate(eq%time_slice(it)%profiles_1d%magnetic_shear(offset))
-      eq%time_slice(it)%profiles_1d%magnetic_shear(1:offset)= &
-         prdata(1+(it-1)*offset:it*offset)
+      eq%time_slice(it)%profiles_1d%magnetic_shear(1:offset) = &
+         0.5 * prdata(1+(it-1)*offset:it*offset)
+      ! Extrapolate SHAT(XB(offset)) and save for later
+      rdum = 3 * eq%time_slice(it)%profiles_1d%magnetic_shear(offset) - &
+                 eq%time_slice(it)%profiles_1d%magnetic_shear(offset-1)
+      do ir = 1, offset-1
+         eq%time_slice(it)%profiles_1d%magnetic_shear(ir) = &
+         eq%time_slice(it)%profiles_1d%magnetic_shear(ir) + &
+         eq%time_slice(it)%profiles_1d%magnetic_shear(ir+1)
+      enddo
+      ! Now write extrapolated boundary value
+      eq%time_slice(it)%profiles_1d%magnetic_shear(offset) = rdum
    enddo
 
    write(iout,*) ' '
