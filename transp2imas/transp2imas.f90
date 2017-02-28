@@ -273,6 +273,8 @@ program transp2imas
    enddo
    !write(iout,*) 'cj2: ', XItype, XBtype, LIMtype
 
+   ! In theory, X (sometimes called XI) and XB could have different sizes.
+   ! Let's try to keep that possible even if it's currently not used in practice.
    offset=xsizes(1); allocate(xibuf1(offset), xibuf2(offset))
    offset=xsizes(2); allocate(xbbuf1(offset), xbbuf2(offset), xbbuf3(offset))
 
@@ -722,7 +724,12 @@ program transp2imas
 
 !---------------------------------
 ! get the profile info f(x,t)
+!---------------------------------
 !
+! Profiles in the core_profiles IDS are evaluated at zone centers, i.e. they're functions of X.
+! Profiles in the equilibrium IDS are evaluated at zone boundaries, i.e. they're functions of XB.
+! When needed, we use interpolation (linear or spline) to transform between the two.
+
    write(iout,*) ' '
    write(iout,*) &
       ' transp2imas:  rpnlist, rplist, rplabel (profiles)...'
@@ -901,8 +908,6 @@ program transp2imas
    if(iret.ne.nsctime) &
       call transp2imas_exit(' ?? VSURC read error')
    call transp2imas_echo('VSURC',scdata,1,nsctime)
-   !write(*, *) ' VSURC', nsctime, scdata(nsctime)
-   !stop
    allocate(cp%global_quantities%v_loop(nsctime))
    cp%global_quantities%v_loop(:)= scdata(:)
 
@@ -1204,8 +1209,7 @@ program transp2imas
    if(iret.ne.nprtime*xsizes(1)) &
       call transp2imas_exit(' ?? NI read error')
    call transp2imas_echo('NI',prdata,xsizes(1),nprtime)
-   ! ids doesn't has field for NI
-   !only has ni_over_ne
+   ! ids doesn't have profile for NI, only for ni_over_ne
    write(iout,*) ' '
    call rpcalc('NI/NE',prdata,nprtime*xsizes(1),iret, istype, &
       iwarn,ier)
