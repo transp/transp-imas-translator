@@ -74,4 +74,7 @@ print '\nIon species:'
 for i in range(len(ids.profiles_1d[-1].ion)):
   print ids.profiles_1d[-1].ion[i].label
 
+ids.profiles_1d[-1].q
+  cp%profiles_1d(it)%q
+
 itm.close()
