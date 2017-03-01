@@ -1585,15 +1585,24 @@ program transp2imas
       ! dp/dPLFLX = dp/dXB * dXB/dPLFLX
       allocate(eq%time_slice(it)%profiles_1d%dpressure_dpsi(offset))
       eq%time_slice(it)%profiles_1d%dpressure_dpsi(1:offset) = xbbuf3(:) * dXBdPLFLX(:, it)
+#if 0
+      do ir = 2, offset-1
+         eq%time_slice(it)%profiles_1d%dpressure_dpsi(ir) = &
+         (eq%time_slice(it)%profiles_1d%pressure(ir+1) - eq%time_slice(it)%profiles_1d%pressure(ir-1)) / &
+         (eq%time_slice(it)%profiles_1d%psi(ir+1) - eq%time_slice(it)%profiles_1d%psi(ir-1))
+      enddo
+      eq%time_slice(it)%profiles_1d%dpressure_dpsi(1) = eq%time_slice(it)%profiles_1d%dpressure_dpsi(2)
+      eq%time_slice(it)%profiles_1d%dpressure_dpsi(offset) = eq%time_slice(it)%profiles_1d%dpressure_dpsi(offset-1)
+#endif
 
       call ezspline_free(spln1, ier)
       call ezspline_error(ier)
 
-      !write(313,*) 'pressure flux at', it
-      !write(313,*) 'size', size(xbbuf2), size(xibuf2), size(xibuf1), size(xbbuf1)
-      !do ir=1,offset
-      !   write(313,*) xbbuf1(ir), xibuf1(ir), xbbuf2(ir), xibuf2(ir), xibuf22(ir)
-      !enddo
+      write(313, *) 'foobar, p, pprime at ', it
+      do ir = 1, offset
+         write(313, *) eq%time_slice(it)%profiles_1d%pressure(ir), &
+                       eq%time_slice(it)%profiles_1d%dpressure_dpsi(ir)
+      enddo
    enddo
 
    write(iout,*) ' '
@@ -1877,6 +1886,15 @@ program transp2imas
       ! F' = dF/dPLFLX = dF/dXB * dXB/dPLFLX => FF' = F * dF/dXB * dXB/dPLFLX
       allocate(eq%time_slice(it)%profiles_1d%f_df_dpsi(offset))
       eq%time_slice(it)%profiles_1d%f_df_dpsi(1:offset) = xbbuf2(:) * xbbuf3(:) * dXBdPLFLX(:, it)
+#if 0
+      do ir = 2, offset-1
+         eq%time_slice(it)%profiles_1d%f_df_dpsi(ir) = eq%time_slice(it)%profiles_1d%f(ir) * &
+         (eq%time_slice(it)%profiles_1d%f(ir+1) - eq%time_slice(it)%profiles_1d%f(ir-1)) / &
+         (eq%time_slice(it)%profiles_1d%psi(ir+1) - eq%time_slice(it)%profiles_1d%psi(ir-1))
+      enddo
+      eq%time_slice(it)%profiles_1d%f_df_dpsi(1) = eq%time_slice(it)%profiles_1d%f_df_dpsi(2)
+      eq%time_slice(it)%profiles_1d%f_df_dpsi(offset) = eq%time_slice(it)%profiles_1d%f_df_dpsi(offset-1)
+#endif
 
       call ezspline_free(spln1, ier)
       call ezspline_error(ier)
@@ -1886,6 +1904,11 @@ program transp2imas
       !do ir=1,offset
       !   write(314,*) xbbuf1(ir), xbbuf2(ir), xibuf2(ir), xibuf22(ir)
       !enddo
+      write(314, *) 'barbaz, F, FFprime at ', it
+      do ir = 1, offset
+         write(314, *) eq%time_slice(it)%profiles_1d%f(ir), &
+                       eq%time_slice(it)%profiles_1d%f_df_dpsi(ir)
+      enddo
    enddo
 ! TRANSP does not have data on LCFS. Need to think about how to provide it. Johan 12/21/16
 #if 0

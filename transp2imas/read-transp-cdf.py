@@ -34,7 +34,7 @@ print 'dtst.variables[\'X\'][0, :] =', dtst.variables['X'][0, :], '\n\n'
 print 'dtst.variables[\'XB\']:\n', dtst.variables['XB']
 print 'dtst.variables[\'XB\'][0, :] =', dtst.variables['XB'][0, :], '\n\n'
 
-sys.exit(0)
+#sys.exit(0)
 
 #print 'dtst.variables[\'NIMP_BE_4\']:\n', dtst.variables['NIMP_BE_4']
 #print 'dtst.variables[\'NIMP_BE_4\'][:] =', dtst.variables['NIMP_BE_4'][:], '\n\n'
@@ -44,11 +44,11 @@ sys.exit(0)
 #plt.plot(dtst.variables['TIME'], dtst.variables['GSERROR'])
 #plt.show()
 
-print dtst.variables['UFPRP_4'].shape
-print dtst.variables['UFPRP_4']
+print dtst.variables['Q'].shape
+print dtst.variables['Q']
 #print dtst.variables['CUR'][:, :]
-print dtst.variables['X'].shape
-print dtst.variables['X']
+print dtst.variables['XB'].shape
+print dtst.variables['XB']
 
 #sys.exit(0)
 
@@ -60,13 +60,14 @@ print dtst.variables['X']
 #for n in range(718):
 #  plt.plot(dtst.variables['X'][n, :], dtst.variables['LHCUR'][n, :])
 for j in range(-1, -7, -1):
-  plt.plot(dtst.variables['X'][j, :], dtst.variables['UFPRP_4'][j, :])
+  plt.plot(dtst.variables['XB'][j, :], dtst.variables['Q'][j, :])
 #plt.plot(dtst.variables['X'][-1, :], dtst.variables['LHCUR'][-1, :])
 
-plt.xlabel('X')
-plt.ylabel('UFPRP_4')
+plt.xlabel('XB')
+plt.ylabel('Q')
 plt.grid(True)
+plt.xlim([0, 1])
 plt.tight_layout()
-plt.savefig('ufprp_4-final6.png', format = 'png')
+plt.savefig('q-final6.png', format = 'png')
 plt.show()
 plt.close()
