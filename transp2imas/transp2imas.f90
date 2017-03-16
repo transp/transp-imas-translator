@@ -1196,11 +1196,17 @@ program transp2imas
       call transp2imas_exit(' ?? OMEGA read error')
    call transp2imas_echo('OMEGA',prdata,xsizes(1),nprtime)
 
-   offset=xsizes(1)
-   do it=1,nprtime
+   offset = xsizes(1)
+   do it = 1, nprtime
       allocate(cp%profiles_1d(it)%electrons%velocity_tor(offset))
       cp%profiles_1d(it)%electrons%velocity_tor(1:offset)=&
          eq%vacuum_toroidal_field%r0 * prdata(1+(it-1)*offset:it*offset)
+      ! Assume ions rotate with electrons
+      do iion = 1, n_thi + nlist
+         allocate(cp%profiles_1d(it)%ion(iion)%velocity_tor(offset))
+         cp%profiles_1d(it)%ion(iion)%velocity_tor(1:offset) = &
+         cp%profiles_1d(it)%electrons%velocity_tor(1:offset)
+      enddo
    enddo
 
    write(iout,*) ' '
