@@ -1311,6 +1311,39 @@ program transp2imas
    enddo
 
    write(iout,*) ' '
+   call rprofile('VRPOT',prdata,nprtime*xsizes(2),iret,ier)
+   if(ier.ne.0) call transp2imas_error('rprofile(VRPOT)',ier)
+   if(iret.ne.nprtime*xsizes(2)) &
+      call transp2imas_exit(' ?? VRPOT read error')
+   call transp2imas_echo('VRPOT',prdata,xsizes(2),nprtime)
+   ! Use linear differentiation to transform VRPOT(XB) -> "ERAD(X)"
+   offset = xsizes(1)
+   do it = 1, nprtime
+      allocate(cp%profiles_1d(it)%e_field%radial(offset))
+      do ir = 2, offset
+         cp%profiles_1d(it)%e_field%radial(ir) = &
+         prdata(ir+(it-1)*offset) - prdata(ir-1+(it-1)*offset)
+      enddo
+   enddo
+   write(iout,*) ' '
+   call rprofile('RBOUN',prdata,nprtime*xsizes(2),iret,ier)
+   if(ier.ne.0) call transp2imas_error('rprofile(RBOUN)',ier)
+   if(iret.ne.nprtime*xsizes(2)) &
+      call transp2imas_exit(' ?? RBOUN read error')
+   call transp2imas_echo('RBOUN',prdata,xsizes(2),nprtime)
+   offset = xsizes(1)
+   do it = 1, nprtime
+      do ir = 2, offset
+         cp%profiles_1d(it)%e_field%radial(ir) = &
+         cp%profiles_1d(it)%e_field%radial(ir) / &
+         (prdata(ir+(it-1)*offset) - prdata(ir-1+(it-1)*offset))
+      enddo
+      ! Assume on-axis radial electric field is zero
+      cp%profiles_1d(it)%e_field%radial(1) = &
+      0.5 * cp%profiles_1d(it)%e_field%radial(2)
+   enddo
+
+   write(iout,*) ' '
    !? correct?
    ! CUR(X)            TOTAL PLASMA CURRENT         AMPS/CM2
    ! CURGP(X)          GRAD(P) TOROIDAL CUR         AMPS/CM2
