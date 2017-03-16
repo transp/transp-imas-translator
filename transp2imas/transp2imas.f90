@@ -1336,7 +1336,8 @@ program transp2imas
       do ir = 2, offset
          cp%profiles_1d(it)%e_field%radial(ir) = &
          cp%profiles_1d(it)%e_field%radial(ir) / &
-         (prdata(ir+(it-1)*offset) - prdata(ir-1+(it-1)*offset))
+         (prdata(ir+(it-1)*offset) - prdata(ir-1+(it-1)*offset)) * &
+         1.0e2 ! V/cm -> V/m
       enddo
       ! Assume on-axis radial electric field is zero
       cp%profiles_1d(it)%e_field%radial(1) = &
