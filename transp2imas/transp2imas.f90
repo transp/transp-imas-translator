@@ -200,7 +200,8 @@ program transp2imas
    allocate(eq%time(nsctime))
    allocate(eq%time_slice(nprtime))
    allocate(ct%time(nsctime))
-   allocate(cp%model%profiles_1d(nprtime))
+   allocate(ct%model(1))
+   allocate(ct%model(1)%profiles_1d(nprtime))
 
 ! Count the number of beams
    nbeam = 0
@@ -370,7 +371,7 @@ program transp2imas
          allocate(cp%profiles_1d(it)%ion(i)%element(1))
          allocate(cp%profiles_1d(it)%ion(i)%label(1))
       enddo
-      allocate(ct%model%profiles_1d(it)%ion(nion))
+      allocate(ct%model(1)%profiles_1d(it)%ion(nion))
    enddo
    write(iout,*) ' There are total ', nion, ' ions', &
       nlist, ' of them are impurity'
@@ -1515,8 +1516,8 @@ program transp2imas
       call transp2imas_echo('BDIFBX_D', prdata, xsizes(2), nprtime)
       offset = xsizes(2)
       do it = 1, nprtime
-         allocate(ct%model%profiles_1d(it)%ion(1)%particles%d(offset))
-         ct%model%profiles_1d(it)%ion(1)%particles%d(1:offset) = &
+         allocate(ct%model(1)%profiles_1d(it)%ion(1)%particles%d(offset))
+         ct%model(1)%profiles_1d(it)%ion(1)%particles%d(1:offset) = &
          prdata(1+(it-1)*offset:it*offset)
       enddo
    endif
