@@ -195,10 +195,12 @@ program transp2imas
    allocate(mgslice(nxmax,max(66,naxmgf)))
 
    ! fill ids
-   allocate(cp%profiles_1d(nprtime))
    allocate(cp%time(nsctime))
-   allocate(eq%time_slice(nprtime))
+   allocate(cp%profiles_1d(nprtime))
    allocate(eq%time(nsctime))
+   allocate(eq%time_slice(nprtime))
+   allocate(ct%time(nsctime))
+   allocate(cp%model%profiles_1d(nprtime))
 
 ! Count the number of beams
    nbeam = 0
@@ -368,6 +370,7 @@ program transp2imas
          allocate(cp%profiles_1d(it)%ion(i)%element(1))
          allocate(cp%profiles_1d(it)%ion(i)%label(1))
       enddo
+      allocate(ct%model%profiles_1d(it)%ion(nion))
    enddo
    write(iout,*) ' There are total ', nion, ' ions', &
       nlist, ' of them are impurity'
@@ -859,6 +862,7 @@ program transp2imas
    write(*,*) 'fill ids sctime time'
    cp%time = sctime
    eq%time = sctime
+   ct%time = sctime
    if (nbeam.gt.0) nbi%time = sctime
    do k = 1, nbeam
       nbi%unit(k)%power%time(:) = sctime(:)
@@ -1502,6 +1506,20 @@ program transp2imas
    !if(iret.ne.nprtime*xsizes(1)) &
    !   call transp2imas_exit(' ?? NLITH read error')
    !call transp2imas_echo('NLITH',prdata,xsizes(1),nprtime)
+
+   write(iout,*) ' '
+   call rprofile('BDIFBX_D', prdata, nprtime * xsizes(2), iret, ier)
+   if (ier .eq. 0) then
+      if (iret .ne. nprtime * xsizes(2)) &
+         call transp2imas_exit(' ?? BDIFBX_D read error')
+      call transp2imas_echo('BDIFBX_D', prdata, xsizes(2), nprtime)
+      offset = xsizes(2)
+      do it = 1, nprtime
+         allocate(ct%model%profiles_1d(it)%ion(1)%particles%d(offset))
+         ct%model%profiles_1d(it)%ion(1)%particles%d(1:offset) = &
+         prdata(1+(it-1)*offset:it*offset)
+      enddo
+   endif
 
    ! fill ids_equilibrium
 
@@ -2298,6 +2316,8 @@ program transp2imas
    call ids_put(idsidx, "equilibrium", eq)
    write(*,*) ' transp2imas: save cp ids'
    call ids_put(idsidx, "core_profiles", cp)
+   write(*,*) ' transp2imas: save ct ids'
+   call ids_put(idsidx, "core_transport", ct)
    write(*,*) ' transp2imas: save nbi ids'
    call ids_put(idsidx, "nbi", nbi)
 
@@ -2305,6 +2325,7 @@ program transp2imas
 
    call ids_deallocate(eq)
    call ids_deallocate(cp)
+   call ids_deallocate(ct)
    call ids_deallocate(nbi)
    call imas_close(idsidx)
 

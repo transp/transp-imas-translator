@@ -3,8 +3,9 @@ module transp2imas_module
 	use ids_schemas
 	use ids_routines
 
-	type (ids_core_profiles) :: cp ! Declaration of the empty core_profiles ids to be filled
-	type (ids_equilibrium) :: eq
+	type (ids_equilibrium) :: eq ! Declaration of the empty core_profiles ids to be filled
+	type (ids_core_profiles) :: cp
+	type (ids_core_transport) :: ct
 	type (ids_nbi) :: nbi
 
 	type (ids_pf_active) :: pf
@@ -12,7 +13,6 @@ module transp2imas_module
 	type (ids_atomic_data) :: atomic
 	type (ids_controllers) :: controllers
 	type (ids_core_sources) :: cs
-	type (ids_core_transport) :: ct
 	type (ids_em_coupling) :: em
 	type (ids_magnetics) :: mag
 	type (ids_pf_passive) :: pfpassive
