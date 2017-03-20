@@ -1519,6 +1519,7 @@ program transp2imas
          allocate(ct%model(1)%profiles_1d(it)%ion(1)%particles%d(offset))
          ct%model(1)%profiles_1d(it)%ion(1)%particles%d(1:offset) = &
          prdata(1+(it-1)*offset:it*offset)
+         ct%model(1)%profiles_1d(it)%time = prtime(it)
       enddo
    endif
 
