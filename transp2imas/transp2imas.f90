@@ -884,6 +884,9 @@ program transp2imas
    write(*,*) 'fill ids prtime'
    cp%profiles_1d(:)%time = prtime
    eq%time_slice(:)%time = prtime
+   do it = 1, nprtime
+      ct%model(1)%profiles_1d(it)%time = prtime(it)
+   enddo
 
 !
 ! rpscalar get scalar data
@@ -1508,6 +1511,16 @@ program transp2imas
    !   call transp2imas_exit(' ?? NLITH read error')
    !call transp2imas_echo('NLITH',prdata,xsizes(1),nprtime)
 
+   ! First set all ion diffusivities to zero
+   do iion = 1, nion
+      do it = 1, nprtime
+         allocate(ct%model(1)%profiles_1d(it)%ion(iion)%particles%d(offset))
+         ct%model(1)%profiles_1d(it)%ion(iion)%particles%d(1:offset) = 0.0
+      enddo
+   enddo
+
+   ! Next look for actual ion-diffusivity data
+   ! First for beam deuterons...
    write(iout,*) ' '
    call rprofile('BDIFBX_D', prdata, nprtime * xsizes(2), iret, ier)
    if (ier .eq. 0) then
@@ -1516,10 +1529,34 @@ program transp2imas
       call transp2imas_echo('BDIFBX_D', prdata, xsizes(2), nprtime)
       offset = xsizes(2)
       do it = 1, nprtime
-         allocate(ct%model(1)%profiles_1d(it)%ion(1)%particles%d(offset))
-         ct%model(1)%profiles_1d(it)%ion(1)%particles%d(1:offset) = &
-         prdata(1+(it-1)*offset:it*offset)
-         ct%model(1)%profiles_1d(it)%time = prtime(it)
+            do iion = 1, nion
+               !write(*,*) nion, iion, cp%profiles_1d(it)%ion(iion)%element(1)%a, &
+               !cp%profiles_1d(it)%ion(iion)%z_ion, cp%profiles_1d(it)%ion(iion)%element(1)%z_n
+               if ((2.0 .eq. cp%profiles_1d(it)%ion(iion)%element(1)%a) .and. &
+                   (1.0 .eq. cp%profiles_1d(it)%ion(iion)%z_ion)        .and. &
+                   (1.0 .eq. cp%profiles_1d(it)%ion(iion)%element(1)%z_n)) &
+                      ct%model(1)%profiles_1d(it)%ion(iion)%particles%d(1:offset) = &
+                      prdata(1+(it-1)*offset:it*offset) * 1.0e-4 ! cm^2/s -> m^2/s
+            enddo
+         !stop
+      enddo
+   endif
+   ! Then for fusion alphas...
+   write(iout,*) ' '
+   call rprofile('FDIFBX_4', prdata, nprtime * xsizes(2), iret, ier)
+   if (ier .eq. 0) then
+      if (iret .ne. nprtime * xsizes(2)) &
+         call transp2imas_exit(' ?? FDIFBX_4 read error')
+      call transp2imas_echo('FDIFBX_4', prdata, xsizes(2), nprtime)
+      offset = xsizes(2)
+      do it = 1, nprtime
+            do iion = 1, nion
+               if ((4.0 .eq. cp%profiles_1d(it)%ion(iion)%element(1)%a) .and. &
+                   (1.0 .eq. cp%profiles_1d(it)%ion(iion)%z_ion)        .and. &
+                   (2.0 .eq. cp%profiles_1d(it)%ion(iion)%element(1)%z_n)) &
+                      ct%model(1)%profiles_1d(it)%ion(iion)%particles%d(1:offset) = &
+                      prdata(1+(it-1)*offset:it*offset) * 1.0e-4 ! cm^2/s -> m^2/s
+            enddo
       enddo
    endif
 
