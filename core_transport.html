@@ -1,0 +1,364 @@
+<html>
+
+<head>
+<title>The core_transport IDS</title>
+</head>
+
+<body>
+
+<code>[The info on this page was extracted from IMAS source code (access-layer/fortraninterface/core_transport_put.f90, git master 08/29/2016)]</code>
+
+<p>
+
+The core_transport IDS is a container object that has a single data object, a double(:) with all the timeslice values for scalar data.
+The core_transport IDS also holds five container objects with data, or meta data, or other containers: 
+ids_properties, code, vacuum_toroidal_field, model and profiles_1d, respectively.
+The containver profiles_1d holds the three containers grid_d, grid_v and grid_flux. The model container has two containers: identifier and profiles_1d. The latter in turn has containers total_ion_energy, momentum_tor, electrons, ion(nion) and neutral(nneut). electrons has the two containers particles and energy. The ion and neutral containers have sub containers element, particles, energy and state, where the latter itself has sub containers particles and energy, and neutral_type (ion sub container state only). The core_transport IDS has a total of 28 container objects with 320 data (or meta data) objects.
+
+<p>
+
+Below is a table with all the core_transport data and meta-data objects and their types:
+
+<p>
+
+<table border="1">
+
+<tr><th align="left">data container</th><th>data type</th><th>used by<br>TRANSP?</th></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%time(nsctime)</td><td>double(:)</td><td align="center">&#x2714;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%ids_properties%comment</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%ids_properties%homogeneous_time</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%code%name</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%code%version</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%code%parameters</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%code%output_flag</td><td>int(:)</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%vacuum_toroidal_field%r0</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%vacuum_toroidal_field%r0_error_upper</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%vacuum_toroidal_field%r0_error_lower</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%vacuum_toroidal_field%r0_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%vacuum_toroidal_field%b0</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%vacuum_toroidal_field%b0_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%vacuum_toroidal_field%b0_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%vacuum_toroidal_field%b0_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%flux_multiplier</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%flux_multiplier_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%flux_multiplier_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%flux_multiplier_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%identifier%name</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%identifier%index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%identifier%description</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%time</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%conductivity_parallel</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%conductivity_parallel_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%conductivity_parallel_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%conductivity_parallel_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%particles%d</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%particles%d_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%particles%d_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%particles%d_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%particles%v</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%particles%v_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%particles%v_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%particles%v_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%particles%flux</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%particles%flux_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%particles%flux_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%particles%flux_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%energy%d</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%energy%d_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%energy%d_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%energy%d_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%energy%v</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%energy%v_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%energy%v_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%energy%v_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%energy%flux</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%energy%flux_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%energy%flux_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%electrons%energy%flux_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%total_ion_energy%d</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%total_ion_energy%d_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%total_ion_energy%d_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%total_ion_energy%d_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%total_ion_energy%v</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%total_ion_energy%v_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%total_ion_energy%v_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%total_ion_energy%v_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%total_ion_energy%flux</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%total_ion_energy%flux_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%total_ion_energy%flux_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%total_ion_energy%flux_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%momentum_tor%d</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%momentum_tor%d_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%momentum_tor%d_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%momentum_tor%d_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%momentum_tor%v</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%momentum_tor%v_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%momentum_tor%v_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%momentum_tor%v_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%momentum_tor%flux</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%momentum_tor%flux_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%momentum_tor%flux_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%momentum_tor%flux_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%z_ion</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%z_ion_error_upper</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%z_ion_error_lower</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%z_ion_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%label</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%neutral_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%multiple_states_flag</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%element(1)%a</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%element(1)%a_error_upper</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%element(1)%a_error_lower</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%element(1)%a_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%element(1)%z_n</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%element(1)%z_n_error_upper</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%element(1)%z_n_error_lower</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%element(1)%z_n_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%element(1)%multiplicity</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%element(1)%multiplicity_error_upper</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%element(1)%multiplicity_error_lower</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%element(1)%multiplicity_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%particles%d</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%particles%d_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%particles%d_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%particles%d_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%particles%v</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%particles%v_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%particles%v_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%particles%v_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%particles%flux</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%particles%flux_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%particles%flux_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%particles%flux_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%energy%d</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%energy%d_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%energy%d_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%energy%d_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%energy%v</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%energy%v_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%energy%v_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%energy%v_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%energy%flux</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%energy%flux_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%energy%flux_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%energy%flux_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_min</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_min_error_upper</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_min_error_lower</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_min_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_max</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_max_error_upper</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_max_error_lower</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%z_max_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%vibrational_level</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%vibrational_level_error_upper</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%vibrational_level_error_lower</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%vibrational_level_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%vibrational_mode</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%label</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%is_neutral</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%neutral_type%name</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%neutral_type%description</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%neutral_type%electron_configuration</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%neutral_type%index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%particles%d</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%particles%d_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%particles%d_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%particles%d_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%particles%v</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%particles%v_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%particles%v_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%particles%v_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%particles%flux</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%particles%flux_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%particles%flux_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%particles%flux_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%energy%d</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%energy%d_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%energy%d_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%energy%d_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%energy%v</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%energy%v_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%energy%v_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%energy%v_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%energy%flux</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%energy%flux_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%energy%flux_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%ion(nion)%state(nstate)%energy%flux_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%label</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%ion_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%multiple_states_flag</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%element(1)%a</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%element(1)%a_error_upper</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%element(1)%a_error_lower</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%element(1)%a_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%element(1)%z_n</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%element(1)%z_n_error_upper</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%element(1)%z_n_error_lower</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%element(1)%z_n_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%element(1)%multiplicity</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%element(1)%multiplicity_error_upper</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%element(1)%multiplicity_error_lower</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%element(1)%multiplicity_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%particles%d</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%particles%d_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%particles%d_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%particles%d_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%particles%v</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%particles%v_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%particles%v_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%particles%v_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%particles%flux</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%particles%flux_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%particles%flux_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%particles%flux_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%energy%d</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%energy%d_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%energy%d_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%energy%d_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%energy%v</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%energy%v_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%energy%v_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%energy%v_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%energy%flux</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%energy%flux_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%energy%flux_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%energy%flux_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%label</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%electron_configuration</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%vibrational_level</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%vibrational_level_error_upper</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%vibrational_level_error_lower</td><td>double</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%vibrational_level_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%vibrational_mode</td><td>string</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%particles%d</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%particles%d_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%particles%d_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%particles%d_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%particles%v</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%particles%v_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%particles%v_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%particles%v_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%particles%flux</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%particles%flux_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%particles%flux_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%particles%flux_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%energy%d</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%energy%d_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%energy%d_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%energy%d_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%energy%v</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%energy%v_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%energy%v_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%energy%v_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%energy%flux</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%energy%flux_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%energy%flux_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%model%profiles_1d(nprtime)%neutral(nneut)%state(nstate)%energy%flux_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%rho_tor_norm</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%rho_tor_norm_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%rho_tor_norm_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%rho_tor_norm_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%rho_tor</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%rho_tor_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%rho_tor_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%rho_tor_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%psi</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%psi_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%psi_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%psi_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%volume</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%volume_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%volume_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%volume_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%area</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%area_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%area_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_d%area_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%rho_tor_norm</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%rho_tor_norm_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%rho_tor_norm_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%rho_tor_norm_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%rho_tor</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%rho_tor_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%rho_tor_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%rho_tor_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%psi</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%psi_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%psi_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%psi_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%volume</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%volume_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%volume_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%volume_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%area</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%area_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%area_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_v%area_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td colspan="3">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%rho_tor_norm</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%rho_tor_norm_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%rho_tor_norm_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%rho_tor_norm_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%rho_tor</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%rho_tor_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%rho_tor_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%rho_tor_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%psi</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%psi_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%psi_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%psi_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%volume</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%volume_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%volume_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%volume_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%area</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%area_error_upper</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%area_error_lower</td><td>double(:)</td><td align="center">&#8291;</td></tr>
+<tr><td align="left">core_transport%profiles_1d(nprtime)%grid_flux%area_error_index</td><td>int</td><td align="center">&#8291;</td></tr>
+
+</table>
+
+<p>
+
+<h3>Notes:</h3>
+
+<ul>
+
+<li> sctime stands for "scalar time", i.e. the times when the scalar data was dumped
+
+<li> prtime stands for "profile time", i.e. the times when the profile data was dumped
+
+</ul>
+
+</body>
+
+</html>
