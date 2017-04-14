@@ -2347,6 +2347,15 @@ program transp2imas
          nbi%unit(i)%beamlets_group(1)%divergence_component%particles_fraction = 1.0
       enddo
 #endif
+      call tr_getnl_r4vec('DN0OUT', rvdum, 10, istat)
+      offset = size(cp%profiles_1d(1)%electrons%density)
+      do it = 1, nprtime
+         allocate(cp%profiles_1d(it)%neutral(1))
+         allocate(cp%profiles_1d(it)%neutral(1)%density(offset))
+         cp%profiles_1d(it)%neutral(1)%density(:) = 0.0
+         if (istat .eq. 1) &
+            cp%profiles_1d(it)%neutral(1)%density(:) = rvdum(1)
+      enddo
    endif
 !
 !  save ids data
