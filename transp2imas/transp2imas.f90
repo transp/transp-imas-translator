@@ -2354,7 +2354,7 @@ program transp2imas
          allocate(cp%profiles_1d(it)%neutral(1)%density(offset))
          cp%profiles_1d(it)%neutral(1)%density(:) = 0.0
          if (istat .eq. 1) &
-            cp%profiles_1d(it)%neutral(1)%density(:) = rvdum(1)
+            cp%profiles_1d(it)%neutral(1)%density(:) = rvdum(1) * 1.0e6 ! /cm3 to /m3
       enddo
    endif
 !
