@@ -367,11 +367,13 @@ program transp2imas
    nion=nlist+n_thi
    do it=1,nprtime
       allocate(cp%profiles_1d(it)%ion(nion))
+      allocate(ct%model(1)%profiles_1d(it)%ion(nion))
       do i = 1, nion
          allocate(cp%profiles_1d(it)%ion(i)%element(1))
          allocate(cp%profiles_1d(it)%ion(i)%label(1))
+         allocate(ct%model(1)%profiles_1d(it)%ion(i)%element(1))
+         allocate(ct%model(1)%profiles_1d(it)%ion(i)%label(1))
       enddo
-      allocate(ct%model(1)%profiles_1d(it)%ion(nion))
    enddo
    write(iout,*) ' There are total ', nion, ' ions', &
       nlist, ' of them are impurity'
@@ -386,14 +388,17 @@ program transp2imas
       if(itype(i) .eq. 1) then
          iion=iion+1
          iion_start=i  ! position in n_species
-         write(iout,*) ' specie', i, 'th ion is ', zlbla(i )
+         write(iout,*) ' specie', i, 'th ion is ', zlbla(i)
 
          do it=1,nprtime
             cp%profiles_1d(it)%ion(iion)%element(1)%a=aa(i)
             cp%profiles_1d(it)%ion(iion)%z_ion=zz(i)
             cp%profiles_1d(it)%ion(iion)%element(1)%z_n=izc(i)
-            cp%profiles_1d(it)%ion(iion)%label(1)=zlbla(i) ! Johan
+            cp%profiles_1d(it)%ion(iion)%label(1)=zlbla(i)
 !           cp%profiles_1d(it)%ion(iion)%multiple_charge_states_flag=0
+            ct%model(1)%profiles_1d(it)%ion(iion)%element(1)%a=aa(i)
+            ct%model(1)%profiles_1d(it)%ion(iion)%element(1)%z_n=izc(i)
+            ct%model(1)%profiles_1d(it)%ion(iion)%label(1)=zlbla(i)
          enddo
 
          call rplabel(abray(1,i),label,units,imulti,istype)
@@ -654,6 +659,9 @@ program transp2imas
         	       cp%profiles_1d(it)%ion(iion)%element(1)%z_n=izc(iion_start+j)
         	       cp%profiles_1d(it)%ion(iion)%label(1)=label
         	       cp%profiles_1d(it)%ion(iion)%state(j)%label(1)=zlbla(iion_start+j)
+        	       ct%model(1)%profiles_1d(it)%ion(iion)%element(1)%a=aa(iion_start+j)
+        	       ct%model(1)%profiles_1d(it)%ion(iion)%element(1)%z_n=izc(iion_start+j)
+        	       ct%model(1)%profiles_1d(it)%ion(iion)%label(1)=label
         	    end do
 
 	            call rplabel(abray(1,iion_start+j),label,units,imulti,istype)
