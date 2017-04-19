@@ -1,4 +1,3 @@
-
 !                                                                            !
 ! prepare data for TRANSP from ITER IDS                                      !
 ! TRANSP UFILES LIB is called                                                !
@@ -7,17 +6,15 @@
 !                                                                            !
 !............................................................................!
 
-subroutine put_data_to_ufiles(ilun, &
-                              prefix,suffix,disk,directory, &
-                              ishot, &
-                              tdev,ndim,shdate, &
-                              comment, &
-                        t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
-                              ierr)
+subroutine put_data_to_ufiles(ilun, prefix,suffix,disk,directory, &
+                              ishot,tdev,ndim,shdate,comment, &
+                              t_uf0d,t_uf1d,t_uf2d,t_uf3d,ierr)
+
 use transp_ufiles_0d
 use transp_ufiles_1d
 use transp_ufiles_2d
 use transp_ufiles_3d
+
 implicit none
 
     integer,intent(out) :: ierr
@@ -44,8 +41,6 @@ implicit none
 
 !2. open file with a shot number
     integer,intent(in) :: ishot  !(6-digit shot number)
-
-!.
     CHARACTER(len=*) TDEV !(tokamak id)
     !(0,1,2,3. 0 for scalar, 1 for 1d array, 2 for 2d array, 3 for 3darray)
     integer,intent(in) :: ndim
@@ -119,7 +114,6 @@ implicit none
  
 !4. append comments to the end of the file after the standard UFILES data write is complete.
     CHARACTER(len=*),intent(in) :: comment
- 
 
     ! ... local ... !
     ! label X (coor) , Y (coor), Z (coor), and F (function of X,Y,Z)
@@ -129,8 +123,6 @@ implicit none
     type(transp_ufiles_2d_data) :: t_uf2d
     type(transp_ufiles_3d_data) :: t_uf3d
     integer :: is
-
-
 
                ! ............ code start here ............ !
 
@@ -147,18 +139,15 @@ implicit none
     !enhance the default ascii format writing
     CALL UFCMPR(ILUN,0)
 
-
 !2. A shot (experiment) number is supplied (this completes the filename whose 
 !   form was specified in step 1), and the UFILES file is opened for write access. 
 !   call UFOPWR(lun,ishot,ierr)
 !
 !   ISHOT - the 6 digit shot number between 1000 and 999999
 
-    CALL UFOPWR(ilun,ishot,ierr) 
-
+    CALL UFOPWR(ilun,ishot,ierr)
 
 !3. write
-
 
    if( ndim==0 ) then
 
@@ -199,7 +188,6 @@ implicit none
                   t_uf0d%SCVAL,t_uf0d%SCLAB,t_uf0d%nsc, &
                   IERR)
    deallocate( t_uf0d%SCLAB )
-
 
    else if( ndim==1 ) then
 
@@ -324,7 +312,6 @@ implicit none
 !then all of f vs. x at the second y, etc. This is consistent with the FORTRAN 
 !convention for the storage of data in multiply-subscripted arrays.
 
-
    !ndim=2
    !nsc=0
    !nx=NXMAX
@@ -418,9 +405,8 @@ implicit none
 !C SPOOL CONTENTS OF TEMPORARY FILE
 !   CALL UCSEND(LUNT, ILUN)
 
-
 !5. Close the file.
-   CALL UFCLOS(ILUN) 
+   CALL UFCLOS(ILUN)
 
       101 format ( a20,a10 )
 

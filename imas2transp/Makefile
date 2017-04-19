@@ -31,6 +31,12 @@ put_data_to_ufiles.o : put_data_to_ufiles.f90
 imas2transp.o : imas2transp.f90
 	$(F90) $(COPTS) -I. $(INCLUDES) -c $<
 
+put_nubeam_data_to_ufiles : put_nubeam_data_to_ufiles.o
+	$(F90) $(COPTS) -o $@ $^ $(LIBS_ufile) $(LIBS_ezspline) $(LIBS)
+
+put_nubeam_data_to_ufiles.o : put_nubeam_data_to_ufiles.f90
+	$(F90) $(COPTS) -I. $(INCLUDES) -c $<
+
 .PHONY : clean
 clean :
-	rm -f imas2transp *.o *.mod *~
+	rm -f imas2transp put_nubeam_data_to_ufiles *.o *.mod *~ A32???.???
