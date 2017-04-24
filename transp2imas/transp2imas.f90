@@ -220,7 +220,7 @@ program transp2imas
       if (kerr.eq.-1) nbeam = nbeam + 1
    end do
    !write(*, *) 'nbeam =', nbeam
-   !stop
+
    if (nbeam.gt.0) then
       allocate(nbi%time(nsctime))
       allocate(nbi%unit(nbeam))
@@ -1206,24 +1206,27 @@ program transp2imas
    enddo
 
    write(iout,*) ' '
-   call rprofile('OMEGA',prdata,nprtime*xsizes(1),iret,ier)
-   if(ier.ne.0) call transp2imas_error('rprofile(OMEGA)',ier)
-   if(iret.ne.nprtime*xsizes(1)) &
-      call transp2imas_exit(' ?? OMEGA read error')
-   call transp2imas_echo('OMEGA',prdata,xsizes(1),nprtime)
-
-   offset = xsizes(1)
-   do it = 1, nprtime
-      allocate(cp%profiles_1d(it)%electrons%velocity_tor(offset))
-      cp%profiles_1d(it)%electrons%velocity_tor(1:offset)=&
-         eq%vacuum_toroidal_field%r0 * prdata(1+(it-1)*offset:it*offset)
-      ! Assume ions rotate with electrons
-      do iion = 1, n_thi + nlist
-         allocate(cp%profiles_1d(it)%ion(iion)%velocity_tor(offset))
-         cp%profiles_1d(it)%ion(iion)%velocity_tor(1:offset) = &
-         cp%profiles_1d(it)%electrons%velocity_tor(1:offset)
-      enddo
-   enddo
+   call rprofile('OMEGA', prdata, nprtime * xsizes(1), iret, ier)
+   !if (ier.ne.0) call transp2imas_error('rprofile(OMEGA)',ier)
+   !if (iret .ne. nprtime * xsizes(1)) &
+   !   call transp2imas_exit(' ?? OMEGA read error')
+   if (ier .eq. 0) then
+      if (iret .eq. nprtime * xsizes(1)) then
+         call transp2imas_echo('OMEGA', prdata, xsizes(1), nprtime)
+         offset = xsizes(1)
+         do it = 1, nprtime
+            allocate(cp%profiles_1d(it)%electrons%velocity_tor(offset))
+            cp%profiles_1d(it)%electrons%velocity_tor(1:offset) = &
+               eq%vacuum_toroidal_field%r0 * prdata(1+(it-1)*offset:it*offset)
+            ! Assume ions rotate with electrons
+            do iion = 1, n_thi + nlist
+               allocate(cp%profiles_1d(it)%ion(iion)%velocity_tor(offset))
+               cp%profiles_1d(it)%ion(iion)%velocity_tor(1:offset) = &
+               cp%profiles_1d(it)%electrons%velocity_tor(1:offset)
+            enddo
+         enddo
+      endif
+   endif
 
    write(iout,*) ' '
    call rprofile('NI',prdata,nprtime*xsizes(1),iret,ier)
@@ -1332,39 +1335,43 @@ program transp2imas
          prdata(1+(it-1)*offset:it*offset) * 1.e4
    enddo
 
-   write(iout,*) ' '
-   call rprofile('VRPOT',prdata,nprtime*xsizes(2),iret,ier)
-   if(ier.ne.0) call transp2imas_error('rprofile(VRPOT)',ier)
-   if(iret.ne.nprtime*xsizes(2)) &
-      call transp2imas_exit(' ?? VRPOT read error')
-   call transp2imas_echo('VRPOT',prdata,xsizes(2),nprtime)
-   ! Use linear differentiation to transform VRPOT(XB) -> "ERAD(X)"
-   offset = xsizes(1)
-   do it = 1, nprtime
-      allocate(cp%profiles_1d(it)%e_field%radial(offset))
-      do ir = 2, offset
-         cp%profiles_1d(it)%e_field%radial(ir) = &
-         prdata(ir+(it-1)*offset) - prdata(ir-1+(it-1)*offset)
-      enddo
-   enddo
-   write(iout,*) ' '
-   call rprofile('RBOUN',prdata,nprtime*xsizes(2),iret,ier)
-   if(ier.ne.0) call transp2imas_error('rprofile(RBOUN)',ier)
-   if(iret.ne.nprtime*xsizes(2)) &
-      call transp2imas_exit(' ?? RBOUN read error')
-   call transp2imas_echo('RBOUN',prdata,xsizes(2),nprtime)
-   offset = xsizes(1)
-   do it = 1, nprtime
-      do ir = 2, offset
-         cp%profiles_1d(it)%e_field%radial(ir) = &
-         cp%profiles_1d(it)%e_field%radial(ir) / &
-         (prdata(ir+(it-1)*offset) - prdata(ir-1+(it-1)*offset)) * &
-         1.0e2 ! V/cm -> V/m
-      enddo
-      ! Assume on-axis radial electric field is zero
-      cp%profiles_1d(it)%e_field%radial(1) = &
-      0.5 * cp%profiles_1d(it)%e_field%radial(2)
-   enddo
+   write(iout, *) ' '
+   call rprofile('VRPOT', prdata, nprtime * xsizes(2), iret, ier)
+   !if (ier .ne. 0) call transp2imas_error('rprofile(VRPOT)', ier)
+   !if (iret .ne. nprtime * xsizes(2)) &
+   !   call transp2imas_exit(' ?? VRPOT read error')
+   if (ier .eq. 0) then
+      if (iret .eq. nprtime * xsizes(2)) then
+         call transp2imas_echo('VRPOT', prdata, xsizes(2), nprtime)
+         ! Use linear differentiation to transform VRPOT(XB) -> "ERAD(X)"
+         offset = xsizes(1)
+         do it = 1, nprtime
+            allocate(cp%profiles_1d(it)%e_field%radial(offset))
+            do ir = 2, offset
+               cp%profiles_1d(it)%e_field%radial(ir) = &
+               prdata(ir+(it-1)*offset) - prdata(ir-1+(it-1)*offset)
+            enddo
+         enddo
+         write(iout,*) ' '
+         call rprofile('RBOUN', prdata, nprtime * xsizes(2), iret, ier)
+         if (ier .ne. 0) call transp2imas_error('rprofile(RBOUN)', ier)
+         if (iret .ne. nprtime * xsizes(2)) &
+            call transp2imas_exit(' ?? RBOUN read error')
+         call transp2imas_echo('RBOUN', prdata, xsizes(2), nprtime)
+         offset = xsizes(1)
+         do it = 1, nprtime
+            do ir = 2, offset
+               cp%profiles_1d(it)%e_field%radial(ir) = &
+               cp%profiles_1d(it)%e_field%radial(ir) / &
+               (prdata(ir+(it-1)*offset) - prdata(ir-1+(it-1)*offset)) * &
+               1.0e2 ! V/cm -> V/m
+            enddo
+            ! Assume on-axis radial electric field is zero
+            cp%profiles_1d(it)%e_field%radial(1) = &
+            0.5 * cp%profiles_1d(it)%e_field%radial(2)
+         enddo
+      endif
+   endif
 
    write(iout,*) ' '
    !? correct?
@@ -1546,7 +1553,6 @@ program transp2imas
                       ct%model(1)%profiles_1d(it)%ion(iion)%particles%d(1:offset) = &
                       prdata(1+(it-1)*offset:it*offset) * 1.0e-4 ! cm^2/s -> m^2/s
             enddo
-         !stop
       enddo
    endif
    ! Then for fusion alphas...
