@@ -120,8 +120,8 @@ program transp2imas
 
    type(ezspline1_r8) :: spln1
 
-   real :: rdum, rvdum(10), rvdum2(10)
-   integer :: ivdum(10)
+   real :: rdum, rvdum(20), rvdum2(20)
+   integer :: ivdum(20)
 
 !----------------------------------------------------------------
 !
@@ -219,7 +219,8 @@ program transp2imas
       !if (kerr.gt.0) nbeam = nbeam + 1
       if (kerr.eq.-1) nbeam = nbeam + 1
    end do
-   !write(*, *) 'nbeam =', nbeam
+   write(*, *) 'nbeam =', nbeam
+   stop
 
    if (nbeam.gt.0) then
       allocate(nbi%time(nsctime))
@@ -679,11 +680,11 @@ program transp2imas
     	           call transp2imas_echo(abray(1,iion_start+j),prdata,xsizes(istype),nprtime)
 
     	           offset=xsizes(istype)
-    	           do it = 1, nprtime
-	                  allocate(cp%profiles_1d(it)%ion(iion)%state(j)%density(offset))
-    	              cp%profiles_1d(it)%ion(iion)%state(j)%density(1:offset)=&
-    	                 prdata(1+(it-1)*offset:it*offset)*1.e6
-    	           end do
+    	           !do it = 1, nprtime
+	           !       allocate(cp%profiles_1d(it)%ion(iion)%state(j)%density(offset))
+    	           !   cp%profiles_1d(it)%ion(iion)%state(j)%density(1:offset)=&
+    	           !      prdata(1+(it-1)*offset:it*offset)*1.e6
+    	           !end do
 
     	           !get charge state temperature
     	           write(iout,*) ' '
@@ -694,11 +695,11 @@ program transp2imas
     	           call transp2imas_echo(abray(2,iion_start+j),prdata,xsizes(istype),nprtime)
 
     	           offset=xsizes(istype)
-    	           do it = 1, nprtime
-    	              allocate(cp%profiles_1d(it)%ion(iion)%state(j)%temperature(offset))
-    	              cp%profiles_1d(it)%ion(iion)%state(j)%temperature(1:offset)=&
-    	                 prdata(1+(it-1)*offset:it*offset)
-    	           end do
+    	           !do it = 1, nprtime
+    	           !   allocate(cp%profiles_1d(it)%ion(iion)%state(j)%temperature(offset))
+    	           !   cp%profiles_1d(it)%ion(iion)%state(j)%temperature(1:offset)=&
+    	           !      prdata(1+(it-1)*offset:it*offset)
+    	           !end do
 		        end if
             end if
          end do
@@ -1334,7 +1335,7 @@ program transp2imas
       cp%profiles_1d(it)%j_ohmic(1:offset)=&
          prdata(1+(it-1)*offset:it*offset) * 1.e4
    enddo
-
+#if 0
    write(iout, *) ' '
    call rprofile('VRPOT', prdata, nprtime * xsizes(2), iret, ier)
    !if (ier .ne. 0) call transp2imas_error('rprofile(VRPOT)', ier)
@@ -1372,7 +1373,7 @@ program transp2imas
          enddo
       endif
    endif
-
+#endif
    write(iout,*) ' '
    !? correct?
    ! CUR(X)            TOTAL PLASMA CURRENT         AMPS/CM2
@@ -2254,9 +2255,9 @@ program transp2imas
    if (nbeam.gt.0) then
       ivdum(1) = 0
       call tr_getnl_intvec('NBEAM', ivdum, 1, istat)
-      !write(*,*) 'istat =', istat
-      !stop
-      if ((istat.ne.1).or.(ivdum(1).ne.nbeam)) call transp2imas_exit('NBEAM.neq.nbeam...')
+      write(*,*) 'istat = ', istat, ivdum(1)
+      stop
+      if ((istat.ne.1).or.(ivdum(1).ne.nbeam)) call transp2imas_exit('NBEAM.ne.nbeam...')
       call tr_getnl_r4vec('FFULLA', rvdum, nbeam, istat)
       call tr_getnl_r4vec('FHALFA', rvdum2, nbeam, istat)
       do i = 1, nbeam
@@ -2363,13 +2364,13 @@ program transp2imas
 #endif
       call tr_getnl_r4vec('DN0OUT', rvdum, 10, istat)
       offset = size(cp%profiles_1d(1)%electrons%density)
-      do it = 1, nprtime
-         allocate(cp%profiles_1d(it)%neutral(1))
-         allocate(cp%profiles_1d(it)%neutral(1)%density(offset))
-         cp%profiles_1d(it)%neutral(1)%density(:) = 0.0
-         if (istat .eq. 1) &
-            cp%profiles_1d(it)%neutral(1)%density(:) = rvdum(1) * 1.0e6 ! /cm3 to /m3
-      enddo
+      !do it = 1, nprtime
+      !   allocate(cp%profiles_1d(it)%neutral(1))
+      !   allocate(cp%profiles_1d(it)%neutral(1)%density(offset))
+      !   cp%profiles_1d(it)%neutral(1)%density(:) = 0.0
+      !   if (istat .eq. 1) &
+      !      cp%profiles_1d(it)%neutral(1)%density(:) = rvdum(1) * 1.0e6 ! /cm3 to /m3
+      !enddo
    endif
 !
 !  save ids data

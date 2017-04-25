@@ -2707,11 +2707,11 @@ subroutine t1mhdeqi_geqdsk(lun_geqdsk,geqdsk_lbl, &
 
 ! Stuff the limiter coords in outline for now. Johan 01/05/17
 
-        allocate(eq%time_slice(it)%boundary%outline%r(nblim))
-        eq%time_slice(it)%boundary%outline%r(:) = rlim(:)
+        !allocate(eq%time_slice(it)%boundary%outline%r(nblim))
+        !eq%time_slice(it)%boundary%outline%r(:) = rlim(:)
 
-        allocate(eq%time_slice(it)%boundary%outline%z(nblim))
-        eq%time_slice(it)%boundary%outline%z(:) = zlim(:)
+        !allocate(eq%time_slice(it)%boundary%outline%z(nblim))
+        !eq%time_slice(it)%boundary%outline%z(:) = zlim(:)
 
 !  that is all
 
