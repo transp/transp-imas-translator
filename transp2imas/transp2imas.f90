@@ -203,6 +203,13 @@ program transp2imas
    allocate(ct%model(1))
    allocate(ct%model(1)%profiles_1d(nprtime))
 
+   write(iout,*) ' '
+   ilun=99
+   call tr_getnl_text(ilun,ier)
+   if(ier.ne.0) then
+      call transp2imas_error('tr_getnl_text',ier)
+   endif
+
    nbeam = 0
 #if 1
    ! Get number of beams from namelist
@@ -228,7 +235,7 @@ program transp2imas
    end do
 #endif
    write(*, *) 'nbeam =', nbeam
-   stop
+   !stop
 
    if (nbeam .gt. 0) then
       allocate(nbi%time(nsctime))
@@ -2218,8 +2225,7 @@ program transp2imas
    !         xplasma_wr_geqdsk  ==>> t1mhdeq_xplasma2geq, somehow
    !         didn't work, module name change also won't work. ????
 !---------------------------------
-!  namelist test...
-
+#if 1
 !  read namelist file
 
    write(iout,*) ' '
@@ -2228,7 +2234,7 @@ program transp2imas
    if(ier.ne.0) then
       call transp2imas_error('tr_getnl_text',ier)
    endif
-
+#endif
 !  get number of plasma species
 
    call tr_getnl_intvec('NGMAX',ngmax,1,istat)
