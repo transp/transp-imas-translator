@@ -203,8 +203,15 @@ program transp2imas
    allocate(ct%model(1))
    allocate(ct%model(1)%profiles_1d(nprtime))
 
-! Count the number of beams
    nbeam = 0
+#if 1
+   ! Get number of beams from namelist
+   ivdum(1) = 0
+   call tr_getnl_intvec('NBEAM', ivdum, 1, istat)
+   write(*,*) 'istat = ', istat, ivdum(1)
+   if (istat .eq. 1) nbeam = ivdum(1)
+#else
+! Count the number of beams
    do k = 1, 9
       write(int2strng, *) k
       tmps1 = adjustl(int2strng) ! delete the leading blanks
@@ -219,10 +226,11 @@ program transp2imas
       !if (kerr.gt.0) nbeam = nbeam + 1
       if (kerr.eq.-1) nbeam = nbeam + 1
    end do
+#endif
    write(*, *) 'nbeam =', nbeam
    stop
 
-   if (nbeam.gt.0) then
+   if (nbeam .gt. 0) then
       allocate(nbi%time(nsctime))
       allocate(nbi%unit(nbeam))
       do k = 1, nbeam
@@ -873,7 +881,7 @@ program transp2imas
    cp%time = sctime
    eq%time = sctime
    ct%time = sctime
-   if (nbeam.gt.0) nbi%time = sctime
+   if (nbeam .gt. 0) nbi%time = sctime
    do k = 1, nbeam
       nbi%unit(k)%power%time(:) = sctime(:)
       nbi%unit(k)%energy%time = sctime
@@ -2252,12 +2260,7 @@ program transp2imas
 
 !  get beam data from namelist
 
-   if (nbeam.gt.0) then
-      ivdum(1) = 0
-      call tr_getnl_intvec('NBEAM', ivdum, 1, istat)
-      write(*,*) 'istat = ', istat, ivdum(1)
-      stop
-      if ((istat.ne.1).or.(ivdum(1).ne.nbeam)) call transp2imas_exit('NBEAM.ne.nbeam...')
+   if (nbeam .gt. 0) then
       call tr_getnl_r4vec('FFULLA', rvdum, nbeam, istat)
       call tr_getnl_r4vec('FHALFA', rvdum2, nbeam, istat)
       do i = 1, nbeam
