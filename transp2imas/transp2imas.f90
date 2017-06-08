@@ -695,11 +695,11 @@ program transp2imas
     	           call transp2imas_echo(abray(1,iion_start+j),prdata,xsizes(istype),nprtime)
 
     	           offset=xsizes(istype)
-    	           !do it = 1, nprtime
-	           !       allocate(cp%profiles_1d(it)%ion(iion)%state(j)%density(offset))
-    	           !   cp%profiles_1d(it)%ion(iion)%state(j)%density(1:offset)=&
-    	           !      prdata(1+(it-1)*offset:it*offset)*1.e6
-    	           !end do
+    	           do it = 1, nprtime
+	                  allocate(cp%profiles_1d(it)%ion(iion)%state(j)%density(offset))
+    	              cp%profiles_1d(it)%ion(iion)%state(j)%density(1:offset)=&
+    	                 prdata(1+(it-1)*offset:it*offset)*1.e6
+    	           end do
 
     	           !get charge state temperature
     	           write(iout,*) ' '
@@ -710,11 +710,11 @@ program transp2imas
     	           call transp2imas_echo(abray(2,iion_start+j),prdata,xsizes(istype),nprtime)
 
     	           offset=xsizes(istype)
-    	           !do it = 1, nprtime
-    	           !   allocate(cp%profiles_1d(it)%ion(iion)%state(j)%temperature(offset))
-    	           !   cp%profiles_1d(it)%ion(iion)%state(j)%temperature(1:offset)=&
-    	           !      prdata(1+(it-1)*offset:it*offset)
-    	           !end do
+    	           do it = 1, nprtime
+    	              allocate(cp%profiles_1d(it)%ion(iion)%state(j)%temperature(offset))
+    	              cp%profiles_1d(it)%ion(iion)%state(j)%temperature(1:offset)=&
+    	                 prdata(1+(it-1)*offset:it*offset)
+    	           end do
 		        end if
             end if
          end do
@@ -1350,7 +1350,7 @@ program transp2imas
       cp%profiles_1d(it)%j_ohmic(1:offset)=&
          prdata(1+(it-1)*offset:it*offset) * 1.e4
    enddo
-#if 0
+#if 1
    write(iout, *) ' '
    call rprofile('VRPOT', prdata, nprtime * xsizes(2), iret, ier)
    !if (ier .ne. 0) call transp2imas_error('rprofile(VRPOT)', ier)
@@ -1659,11 +1659,11 @@ program transp2imas
    enddo
 
    write(iout,*) ' '
-   call rprofile('PPLAS',prdata,nprtime*xsizes(1),iret,ier)
-   if(ier.ne.0) call transp2imas_error('rprofile(PPLAS)',ier)
+   call rprofile('PMHD_IN',prdata,nprtime*xsizes(1),iret,ier)
+   if(ier.ne.0) call transp2imas_error('rprofile(PMHD_IN)',ier)
    if(iret.ne.nprtime*xsizes(1)) &
-      call transp2imas_exit(' ?? PPLAS read error')
-   call transp2imas_echo('PPLAS',prdata,xsizes(1),nprtime)
+      call transp2imas_exit(' ?? PMHD_IN read error')
+   call transp2imas_echo('PMHD_IN',prdata,xsizes(1),nprtime)
 
    offset = xsizes(1)
 
@@ -2373,13 +2373,13 @@ program transp2imas
 #endif
       call tr_getnl_r4vec('DN0OUT', rvdum, 10, istat)
       offset = size(cp%profiles_1d(1)%electrons%density)
-      !do it = 1, nprtime
-      !   allocate(cp%profiles_1d(it)%neutral(1))
-      !   allocate(cp%profiles_1d(it)%neutral(1)%density(offset))
-      !   cp%profiles_1d(it)%neutral(1)%density(:) = 0.0
-      !   if (istat .eq. 1) &
-      !      cp%profiles_1d(it)%neutral(1)%density(:) = rvdum(1) * 1.0e6 ! /cm3 to /m3
-      !enddo
+      do it = 1, nprtime
+         allocate(cp%profiles_1d(it)%neutral(1))
+         allocate(cp%profiles_1d(it)%neutral(1)%density(offset))
+         cp%profiles_1d(it)%neutral(1)%density(:) = 0.0
+         if (istat .eq. 1) &
+            cp%profiles_1d(it)%neutral(1)%density(:) = rvdum(1) * 1.0e6 ! /cm3 to /m3
+      enddo
    endif
 !
 !  save ids data
