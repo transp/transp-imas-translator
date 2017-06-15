@@ -1,11 +1,11 @@
-F90 = ifort
-COPTS = -cpp
-INCLUDES = -I$(UAL)/fortraninterface/ifort -I$(NETCDFHOME)/include -I$(LOCAL)/mod
-LIBS = $(UAL)/fortraninterface/libimas-ifort.a $(UAL)/lowlevel/libimas.a $(MDSPLUS_DIR)/lib/libMdsObjectsCppShr.a \
+F90 = gfortran
+COPTS = -cpp -fPIC -g -O0
+INCLUDES = -I$(UAL)/fortraninterface/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
+LIBS = $(UAL)/fortraninterface/libimas-gfortran.a $(UAL)/lowlevel/libimas.a $(MDSPLUS_DIR)/lib/libMdsObjectsCppShr.a \
 $(MDSPLUS_DIR)/lib/libMdsLib.a $(MDSPLUS_DIR)/lib/libMdsIpShr.a $(MDSPLUS_DIR)/lib/libTdiShr.a $(MDSPLUS_DIR)/lib/libTreeShr.a $(MDSPLUS_DIR)/lib/libMdsShr.a \
--L$(MDSPLUS_DIR)/lib -lMdsIpShr $(NETCDFHOME)/lib/libnetcdff.a $(NETCDFHOME)/lib/libnetcdf.a -L$(HDF5_HOME)/lib -lhdf5_hl -lhdf5 \
--L/usr/pppl/intel/2015.u1/mkl/lib/intel64 -lmkl_intel_lp64 -lmkl_sequential -lmkl_core \
--lxml2 -lpthread -lstdc++ -ldl
+-L$(MDSPLUS_DIR)/lib -lMdsIpShr $(NETCDFHOME)/lib/libnetcdff.a $(NETCDFHOME)/lib/libnetcdf.a -lhdf5_hl -lhdf5 \
+-L$(HOME)/local/mkl-11.3.2.181/compilers_and_libraries_2016.2.181/linux/mkl/lib/intel64_lin -lmkl_intel_lp64 -lmkl_sequential -lmkl_core \
+-lxml2 -lpthread -L/home/jcarlsso/local/gcc-6.1.0/lib64 -lstdc++ -ldl
 
 LIBS_transp = \
 	$(LOCAL)/lib/key_access.a \
