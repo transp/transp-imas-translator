@@ -8,6 +8,19 @@ $(MDSPLUS_DIR)/lib/libMdsLib.a $(MDSPLUS_DIR)/lib/libMdsIpShr.a $(MDSPLUS_DIR)/l
 -L$(HOME)/local/mkl-11.3.2.181/compilers_and_libraries_2016.2.181/linux/mkl/lib/intel64_lin -lmkl_intel_lp64 -lmkl_sequential -lmkl_core \
 -lxml2 -lpthread -L/home/jcarlsso/local/$(GCC)/lib64 -lstdc++ -ldl
 
+# SPECIFIC TO ITER HPC CLUSTER
+ifneq (,$(findstring iter.org, $(shell hostname)))
+  F90 = ifort -g
+  TRANSP_DIR = /home/ITER/andrer/transpsvn/Linux_x86_64/local
+  LOCAL=$(TRANSP_DIR)
+  INCLUDES = `pkg-config imas-ifort netcdf netcdf-fortran --cflags`  -I$(LOCAL)/mod
+  LIBS = `pkg-config imas-ifort imas-lowlevel netcdf netcdf-fortran --libs` 
+  LIBS += $(MDSPLUS_DIR)/lib/libMdsObjectsCppShr.a $(MDSPLUS_DIR)/lib/libMdsLib.a $(MDSPLUS_DIR)/lib/libMdsIpShr.a \
+	$(MDSPLUS_DIR)/lib/libTdiShr.a $(MDSPLUS_DIR)/lib/libTreeShr.a $(MDSPLUS_DIR)/lib/libMdsShr.a \
+	-L$(MDSPLUS_DIR)/lib -lMdsIpShr -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_sequential \
+	-lmkl_core -lpthread -limf -lm
+endif
+
 LIBS_transp = \
 	$(LOCAL)/lib/key_access.a \
 	$(LOCAL)/lib/trxplib.a \
