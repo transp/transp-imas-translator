@@ -235,7 +235,6 @@ program transp2imas
    end do
 #endif
    write(*, *) 'nbeam =', nbeam
-   !stop
 
    if (nbeam .gt. 0) then
       allocate(nbi%time(nsctime))
@@ -2426,6 +2425,7 @@ program transp2imas
    if (allocated(xbbuf3)) deallocate(xbbuf3)
 
    stop
+
 end
 
 !----------------------------------------------------
@@ -2628,7 +2628,7 @@ SUBROUTINE getids_shotid(runid,shot,run)
 
    CHARACTER(26) :: delim='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
    CHARACTER(10) :: instring,string1,string2
-   INTEGER :: index=0,itmp
+   INTEGER :: index=0,itmp,stat
 
    write(*,*) ' '
    instring = TRIM(runid)
@@ -2647,6 +2647,7 @@ SUBROUTINE getids_shotid(runid,shot,run)
    if(index.eq.6) then
       ! there are 5 digits in the transp runid
       read(string1,'(i5)') itmp
+      !read(string1,*,iostat=stat) itmp
       shot=itmp/100
       run=itmp-shot*100
    else if(index.eq.7) then

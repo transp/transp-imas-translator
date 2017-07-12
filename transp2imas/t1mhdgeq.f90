@@ -54,10 +54,10 @@ subroutine t1mhdeq_geq(runid, time)
    deltat = 0.01_r8
    ibccw  = 1
    ipccw  = 1
-   nR = 85 !105    ! this must be an ODD number
-   nZ = 85 !165    ! this must be an ODD number
-   ntheta = 85 !135
-   ns = 85 ! 135 ! number of points to use to described plasma boundary and limiter
+   nR = 105 ! this must be an ODD number
+   nZ = 165 ! this must be an ODD number
+   ntheta = 135
+   ns = 135 ! number of points to use to described plasma boundary and limiter
 
    ier = 1
    call trx_connect(runid, ier)
@@ -2256,7 +2256,6 @@ subroutine t1mhdeqi_geqdsk(lun_geqdsk,geqdsk_lbl, &
    REAL twopi
 
    !------------------------------------------------------
-
    idum=0
    xdum=ZERO
    twopi=2.*4.*atan(1.)
@@ -2684,7 +2683,7 @@ subroutine t1mhdeqi_geqdsk(lun_geqdsk,geqdsk_lbl, &
 
    ! todo use ezspline to interpolate
    if(associated(eq%time_slice(it)%profiles_1d%f_df_dpsi)) &
-      eq%time_slice(it)%profiles_1d%f_df_dpsi(:)= ffprime(:)
+      eq%time_slice(it)%profiles_1d%f_df_dpsi(:)= ffprime(:) ! Memory error
    if(associated(eq%time_slice(it)%profiles_1d%dpressure_dpsi)) &
       eq%time_slice(it)%profiles_1d%dpressure_dpsi(:)= pprime(:)
 
