@@ -2679,14 +2679,16 @@ subroutine t1mhdeqi_geqdsk(lun_geqdsk,geqdsk_lbl, &
 
    ! ids needs poloidal flux decreases when move from R0 to R0+a
    if(associated(cp%profiles_1d(it)%grid%psi)) &
-      cp%profiles_1d(it)%grid%psi(:)= cp%profiles_1d(it)%grid%psi(:) - zpsimag * twopi
+      cp%profiles_1d(it)%grid%psi(:) = cp%profiles_1d(it)%grid%psi(:) - zpsimag * twopi
 
-   ! todo use ezspline to interpolate
+   ! The FF' and p' IMAS profiles are already calculated in transp2imas main program using ezspline
+   ! I don't see a good reason to overwrite here with cruder ffprime and pprime approximations. Johan 07/13/17
+#if 0
    if(associated(eq%time_slice(it)%profiles_1d%f_df_dpsi)) &
       eq%time_slice(it)%profiles_1d%f_df_dpsi(:)= ffprime(:) ! Memory error
    if(associated(eq%time_slice(it)%profiles_1d%dpressure_dpsi)) &
       eq%time_slice(it)%profiles_1d%dpressure_dpsi(:)= pprime(:)
-
+#endif
 ! To do: merge EQDSK (rlim, zlim) & (rbdy, zbdy) into unified IMAS "outline"
 
 ! This guy is an array, not a scalar. Not sure what it's intended for? Johan 01/05/17
