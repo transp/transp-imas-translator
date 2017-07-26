@@ -6,6 +6,7 @@ module transp2imas_module
 	type (ids_equilibrium) :: eq ! Declaration of the empty core_profiles ids to be filled
 	type (ids_core_profiles) :: cp
 	type (ids_core_transport) :: ct
+	type (ids_edge_sources) :: es
 	type (ids_nbi) :: nbi
 
 	type (ids_pf_active) :: pf

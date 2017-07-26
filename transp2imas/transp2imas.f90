@@ -202,6 +202,9 @@ program transp2imas
    allocate(ct%time(nsctime))
    allocate(ct%model(1))
    allocate(ct%model(1)%profiles_1d(nprtime))
+   allocate(es%source(1))
+   allocate(es%source(1)%ggd(1))
+   allocate(es%source(1)%ggd(1)%time(nsctime))
 
    write(iout,*) ' '
    ilun=99

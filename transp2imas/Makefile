@@ -1,5 +1,6 @@
 F90 = gfortran
-COPTS = -cpp -fPIC -g -O0 -fsanitize=address
+#COPTS = -cpp -fPIC -O0 -g -fsanitize=address
+COPTS = -cpp -fPIC -O0 -g
 INCLUDES = -I$(UAL)/fortraninterface/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
 LIBS = $(UAL)/fortraninterface/libimas-gfortran.a $(UAL)/lowlevel/libimas.a $(MDSPLUS_DIR)/lib/libMdsObjectsCppShr.a \
 $(MDSPLUS_DIR)/lib/libMdsLib.a $(MDSPLUS_DIR)/lib/libMdsIpShr.a $(MDSPLUS_DIR)/lib/libTdiShr.a $(MDSPLUS_DIR)/lib/libTreeShr.a $(MDSPLUS_DIR)/lib/libMdsShr.a \
@@ -49,7 +50,7 @@ t1mhdgeq.o : t1mhdgeq.f90
 
 transp2imas.o : transp2imas.f90
 	$(F90) $(COPTS) -I. $(INCLUDES) -c $<
-	
+
 .PHONY : clean
 clean :
 	rm -f transp2imas eqdskin fort.* transp2imas.msgs *.o *.mod *~
