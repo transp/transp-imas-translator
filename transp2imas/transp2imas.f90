@@ -205,10 +205,9 @@ program transp2imas
    allocate(es%source(2)) ! Gas-flow (1) and recycling (2) sources, respectively
    allocate(es%source(1)%ggd(1))
    allocate(es%source(1)%ggd(1)%neutral(5)) ! H, D, T, He3, He4 are the possible options
-   allocate(es%source(1)%ggd(1)%time(nsctime))
+   allocate(es%time(nsctime))
    allocate(es%source(2)%ggd(1))
    allocate(es%source(2)%ggd(1)%neutral(5))
-   allocate(es%source(2)%ggd(1)%time(nsctime))
 
    write(iout,*) ' '
    ilun=99
@@ -1134,7 +1133,10 @@ program transp2imas
          if ((2.0 .eq. cp%profiles_1d(nsctime)%ion(i)%element(1)%a) .and. &
              (1.0 .eq. cp%profiles_1d(nsctime)%ion(i)%element(1)%z_n)) then
             allocate(es%source(1)%ggd(1)%neutral(1)%particles(nsctime))
-            es%source(1)%ggd(1)%neutral(1)%particles = scdata(:)
+            do k = 1, nsctime
+               allocate(es%source(1)%ggd(1)%neutral(1)%particles(k)%values(1))
+               es%source(1)%ggd(1)%neutral(1)%particles(k)%values = scdata(k)
+            end do
          endif
       enddo
    endif

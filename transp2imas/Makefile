@@ -1,6 +1,6 @@
 F90 = gfortran
-#COPTS = -cpp -fPIC -O0 -g -fsanitize=address
-COPTS = -cpp -fPIC -O0 -g
+COPTS = -cpp -fPIC -O0 -g -fsanitize=address
+#COPTS = -cpp -fPIC -O0 -g
 INCLUDES = -I$(UAL)/fortraninterface/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
 LIBS = $(UAL)/fortraninterface/libimas-gfortran.a $(UAL)/lowlevel/libimas.a $(MDSPLUS_DIR)/lib/libMdsObjectsCppShr.a \
 $(MDSPLUS_DIR)/lib/libMdsLib.a $(MDSPLUS_DIR)/lib/libMdsIpShr.a $(MDSPLUS_DIR)/lib/libTdiShr.a $(MDSPLUS_DIR)/lib/libTreeShr.a $(MDSPLUS_DIR)/lib/libMdsShr.a \
