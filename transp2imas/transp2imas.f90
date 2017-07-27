@@ -202,9 +202,13 @@ program transp2imas
    allocate(ct%time(nsctime))
    allocate(ct%model(1))
    allocate(ct%model(1)%profiles_1d(nprtime))
-   allocate(es%source(1))
+   allocate(es%source(2)) ! Gas-flow (1) and recycling (2) sources, respectively
    allocate(es%source(1)%ggd(1))
+   allocate(es%source(1)%ggd(1)%neutral(5)) ! H, D, T, He3, He4 are the possible options
    allocate(es%source(1)%ggd(1)%time(nsctime))
+   allocate(es%source(2)%ggd(1))
+   allocate(es%source(2)%ggd(1)%neutral(5))
+   allocate(es%source(2)%ggd(1)%time(nsctime))
 
    write(iout,*) ' '
    ilun=99
@@ -1122,7 +1126,21 @@ program transp2imas
 !         call transp2imas_exit(' ?? X read error')
 !      call transp2imas_echo('X',scdata,1,nsctime)
 
+   ! fill es IDS
+
+   call rpscalar('GASD',scdata,nsctime,iret,ier)
+   if ((ier .eq. 0) .and. (iret .eq. nsctime)) then
+      do n = 1, n_thi
+         if ((2.0 .eq. cp%profiles_1d(nsctime)%ion(i)%element(1)%a) .and. &
+             (1.0 .eq. cp%profiles_1d(nsctime)%ion(i)%element(1)%z_n)) then
+            allocate(es%source(1)%ggd(1)%neutral(1)%particles(nsctime))
+            es%source(1)%ggd(1)%neutral(1)%particles = scdata(:)
+         endif
+      enddo
+   endif
+
    ! fill nbi IDS
+
    if (nbeam.gt.0) then
 
       do k = 1, nbeam
