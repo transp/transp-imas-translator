@@ -1177,6 +1177,45 @@ program transp2imas
       enddo
    endif
 
+   call rpscalar('RCYD',scdata,nsctime,iret,ier)
+   if ((ier .eq. 0) .and. (iret .eq. nsctime)) then
+      do n = 1, n_thi
+         if ((2.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%a) .and. &
+             (1.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%z_n)) then
+            write(*,*) 'Using index', n, 'for RCYD data'
+            allocate(es%source(2)%ggd(1)%neutral(n)%particles(1))
+            allocate(es%source(2)%ggd(1)%neutral(n)%particles(1)%values(nsctime))
+            es%source(2)%ggd(1)%neutral(n)%particles(1)%values = scdata
+         endif
+      enddo
+   endif
+
+   call rpscalar('RCYT',scdata,nsctime,iret,ier)
+   if ((ier .eq. 0) .and. (iret .eq. nsctime)) then
+      do n = 1, n_thi
+         if ((3.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%a) .and. &
+             (1.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%z_n)) then
+            write(*,*) 'Using index', n, 'for RCYT data'
+            allocate(es%source(2)%ggd(1)%neutral(n)%particles(1))
+            allocate(es%source(2)%ggd(1)%neutral(n)%particles(1)%values(nsctime))
+            es%source(2)%ggd(1)%neutral(n)%particles(1)%values = scdata
+         endif
+      enddo
+   endif
+
+   call rpscalar('RCY4',scdata,nsctime,iret,ier)
+   if ((ier .eq. 0) .and. (iret .eq. nsctime)) then
+      do n = 1, n_thi
+         if ((4.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%a) .and. &
+             (2.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%z_n)) then
+            write(*,*) 'Using index', n, 'for RCY4 data'
+            allocate(es%source(2)%ggd(1)%neutral(n)%particles(1))
+            allocate(es%source(2)%ggd(1)%neutral(n)%particles(1)%values(nsctime))
+            es%source(2)%ggd(1)%neutral(n)%particles(1)%values = scdata
+         endif
+      enddo
+   endif
+
    ! fill nbi IDS
 
    if (nbeam.gt.0) then
@@ -2448,6 +2487,10 @@ program transp2imas
    call ids_put(idsidx, "core_profiles", cp)
    write(*,*) ' transp2imas: save ct ids'
    call ids_put(idsidx, "core_transport", ct)
+   write(*,*) ' transp2imas: save es ids'
+   es%source(1)%ggd(1)%time = 0.
+   es%source(2)%ggd(1)%time = 0.
+   call ids_put(idsidx, "edge_sources", es)
    write(*,*) ' transp2imas: save nbi ids'
    call ids_put(idsidx, "nbi", nbi)
 
@@ -2456,6 +2499,7 @@ program transp2imas
    call ids_deallocate(eq)
    call ids_deallocate(cp)
    call ids_deallocate(ct)
+   call ids_deallocate(es)
    call ids_deallocate(nbi)
    call imas_close(idsidx)
 
