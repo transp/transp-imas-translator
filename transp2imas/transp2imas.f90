@@ -1130,13 +1130,49 @@ program transp2imas
    call rpscalar('GASD',scdata,nsctime,iret,ier)
    if ((ier .eq. 0) .and. (iret .eq. nsctime)) then
       do n = 1, n_thi
-         if ((2.0 .eq. cp%profiles_1d(nsctime)%ion(i)%element(1)%a) .and. &
-             (1.0 .eq. cp%profiles_1d(nsctime)%ion(i)%element(1)%z_n)) then
-            allocate(es%source(1)%ggd(1)%neutral(1)%particles(nsctime))
-            do k = 1, nsctime
-               allocate(es%source(1)%ggd(1)%neutral(1)%particles(k)%values(1))
-               es%source(1)%ggd(1)%neutral(1)%particles(k)%values = scdata(k)
-            end do
+         !write(*,*) 'Writing GASD: n, a(n), z_n(n) =', n, cp%profiles_1d(nsctime)%ion(n)%element(1)%a, &
+         !   cp%profiles_1d(nsctime)%ion(n)%element(1)%z_n
+         if ((2.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%a) .and. &
+             (1.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%z_n)) then
+            write(*,*) 'Using index', n, 'for GASD data'
+            !allocate(es%source(1)%ggd(1)%neutral(n)%particles(nsctime))
+            !do k = 1, nsctime
+            !   allocate(es%source(1)%ggd(1)%neutral(n)%particles(k)%values(1))
+            !   es%source(1)%ggd(1)%neutral(n)%particles(k)%values = scdata(k)
+            !end do
+            allocate(es%source(1)%ggd(1)%neutral(n)%particles(1))
+            allocate(es%source(1)%ggd(1)%neutral(n)%particles(1)%values(nsctime))
+            es%source(1)%ggd(1)%neutral(n)%particles(1)%values = scdata
+         endif
+      enddo
+   endif
+
+   call rpscalar('GAST',scdata,nsctime,iret,ier)
+   if ((ier .eq. 0) .and. (iret .eq. nsctime)) then
+      do n = 1, n_thi
+         !write(*,*) 'Writing GAST: n, a(n), z_n(n) =', n, cp%profiles_1d(nsctime)%ion(n)%element(1)%a, &
+         !   cp%profiles_1d(nsctime)%ion(n)%element(1)%z_n
+         if ((3.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%a) .and. &
+             (1.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%z_n)) then
+            write(*,*) 'Using index', n, 'for GAST data'
+            allocate(es%source(1)%ggd(1)%neutral(n)%particles(1))
+            allocate(es%source(1)%ggd(1)%neutral(n)%particles(1)%values(nsctime))
+            es%source(1)%ggd(1)%neutral(n)%particles(1)%values = scdata
+         endif
+      enddo
+   endif
+
+   call rpscalar('GAS4',scdata,nsctime,iret,ier)
+   if ((ier .eq. 0) .and. (iret .eq. nsctime)) then
+      do n = 1, n_thi
+         !write(*,*) 'Writing GAS4: n, a(n), z_n(n) =', n, cp%profiles_1d(nsctime)%ion(n)%element(1)%a, &
+         !   cp%profiles_1d(nsctime)%ion(n)%element(1)%z_n
+         if ((4.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%a) .and. &
+             (2.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%z_n)) then
+            write(*,*) 'Using index', n, 'for GAS4 data'
+            allocate(es%source(1)%ggd(1)%neutral(n)%particles(1))
+            allocate(es%source(1)%ggd(1)%neutral(n)%particles(1)%values(nsctime))
+            es%source(1)%ggd(1)%neutral(n)%particles(1)%values = scdata
          endif
       enddo
    endif
