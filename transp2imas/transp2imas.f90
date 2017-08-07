@@ -849,6 +849,7 @@ program transp2imas
 
          do i=1,nlist
             call rplabel(names(i),label,units,imulti,istype)
+            write(*,*) j, i, 'multigraph name:', names(i)
             if(imulti.ne.1) call transp2imas_exit(' ?? imulti.ne.1')
             if(istype.ne.ij) &
                call transp2imas_exit(' ?? istype.ne.ij')
@@ -871,6 +872,7 @@ program transp2imas
          if(allocated(names)) deallocate(names)
       endif
    enddo
+   stop
 
 !---------------------------------
 ! get actual data
