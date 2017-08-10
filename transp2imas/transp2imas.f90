@@ -849,7 +849,7 @@ program transp2imas
 
          do i=1,nlist
             call rplabel(names(i),label,units,imulti,istype)
-            write(*,*) j, i, 'multigraph name:', names(i)
+            !write(*,*) j, i, 'multigraph name:', names(i)
             if(imulti.ne.1) call transp2imas_exit(' ?? imulti.ne.1')
             if(istype.ne.ij) &
                call transp2imas_exit(' ?? istype.ne.ij')
@@ -872,7 +872,6 @@ program transp2imas
          if(allocated(names)) deallocate(names)
       endif
    enddo
-   stop
 
 !---------------------------------
 ! get actual data
@@ -1217,6 +1216,34 @@ program transp2imas
          endif
       enddo
    endif
+
+   open(unit=333, file='Non_IMAS_data_for_NUBEAM.txt', status='replace')
+
+   call rpmulti('DENS0ARC',istype,label,units,infuns,mgsigns,mgnames,ier)
+   if(ier.ne.0) call transp2imas_error('rpmulti(DENS0ARC)',ier)
+   write(333,*) 'DENS0ARC: ', label, ' in ', units
+   call rpmg0cal(mgnames,mgsigns,infuns,mgdata,nmax,iret,istype,iwarn,ier)
+   if(ier.ne.0) call transp2imas_error('rpmg0cal ier',ier)
+   if(iwarn.ne.0) call transp2imas_error('rpmg0cal iwarn',iwarn)
+   write(333,*) infuns, nprtime, xsizes(istype)
+   do i = 1, infuns
+      write(333,*) mgnames(i)
+      do j = 1, nprtime
+         write(333,*) j
+         do k = 1, xsizes(istype)
+            rdum = 0.0
+            if ((i .ge. 1) .and. (i .le. 3)) rdum = es%source(2)%ggd(1)%neutral(2)%particles(1)%values(k)
+            if ((i .ge. 4) .and. (i .le. 6)) rdum = es%source(2)%ggd(1)%neutral(1)%particles(1)%values(k)
+            if ((i .ge. 7) .and. (i .le. 9)) rdum = es%source(2)%ggd(1)%neutral(3)%particles(1)%values(k)
+            !if (rdum .eq. 0.0) write(*,*) i, j, k
+            write(333,*) mgdata((j-1)*xsizes(istype)+k, i) / rdum * 1.0e6
+         enddo
+      enddo
+   enddo
+
+   close(333)
+
+   !stop
 
    ! fill nbi IDS
 
