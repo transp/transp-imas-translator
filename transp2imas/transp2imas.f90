@@ -1236,14 +1236,97 @@ program transp2imas
             if ((i .ge. 4) .and. (i .le. 6)) rdum = es%source(2)%ggd(1)%neutral(1)%particles(1)%values(k)
             if ((i .ge. 7) .and. (i .le. 9)) rdum = es%source(2)%ggd(1)%neutral(3)%particles(1)%values(k)
             !if (rdum .eq. 0.0) write(*,*) i, j, k
-            write(333,*) mgdata((j-1)*xsizes(istype)+k, i) / rdum * 1.0e6
+            write(333,*) mgdata((j-1)*xsizes(istype)+k, i) / rdum * 1.0e6 ! /cm3 to /m3
+         enddo
+      enddo
+   enddo
+
+   call rpmulti('DENS0AGF',istype,label,units,infuns,mgsigns,mgnames,ier)
+   if(ier.ne.0) call transp2imas_error('rpmulti(DENS0AGF)',ier)
+   write(333,*) 'DENS0AGF: ', label, ' in ', units
+   call rpmg0cal(mgnames,mgsigns,infuns,mgdata,nmax,iret,istype,iwarn,ier)
+   if(ier.ne.0) call transp2imas_error('rpmg0cal ier',ier)
+   if(iwarn.ne.0) call transp2imas_error('rpmg0cal iwarn',iwarn)
+   do i = 1, infuns
+      write(333,*) mgnames(i)
+      do j = 1, nprtime
+         write(333,*) j
+         do k = 1, xsizes(istype)
+            rdum = 0.0
+            if ((i .ge. 1) .and. (i .le. 3)) rdum = es%source(1)%ggd(1)%neutral(2)%particles(1)%values(k)
+            if ((i .ge. 4) .and. (i .le. 6)) rdum = es%source(1)%ggd(1)%neutral(1)%particles(1)%values(k)
+            if ((i .ge. 7) .and. (i .le. 9)) rdum = es%source(1)%ggd(1)%neutral(3)%particles(1)%values(k)
+            !if (rdum .eq. 0.0) write(*,*) i, j, k
+            write(333,*) mgdata((j-1)*xsizes(istype)+k, i) / rdum * 1.0e6 ! /cm3 to /m3
+         enddo
+      enddo
+   enddo
+
+   call rpmulti('T0ARC',istype,label,units,infuns,mgsigns,mgnames,ier)
+   if(ier.ne.0) call transp2imas_error('rpmulti(T0ARC)',ier)
+   write(333,*) 'T0ARC: ', label, ' in ', units
+   call rpmg0cal(mgnames,mgsigns,infuns,mgdata,nmax,iret,istype,iwarn,ier)
+   if(ier.ne.0) call transp2imas_error('rpmg0cal ier',ier)
+   if(iwarn.ne.0) call transp2imas_error('rpmg0cal iwarn',iwarn)
+   do i = 1, infuns
+      write(333,*) mgnames(i)
+      do j = 1, nprtime
+         write(333,*) j
+         do k = 1, xsizes(istype)
+            write(333,*) mgdata((j-1)*xsizes(istype)+k, i) * 1.0e-3 ! eV to keV
+         enddo
+      enddo
+   enddo
+
+   call rpmulti('T0AGF',istype,label,units,infuns,mgsigns,mgnames,ier)
+   if(ier.ne.0) call transp2imas_error('rpmulti(T0AGF)',ier)
+   write(333,*) 'T0AGF: ', label, ' in ', units
+   call rpmg0cal(mgnames,mgsigns,infuns,mgdata,nmax,iret,istype,iwarn,ier)
+   if(ier.ne.0) call transp2imas_error('rpmg0cal ier',ier)
+   if(iwarn.ne.0) call transp2imas_error('rpmg0cal iwarn',iwarn)
+   do i = 1, infuns
+      write(333,*) mgnames(i)
+      do j = 1, nprtime
+         write(333,*) j
+         do k = 1, xsizes(istype)
+            write(333,*) mgdata((j-1)*xsizes(istype)+k, i) * 1.0e-3 ! eV to keV
+         enddo
+      enddo
+   enddo
+
+   call rpmulti('OMEG0ARC',istype,label,units,infuns,mgsigns,mgnames,ier)
+   if(ier.ne.0) call transp2imas_error('rpmulti(OMEG0ARC)',ier)
+   write(333,*) 'OMEG0ARC: ', label, ' in ', units
+   call rpmg0cal(mgnames,mgsigns,infuns,mgdata,nmax,iret,istype,iwarn,ier)
+   if(ier.ne.0) call transp2imas_error('rpmg0cal ier',ier)
+   if(iwarn.ne.0) call transp2imas_error('rpmg0cal iwarn',iwarn)
+   do i = 1, infuns
+      write(333,*) mgnames(i)
+      do j = 1, nprtime
+         write(333,*) j
+         do k = 1, xsizes(istype)
+            write(333,*) mgdata((j-1)*xsizes(istype)+k, i)
+         enddo
+      enddo
+   enddo
+
+   call rpmulti('OMEG0AGF',istype,label,units,infuns,mgsigns,mgnames,ier)
+   if(ier.ne.0) call transp2imas_error('rpmulti(OMEG0AGF)',ier)
+   write(333,*) 'OMEG0AGF: ', label, ' in ', units
+   call rpmg0cal(mgnames,mgsigns,infuns,mgdata,nmax,iret,istype,iwarn,ier)
+   if(ier.ne.0) call transp2imas_error('rpmg0cal ier',ier)
+   if(iwarn.ne.0) call transp2imas_error('rpmg0cal iwarn',iwarn)
+   do i = 1, infuns
+      write(333,*) mgnames(i)
+      do j = 1, nprtime
+         write(333,*) j
+         do k = 1, xsizes(istype)
+            write(333,*) mgdata((j-1)*xsizes(istype)+k, i)
          enddo
       enddo
    enddo
 
    close(333)
-
-   !stop
 
    ! fill nbi IDS
 
