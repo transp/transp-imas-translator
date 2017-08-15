@@ -1144,6 +1144,8 @@ program transp2imas
             allocate(es%source(1)%ggd(1)%neutral(n)%particles(1))
             allocate(es%source(1)%ggd(1)%neutral(n)%particles(1)%values(nsctime))
             es%source(1)%ggd(1)%neutral(n)%particles(1)%values = scdata
+            allocate(es%source(1)%ggd(1)%neutral(n)%label(1))
+            es%source(1)%ggd(1)%neutral(n)%label = 'D'
          endif
       enddo
    endif
@@ -1159,6 +1161,8 @@ program transp2imas
             allocate(es%source(1)%ggd(1)%neutral(n)%particles(1))
             allocate(es%source(1)%ggd(1)%neutral(n)%particles(1)%values(nsctime))
             es%source(1)%ggd(1)%neutral(n)%particles(1)%values = scdata
+            allocate(es%source(1)%ggd(1)%neutral(n)%label(1))
+            es%source(1)%ggd(1)%neutral(n)%label = 'T'
          endif
       enddo
    endif
@@ -1174,6 +1178,8 @@ program transp2imas
             allocate(es%source(1)%ggd(1)%neutral(n)%particles(1))
             allocate(es%source(1)%ggd(1)%neutral(n)%particles(1)%values(nsctime))
             es%source(1)%ggd(1)%neutral(n)%particles(1)%values = scdata
+            allocate(es%source(1)%ggd(1)%neutral(n)%label(1))
+            es%source(1)%ggd(1)%neutral(n)%label = '4'
          endif
       enddo
    endif
@@ -1187,6 +1193,8 @@ program transp2imas
             allocate(es%source(2)%ggd(1)%neutral(n)%particles(1))
             allocate(es%source(2)%ggd(1)%neutral(n)%particles(1)%values(nsctime))
             es%source(2)%ggd(1)%neutral(n)%particles(1)%values = scdata
+            allocate(es%source(2)%ggd(1)%neutral(n)%label(1))
+            es%source(2)%ggd(1)%neutral(n)%label = 'D'
          endif
       enddo
    endif
@@ -1200,6 +1208,8 @@ program transp2imas
             allocate(es%source(2)%ggd(1)%neutral(n)%particles(1))
             allocate(es%source(2)%ggd(1)%neutral(n)%particles(1)%values(nsctime))
             es%source(2)%ggd(1)%neutral(n)%particles(1)%values = scdata
+            allocate(es%source(2)%ggd(1)%neutral(n)%label(1))
+            es%source(2)%ggd(1)%neutral(n)%label = 'T'
          endif
       enddo
    endif
@@ -1213,6 +1223,8 @@ program transp2imas
             allocate(es%source(2)%ggd(1)%neutral(n)%particles(1))
             allocate(es%source(2)%ggd(1)%neutral(n)%particles(1)%values(nsctime))
             es%source(2)%ggd(1)%neutral(n)%particles(1)%values = scdata
+            allocate(es%source(2)%ggd(1)%neutral(n)%label(1))
+            es%source(2)%ggd(1)%neutral(n)%label = '4'
          endif
       enddo
    endif
@@ -1227,15 +1239,21 @@ program transp2imas
    if(iwarn.ne.0) call transp2imas_error('rpmg0cal iwarn',iwarn)
    write(333,*) infuns, nprtime, xsizes(istype)
    do i = 1, infuns
+      !write(*,*) i, mgnames(i), mgnames(i)(6:6)
       write(333,*) mgnames(i)
       do j = 1, nprtime
          write(333,*) j
          do k = 1, xsizes(istype)
             rdum = 0.0
-            if ((i .ge. 1) .and. (i .le. 3)) rdum = es%source(2)%ggd(1)%neutral(2)%particles(1)%values(k)
-            if ((i .ge. 4) .and. (i .le. 6)) rdum = es%source(2)%ggd(1)%neutral(1)%particles(1)%values(k)
-            if ((i .ge. 7) .and. (i .le. 9)) rdum = es%source(2)%ggd(1)%neutral(3)%particles(1)%values(k)
-            !if (rdum .eq. 0.0) write(*,*) i, j, k
+            do n = 1, 5
+               if (associated(es%source(2)%ggd(1)%neutral(n)%label)) then
+                  !write(*,*) k, n, trim(es%source(2)%ggd(1)%neutral(n)%label(1)), trim(mgnames(i)(6:6))
+                  if (trim(es%source(2)%ggd(1)%neutral(n)%label(1)) == trim(mgnames(i)(6:6))) then
+                     if (j == 1 .and. k == 1) write(*,*) n, es%source(2)%ggd(1)%neutral(n)%label, mgnames(i)
+                     rdum = es%source(2)%ggd(1)%neutral(n)%particles(1)%values(k)
+                  endif
+               endif
+            enddo
             write(333,*) mgdata((j-1)*xsizes(istype)+k, i) / rdum * 1.0e6 ! /cm3 to /m3
          enddo
       enddo
@@ -1253,10 +1271,14 @@ program transp2imas
          write(333,*) j
          do k = 1, xsizes(istype)
             rdum = 0.0
-            if ((i .ge. 1) .and. (i .le. 3)) rdum = es%source(1)%ggd(1)%neutral(2)%particles(1)%values(k)
-            if ((i .ge. 4) .and. (i .le. 6)) rdum = es%source(1)%ggd(1)%neutral(1)%particles(1)%values(k)
-            if ((i .ge. 7) .and. (i .le. 9)) rdum = es%source(1)%ggd(1)%neutral(3)%particles(1)%values(k)
-            !if (rdum .eq. 0.0) write(*,*) i, j, k
+            do n = 1, 5
+               if (associated(es%source(1)%ggd(1)%neutral(n)%label)) then
+                  if (trim(es%source(1)%ggd(1)%neutral(n)%label(1)) == trim(mgnames(i)(6:6))) then
+                     if (j == 1 .and. k == 1) write(*,*) n, es%source(1)%ggd(1)%neutral(n)%label, mgnames(i)
+                     rdum = es%source(1)%ggd(1)%neutral(n)%particles(1)%values(k)
+                  endif
+               endif
+            enddo
             write(333,*) mgdata((j-1)*xsizes(istype)+k, i) / rdum * 1.0e6 ! /cm3 to /m3
          enddo
       enddo
