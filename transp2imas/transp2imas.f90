@@ -202,6 +202,7 @@ program transp2imas
    allocate(ct%time(nsctime))
    allocate(ct%model(1))
    allocate(ct%model(1)%profiles_1d(nprtime))
+   allocate(es%time(nprtime))
    allocate(es%source(2)) ! Gas-flow (1) and recycling (2) sources, respectively
    allocate(es%source(1)%ggd(1))
    allocate(es%source(1)%ggd(1)%neutral(5)) ! H, D, T, He3, He4 are the possible options
@@ -914,6 +915,7 @@ program transp2imas
    write(*,*) 'fill ids prtime'
    cp%profiles_1d(:)%time = prtime
    eq%time_slice(:)%time = prtime
+   es%time = prtime
    do it = 1, nprtime
       ct%model(1)%profiles_1d(it)%time = prtime(it)
    enddo
@@ -1233,11 +1235,11 @@ program transp2imas
 
    call rpmulti('DENS0ARC',istype,label,units,infuns,mgsigns,mgnames,ier)
    if(ier.ne.0) call transp2imas_error('rpmulti(DENS0ARC)',ier)
-   write(333,*) 'DENS0ARC: ', label, ' in ', units
    call rpmg0cal(mgnames,mgsigns,infuns,mgdata,nmax,iret,istype,iwarn,ier)
    if(ier.ne.0) call transp2imas_error('rpmg0cal ier',ier)
    if(iwarn.ne.0) call transp2imas_error('rpmg0cal iwarn',iwarn)
    write(333,*) infuns, nprtime, xsizes(istype)
+   write(333,*) 'DENS0ARC: ', label, ' in ', units
    do i = 1, infuns
       !write(*,*) i, mgnames(i), mgnames(i)(6:6)
       write(333,*) mgnames(i)
@@ -1255,6 +1257,7 @@ program transp2imas
                endif
             enddo
             write(333,*) mgdata((j-1)*xsizes(istype)+k, i) / rdum * 1.0e6 ! /cm3 to /m3
+            !write(333,*) mgdata((j-1)*xsizes(istype)+k, i) / rdum * 1.0e6, mgdata((j-1)*xsizes(istype)+k, i), rdum
          enddo
       enddo
    enddo
