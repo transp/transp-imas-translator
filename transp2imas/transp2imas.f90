@@ -1130,13 +1130,13 @@ program transp2imas
 
    ! fill es IDS
 
-   call rpscalar('GASD',scdata,nsctime,iret,ier)
-   if ((ier .eq. 0) .and. (iret .eq. nsctime)) then
+   call rpscalar('GASD',scdata,nprtime,iret,ier)
+   if ((ier .eq. 0) .and. (iret .eq. nprtime)) then
       do n = 1, n_thi
          !write(*,*) 'Writing GASD: n, a(n), z_n(n) =', n, cp%profiles_1d(nsctime)%ion(n)%element(1)%a, &
          !   cp%profiles_1d(nsctime)%ion(n)%element(1)%z_n
-         if ((2.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%a) .and. &
-             (1.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%z_n)) then
+         if ((2.0 .eq. cp%profiles_1d(nprtime)%ion(n)%element(1)%a) .and. &
+             (1.0 .eq. cp%profiles_1d(nprtime)%ion(n)%element(1)%z_n)) then
             write(*,*) 'Using index', n, 'for GASD data'
             !allocate(es%source(1)%ggd(1)%neutral(n)%particles(nsctime))
             !do k = 1, nsctime
@@ -1144,7 +1144,7 @@ program transp2imas
             !   es%source(1)%ggd(1)%neutral(n)%particles(k)%values = scdata(k)
             !end do
             allocate(es%source(1)%ggd(1)%neutral(n)%particles(1))
-            allocate(es%source(1)%ggd(1)%neutral(n)%particles(1)%values(nsctime))
+            allocate(es%source(1)%ggd(1)%neutral(n)%particles(1)%values(nprtime))
             es%source(1)%ggd(1)%neutral(n)%particles(1)%values = scdata
             allocate(es%source(1)%ggd(1)%neutral(n)%label(1))
             es%source(1)%ggd(1)%neutral(n)%label = 'D'
@@ -1152,16 +1152,16 @@ program transp2imas
       enddo
    endif
 
-   call rpscalar('GAST',scdata,nsctime,iret,ier)
-   if ((ier .eq. 0) .and. (iret .eq. nsctime)) then
+   call rpscalar('GAST',scdata,nprtime,iret,ier)
+   if ((ier .eq. 0) .and. (iret .eq. nprtime)) then
       do n = 1, n_thi
          !write(*,*) 'Writing GAST: n, a(n), z_n(n) =', n, cp%profiles_1d(nsctime)%ion(n)%element(1)%a, &
          !   cp%profiles_1d(nsctime)%ion(n)%element(1)%z_n
-         if ((3.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%a) .and. &
-             (1.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%z_n)) then
+         if ((3.0 .eq. cp%profiles_1d(nprtime)%ion(n)%element(1)%a) .and. &
+             (1.0 .eq. cp%profiles_1d(nprtime)%ion(n)%element(1)%z_n)) then
             write(*,*) 'Using index', n, 'for GAST data'
             allocate(es%source(1)%ggd(1)%neutral(n)%particles(1))
-            allocate(es%source(1)%ggd(1)%neutral(n)%particles(1)%values(nsctime))
+            allocate(es%source(1)%ggd(1)%neutral(n)%particles(1)%values(nprtime))
             es%source(1)%ggd(1)%neutral(n)%particles(1)%values = scdata
             allocate(es%source(1)%ggd(1)%neutral(n)%label(1))
             es%source(1)%ggd(1)%neutral(n)%label = 'T'
@@ -1169,16 +1169,16 @@ program transp2imas
       enddo
    endif
 
-   call rpscalar('GAS4',scdata,nsctime,iret,ier)
-   if ((ier .eq. 0) .and. (iret .eq. nsctime)) then
+   call rpscalar('GAS4',scdata,nprtime,iret,ier)
+   if ((ier .eq. 0) .and. (iret .eq. nprtime)) then
       do n = 1, n_thi
          !write(*,*) 'Writing GAS4: n, a(n), z_n(n) =', n, cp%profiles_1d(nsctime)%ion(n)%element(1)%a, &
          !   cp%profiles_1d(nsctime)%ion(n)%element(1)%z_n
-         if ((4.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%a) .and. &
-             (2.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%z_n)) then
+         if ((4.0 .eq. cp%profiles_1d(nprtime)%ion(n)%element(1)%a) .and. &
+             (2.0 .eq. cp%profiles_1d(nprtime)%ion(n)%element(1)%z_n)) then
             write(*,*) 'Using index', n, 'for GAS4 data'
             allocate(es%source(1)%ggd(1)%neutral(n)%particles(1))
-            allocate(es%source(1)%ggd(1)%neutral(n)%particles(1)%values(nsctime))
+            allocate(es%source(1)%ggd(1)%neutral(n)%particles(1)%values(nprtime))
             es%source(1)%ggd(1)%neutral(n)%particles(1)%values = scdata
             allocate(es%source(1)%ggd(1)%neutral(n)%label(1))
             es%source(1)%ggd(1)%neutral(n)%label = '4'
@@ -1186,14 +1186,14 @@ program transp2imas
       enddo
    endif
 
-   call rpscalar('RCYD',scdata,nsctime,iret,ier)
-   if ((ier .eq. 0) .and. (iret .eq. nsctime)) then
+   call rpscalar('RCYD',scdata,nprtime,iret,ier)
+   if ((ier .eq. 0) .and. (iret .eq. nprtime)) then
       do n = 1, n_thi
-         if ((2.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%a) .and. &
-             (1.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%z_n)) then
+         if ((2.0 .eq. cp%profiles_1d(nprtime)%ion(n)%element(1)%a) .and. &
+             (1.0 .eq. cp%profiles_1d(nprtime)%ion(n)%element(1)%z_n)) then
             write(*,*) 'Using index', n, 'for RCYD data'
             allocate(es%source(2)%ggd(1)%neutral(n)%particles(1))
-            allocate(es%source(2)%ggd(1)%neutral(n)%particles(1)%values(nsctime))
+            allocate(es%source(2)%ggd(1)%neutral(n)%particles(1)%values(nprtime))
             es%source(2)%ggd(1)%neutral(n)%particles(1)%values = scdata
             allocate(es%source(2)%ggd(1)%neutral(n)%label(1))
             es%source(2)%ggd(1)%neutral(n)%label = 'D'
@@ -1201,14 +1201,14 @@ program transp2imas
       enddo
    endif
 
-   call rpscalar('RCYT',scdata,nsctime,iret,ier)
-   if ((ier .eq. 0) .and. (iret .eq. nsctime)) then
+   call rpscalar('RCYT',scdata,nprtime,iret,ier)
+   if ((ier .eq. 0) .and. (iret .eq. nprtime)) then
       do n = 1, n_thi
-         if ((3.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%a) .and. &
-             (1.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%z_n)) then
+         if ((3.0 .eq. cp%profiles_1d(nprtime)%ion(n)%element(1)%a) .and. &
+             (1.0 .eq. cp%profiles_1d(nprtime)%ion(n)%element(1)%z_n)) then
             write(*,*) 'Using index', n, 'for RCYT data'
             allocate(es%source(2)%ggd(1)%neutral(n)%particles(1))
-            allocate(es%source(2)%ggd(1)%neutral(n)%particles(1)%values(nsctime))
+            allocate(es%source(2)%ggd(1)%neutral(n)%particles(1)%values(nprtime))
             es%source(2)%ggd(1)%neutral(n)%particles(1)%values = scdata
             allocate(es%source(2)%ggd(1)%neutral(n)%label(1))
             es%source(2)%ggd(1)%neutral(n)%label = 'T'
@@ -1216,14 +1216,14 @@ program transp2imas
       enddo
    endif
 
-   call rpscalar('RCY4',scdata,nsctime,iret,ier)
-   if ((ier .eq. 0) .and. (iret .eq. nsctime)) then
+   call rpscalar('RCY4',scdata,nprtime,iret,ier)
+   if ((ier .eq. 0) .and. (iret .eq. nprtime)) then
       do n = 1, n_thi
-         if ((4.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%a) .and. &
-             (2.0 .eq. cp%profiles_1d(nsctime)%ion(n)%element(1)%z_n)) then
+         if ((4.0 .eq. cp%profiles_1d(nprtime)%ion(n)%element(1)%a) .and. &
+             (2.0 .eq. cp%profiles_1d(nprtime)%ion(n)%element(1)%z_n)) then
             write(*,*) 'Using index', n, 'for RCY4 data'
             allocate(es%source(2)%ggd(1)%neutral(n)%particles(1))
-            allocate(es%source(2)%ggd(1)%neutral(n)%particles(1)%values(nsctime))
+            allocate(es%source(2)%ggd(1)%neutral(n)%particles(1)%values(nprtime))
             es%source(2)%ggd(1)%neutral(n)%particles(1)%values = scdata
             allocate(es%source(2)%ggd(1)%neutral(n)%label(1))
             es%source(2)%ggd(1)%neutral(n)%label = '4'
@@ -1245,19 +1245,19 @@ program transp2imas
       write(333,*) mgnames(i)
       do j = 1, nprtime
          write(333,*) j
-         do k = 1, xsizes(istype)
-            rdum = 0.0
-            do n = 1, 5
-               if (associated(es%source(2)%ggd(1)%neutral(n)%label)) then
-                  !write(*,*) k, n, trim(es%source(2)%ggd(1)%neutral(n)%label(1)), trim(mgnames(i)(6:6))
-                  if (trim(es%source(2)%ggd(1)%neutral(n)%label(1)) == trim(mgnames(i)(6:6))) then
-                     if (j == 1 .and. k == 1) write(*,*) n, es%source(2)%ggd(1)%neutral(n)%label, mgnames(i)
-                     rdum = es%source(2)%ggd(1)%neutral(n)%particles(1)%values(k)
-                  endif
+         rdum = 0.0
+         do n = 1, 5
+            if (associated(es%source(2)%ggd(1)%neutral(n)%label)) then
+               !write(*,*) k, n, trim(es%source(2)%ggd(1)%neutral(n)%label(1)), trim(mgnames(i)(6:6))
+               if (trim(es%source(2)%ggd(1)%neutral(n)%label(1)) == trim(mgnames(i)(6:6))) then
+                  if (j == 1 .and. k == 1) write(*,*) n, es%source(2)%ggd(1)%neutral(n)%label, mgnames(i)
+                  rdum = es%source(2)%ggd(1)%neutral(n)%particles(1)%values(j)
                endif
-            enddo
-            write(333,*) mgdata((j-1)*xsizes(istype)+k, i) / rdum * 1.0e6 ! /cm3 to /m3
-            !write(333,*) mgdata((j-1)*xsizes(istype)+k, i) / rdum * 1.0e6, mgdata((j-1)*xsizes(istype)+k, i), rdum
+            endif
+         enddo
+         do k = 1, xsizes(istype)
+            write(333,*) mgdata((j - 1) * xsizes(istype) + k, i) / rdum * 1.0e6 ! /cm3 to /m3
+            !write(333,*) mgdata(nprtime * (k - 1) + j, i) / rdum * 1.0e6 ! /cm3 to /m3
          enddo
       enddo
    enddo
@@ -1272,17 +1272,17 @@ program transp2imas
       write(333,*) mgnames(i)
       do j = 1, nprtime
          write(333,*) j
-         do k = 1, xsizes(istype)
-            rdum = 0.0
-            do n = 1, 5
-               if (associated(es%source(1)%ggd(1)%neutral(n)%label)) then
-                  if (trim(es%source(1)%ggd(1)%neutral(n)%label(1)) == trim(mgnames(i)(6:6))) then
-                     if (j == 1 .and. k == 1) write(*,*) n, es%source(1)%ggd(1)%neutral(n)%label, mgnames(i)
-                     rdum = es%source(1)%ggd(1)%neutral(n)%particles(1)%values(k)
-                  endif
+         rdum = 0.0
+         do n = 1, 5
+            if (associated(es%source(1)%ggd(1)%neutral(n)%label)) then
+               if (trim(es%source(1)%ggd(1)%neutral(n)%label(1)) == trim(mgnames(i)(6:6))) then
+                  if (j == 1 .and. k == 1) write(*,*) n, es%source(1)%ggd(1)%neutral(n)%label, mgnames(i)
+                  rdum = es%source(1)%ggd(1)%neutral(n)%particles(1)%values(j)
                endif
-            enddo
-            write(333,*) mgdata((j-1)*xsizes(istype)+k, i) / rdum * 1.0e6 ! /cm3 to /m3
+            endif
+         enddo
+         do k = 1, xsizes(istype)
+            write(333,*) mgdata((j - 1) * xsizes(istype) + k, i) / rdum * 1.0e6 ! /cm3 to /m3
          enddo
       enddo
    enddo
@@ -1298,7 +1298,7 @@ program transp2imas
       do j = 1, nprtime
          write(333,*) j
          do k = 1, xsizes(istype)
-            write(333,*) mgdata((j-1)*xsizes(istype)+k, i) * 1.0e-3 ! eV to keV
+            write(333,*) mgdata((j - 1) * xsizes(istype) + k, i) * 1.0e-3 ! eV to keV
          enddo
       enddo
    enddo
@@ -1314,7 +1314,7 @@ program transp2imas
       do j = 1, nprtime
          write(333,*) j
          do k = 1, xsizes(istype)
-            write(333,*) mgdata((j-1)*xsizes(istype)+k, i) * 1.0e-3 ! eV to keV
+            write(333,*) mgdata((j - 1) * xsizes(istype) + k, i) * 1.0e-3 ! eV to keV
          enddo
       enddo
    enddo
@@ -1330,7 +1330,7 @@ program transp2imas
       do j = 1, nprtime
          write(333,*) j
          do k = 1, xsizes(istype)
-            write(333,*) mgdata((j-1)*xsizes(istype)+k, i)
+            write(333,*) mgdata((j - 1) * xsizes(istype) + k, i)
          enddo
       enddo
    enddo
@@ -1346,7 +1346,7 @@ program transp2imas
       do j = 1, nprtime
          write(333,*) j
          do k = 1, xsizes(istype)
-            write(333,*) mgdata((j-1)*xsizes(istype)+k, i)
+            write(333,*) mgdata((j - 1) * xsizes(istype) + k, i)
          enddo
       enddo
    enddo
