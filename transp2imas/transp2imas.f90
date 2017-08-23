@@ -206,7 +206,6 @@ program transp2imas
    allocate(es%source(2)) ! Gas-flow (1) and recycling (2) sources, respectively
    allocate(es%source(1)%ggd(1))
    allocate(es%source(1)%ggd(1)%neutral(5)) ! H, D, T, He3, He4 are the possible options
-   allocate(es%time(nsctime))
    allocate(es%source(2)%ggd(1))
    allocate(es%source(2)%ggd(1)%neutral(5))
 
@@ -1351,7 +1350,7 @@ program transp2imas
       enddo
    enddo
 
-   close(333)
+   !close(333)
 
    ! fill nbi IDS
 
@@ -1622,6 +1621,18 @@ program transp2imas
          enddo
       endif
    endif
+
+   write(333,*) 'Radial electric field in V/m'
+   offset = xsizes(1)
+   do it = 1, nprtime
+      write(333,*) it
+      do ir = 1, offset
+         write(333,*) cp%profiles_1d(it)%e_field%radial(ir)
+      enddo
+   enddo
+
+   close(333)
+
 #endif
    write(iout,*) ' '
    !? correct?
