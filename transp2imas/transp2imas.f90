@@ -1350,7 +1350,21 @@ program transp2imas
       enddo
    enddo
 
-   !close(333)
+   call rprofile('VRPOT', prdata, nprtime * xsizes(2), iret, ier)
+   if (ier .ne. 0) call transp2imas_error('rprofile(VRPOT)', ier)
+   if (iret .ne. nprtime * xsizes(2)) &
+      call transp2imas_exit(' ?? VRPOT read error')
+
+   write(333,*) 'Radial electrostatic potential (VRPOT) in V/m'
+   offset = xsizes(2)
+   do j = 1, nprtime
+      write(333,*) j
+      do k = 1, offset
+         write(333,*) prdata((j - 1) * offset + k) * 1.0e2
+      enddo
+   enddo
+
+   close(333)
 
    ! fill nbi IDS
 
@@ -1583,7 +1597,7 @@ program transp2imas
       cp%profiles_1d(it)%j_ohmic(1:offset)=&
          prdata(1+(it-1)*offset:it*offset) * 1.e4
    enddo
-#if 1
+
    write(iout, *) ' '
    call rprofile('VRPOT', prdata, nprtime * xsizes(2), iret, ier)
    !if (ier .ne. 0) call transp2imas_error('rprofile(VRPOT)', ier)
@@ -1622,18 +1636,6 @@ program transp2imas
       endif
    endif
 
-   write(333,*) 'Radial electric field in V/m'
-   offset = xsizes(1)
-   do it = 1, nprtime
-      write(333,*) it
-      do ir = 1, offset
-         write(333,*) cp%profiles_1d(it)%e_field%radial(ir)
-      enddo
-   enddo
-
-   close(333)
-
-#endif
    write(iout,*) ' '
    !? correct?
    ! CUR(X)            TOTAL PLASMA CURRENT         AMPS/CM2
