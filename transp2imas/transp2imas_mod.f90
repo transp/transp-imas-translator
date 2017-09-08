@@ -11,13 +11,13 @@ module transp2imas_module
 
 	type (ids_pf_active) :: pf
 	type (ids_actuator) :: actuator
-	type (ids_atomic_data) :: atomic
+	type (ids_amns_data) :: atomic
 	type (ids_controllers) :: controllers
 	type (ids_core_sources) :: cs
 	type (ids_em_coupling) :: em
 	type (ids_magnetics) :: mag
 	type (ids_pf_passive) :: pfpassive
-	type (ids_schedule) :: schedule
+	type (ids_pulse_schedule) :: schedule
 	type (ids_sdn) :: sdn
 	!type (ids_simulation) :: sim
 	type (ids_temporary) :: tmp
