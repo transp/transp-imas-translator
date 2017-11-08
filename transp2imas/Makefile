@@ -1,12 +1,12 @@
 F90 = gfortran
-COPTS = -cpp -fPIC -O0 -g -fsanitize=address
-#COPTS = -cpp -fPIC -O0 -g
-INCLUDES = -I$(UAL)/fortraninterface/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
-LIBS = $(UAL)/fortraninterface/libimas-gfortran.a $(UAL)/lowlevel/libimas.a $(MDSPLUS_DIR)/lib/libMdsObjectsCppShr.a \
+#COPTS = -cpp -fPIC -O0 -g -fsanitize=address
+COPTS = -cpp -fPIC -O0 -g
+INCLUDES = -I$(IMAS_PREFIX)/include/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
+LIBS = -L$(IMAS_PREFIX)/lib -limas-gfortran -limas $(MDSPLUS_DIR)/lib/libMdsObjectsCppShr.a \
 $(MDSPLUS_DIR)/lib/libMdsLib.a $(MDSPLUS_DIR)/lib/libMdsIpShr.a $(MDSPLUS_DIR)/lib/libTdiShr.a $(MDSPLUS_DIR)/lib/libTreeShr.a $(MDSPLUS_DIR)/lib/libMdsShr.a \
 -L$(MDSPLUS_DIR)/lib -lMdsIpShr $(NETCDFHOME)/lib/libnetcdff.a $(NETCDFHOME)/lib/libnetcdf.a \
--L$(HOME)/local/mkl-11.3.2.181/compilers_and_libraries_2016.2.181/linux/mkl/lib/intel64_lin -lmkl_intel_lp64 -lmkl_sequential -lmkl_core \
--lxml2 -lpthread -L/home/jcarlsso/local/$(GCC)/lib64 -lstdc++ -ldl
+-L$(EBROOTOPENBLAS)/lib -lopenblas \
+-lxml2 -lpthread -L$(EBROOTGCC)/lib64 -lstdc++ -ldl
 
 LIBS_transp = \
 	$(LOCAL)/lib/key_access.a \
