@@ -1342,19 +1342,23 @@ program transp2imas
          enddo
       enddo
 
-      call rprofile('VRPOT', prdata, nprtime * xsizes(2), iret, ier)
-      if (ier .ne. 0) call transp2imas_error('rprofile(VRPOT)', ier)
-      if (iret .ne. nprtime * xsizes(2)) &
-         call transp2imas_exit(' ?? VRPOT read error')
+      call rprofile('VRPOT', prdata, nprtime * xsizes(2), iret, ier) ! Not always present. Johan 11/08/17
+      ! if (ier .ne. 0) call transp2imas_error('rprofile(VRPOT)', ier)
+      ! if (iret .ne. nprtime * xsizes(2)) &
+      !    call transp2imas_exit(' ?? VRPOT read error')
 
-      write(333,*) 'Radial electrostatic potential (VRPOT) in V/m'
-      offset = xsizes(2)
-      do j = 1, nprtime
-         write(333,*) j
-         do k = 1, offset
-            write(333,*) prdata((j - 1) * offset + k) * 1.0e2
-         enddo
-      enddo
+      if (ier .eq. 0) then
+         if (iret .eq. nprtime * xsizes(2)) then
+            write(333,*) 'Radial electrostatic potential (VRPOT) in V/m'
+            offset = xsizes(2)
+            do j = 1, nprtime
+               write(333,*) j
+               do k = 1, offset
+                  write(333,*) prdata((j - 1) * offset + k) * 1.0e2
+               enddo
+            enddo
+         endif
+      endif
 
       close(333)
 
