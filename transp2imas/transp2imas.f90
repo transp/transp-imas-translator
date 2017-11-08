@@ -1341,7 +1341,7 @@ program transp2imas
             enddo
          enddo
       enddo
-      stop
+
       call rprofile('VRPOT', prdata, nprtime * xsizes(2), iret, ier)
       if (ier .ne. 0) call transp2imas_error('rprofile(VRPOT)', ier)
       if (iret .ne. nprtime * xsizes(2)) &
