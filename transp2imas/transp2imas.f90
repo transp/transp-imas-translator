@@ -217,29 +217,19 @@ program transp2imas
    endif
 
    nbeam = 0
-#if 1
+
    ! Get number of beams from namelist
    ivdum(1) = 0
-   call tr_getnl_intvec('NBEAM', ivdum, 1, istat)
+   call tr_getnl_logvec('NLBEAM', ivdum, 1, istat)
    write(*,*) 'istat = ', istat, ivdum(1)
-   if (istat .eq. 1) nbeam = ivdum(1)
-#else
-! Count the number of beams
-   do k = 1, 9
-      write(int2strng, *) k
-      tmps1 = adjustl(int2strng) ! delete the leading blanks
-      !tmpstrng = 'BDC0'//tmps1(1:1)
-      tmpstrng = 'PINJ0'//tmps1(1:1)
-      !write(*, *) '.', trim(tmpstrng), '.'
-      ! Now check if BDC01, BDC02, ..., BDC09 exist
-      kerr = -99 ! if MDS+ tree is opened, leave open
-      call rplabel(trim(tmpstrng), zlabel, zunits, ktype, kerr)
-      !write(*, *) 'x', ktype, 'x'
-      !write(*, *) 'y', kerr, 'y'
-      !if (kerr.gt.0) nbeam = nbeam + 1
-      if (kerr.eq.-1) nbeam = nbeam + 1
-   end do
-#endif
+   if (istat .eq. 1) then ! NLBEAM present in namelist
+      if (ivdum(1) .eq. 1) then ! NLBEAM . eq. .TRUE.
+         ivdum(1) = 0
+         call tr_getnl_intvec('NBEAM', ivdum, 1, istat)
+         write(*,*) 'istat = ', istat, ivdum(1)
+         if (istat .eq. 1) nbeam = ivdum(1)
+      endif
+   endif
    write(*, *) 'nbeam =', nbeam
 
    if (nbeam .gt. 0) then
