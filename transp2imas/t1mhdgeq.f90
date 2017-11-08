@@ -54,10 +54,10 @@ subroutine t1mhdeq_geq(runid, time)
    deltat = 0.01_r8
    ibccw  = 1
    ipccw  = 1
-   nR = 105 ! this must be an ODD number
-   nZ = 165 ! this must be an ODD number
-   ntheta = 135
-   ns = 135 ! number of points to use to described plasma boundary and limiter
+   nR = 65 ! 105 ! this must be an ODD number
+   nZ = 105 ! 165 ! this must be an ODD number
+   ntheta = 85 ! 135
+   ns = 85 ! 135 ! number of points to use to described plasma boundary and limiter
 
    ier = 1
    call trx_connect(runid, ier)
