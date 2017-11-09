@@ -2230,6 +2230,8 @@ program transp2imas
       xbbuf2(:) = prdata(1+(it-1)*offset:it*offset) * bzxr(it) * 1.0e-2 ! T * cm -> T * m
       allocate(eq%time_slice(it)%profiles_1d%f(offset))
       eq%time_slice(it)%profiles_1d%f(1:offset) = xbbuf2(:)
+      eq%time_slice(it)%global_quantities%magnetic_axis%b_field_tor = &
+         eq%time_slice(it)%profiles_1d%f(1) / eq%time_slice(it)%global_quantities%magnetic_axis%r
 
       ! Calculate dF/dXB and put result in xbbuf3.
       xbbuf1(:) = XB(:, it)
@@ -2278,12 +2280,12 @@ program transp2imas
             eq%time_slice(it)%profiles_1d%f_df_dpsi(ir)
       enddo
    enddo
+
 ! TRANSP does not have data on LCFS. Need to think about how to provide it. Johan 12/21/16
-#if 0
-   offset=xsizes(2)
-   do it = 1, nprtime
-      allocate(eq%time_slice(it)%boundary%lcfs%r(offset))
-#endif
+   !offset=xsizes(2)
+   !do it = 1, nprtime
+   !   allocate(eq%time_slice(it)%boundary%lcfs%r(offset))
+
       ! fetch limiter data and write it into file
       ! or can get it from dumped g-eqdsk file 'eqdskin'
       write(iout,*) ' '
