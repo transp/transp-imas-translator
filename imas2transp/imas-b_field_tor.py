@@ -16,13 +16,15 @@ imas_obj = imas.ids(shot, run, 0, 0)
 imas_obj.open() # Create a new instance of database
 ids = imas_obj.equilibrium
 
-print 'Test of the GET_SLICE function'
 interpol = 1 # Interpolation mode = closest neighbour
 twant = 0.0
 ids.getSlice(twant, interpol)
+b0 = ids.time_slice[0].global_quantities.magnetic_axis.b_field_tor
+twant = 100.0
+ids.getSlice(twant, interpol)
+b1 = ids.time_slice[0].global_quantities.magnetic_axis.b_field_tor
 
-i = 0
-plt.plot(ids.time_slice[i].global_quantities.magnetic_axis/b_field_tor)
+plt.plot([b0, b1])
 #plt.xlabel('ids.profiles_1d[i].grid.rho_tor_norm')
 #plt.ylabel('ids.profiles_1d[i].electrons.density')
 #plt.grid(True)
