@@ -1,8 +1,8 @@
 import imas
 
-#shot = 386; run = 1
+shot = 386; run = 1
 #shot = 120; run = 28
-shot = 385; run = 30
+#shot = 385; run = 30
 itm = imas.ids(shot, run)
 itm.open()
 
@@ -72,9 +72,6 @@ print 'core_profiles%profiles_1d[-1]%ion[4]%state[0]%density =', ids.profiles_1d
 
 print '\nIon species:'
 for i in range(len(ids.profiles_1d[-1].ion)):
-  print ids.profiles_1d[-1].ion[i].label
-
-ids.profiles_1d[-1].q
-  cp%profiles_1d(it)%q
+  print str(i + 1) + ': ' + ids.profiles_1d[-1].ion[i].label + ', a = ' + str(ids.profiles_1d[-1].ion[i].element[0].a) + ', z_n = ' + str(ids.profiles_1d[-1].ion[i].element[0].z_n)
 
 itm.close()
