@@ -1,6 +1,6 @@
 F90 = gfortran
-#COPTS = -cpp -fPIC -O0 -g -fsanitize=address
-COPTS = -cpp -fPIC -O0 -g
+#COPTS = -cpp -fPIC -g -O0
+COPTS = -cpp -O2
 INCLUDES = -I$(IMAS_PREFIX)/include/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
 #LIBS = -L$(IMAS_PREFIX)/lib -limas-gfortran -limas \
 
@@ -43,7 +43,7 @@ LIBS = \
 
 transp2imas : transp2imas_mod.o transp2imas.o t1mhdgeq.o
 	@echo "   * $^ -> $@"
-	$(F90) $(COPTS) transp2imas_mod.o transp2imas.o t1mhdgeq.o $(LIBS) -o $@
+	$(F90) $(COPTS) $^ $(LIBS) -o $@
 
 transp2imas_mod.o : transp2imas_mod.f90
 	$(F90) $(COPTS) -I. $(INCLUDES) -c $<
