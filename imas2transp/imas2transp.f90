@@ -1,5 +1,12 @@
 program imas2transp
 
+!---------------------------------------------------------------------
+!
+!  to run:
+!     ./imas2transp 386 1
+!
+!---------------------------------------------------------------------
+
    use ids_schemas              !! These are the Fortran type definitions for the Physics Data Model
    use ids_routines             !! These are the Access Layer routines + management of IDS structures
 
