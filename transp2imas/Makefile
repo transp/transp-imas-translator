@@ -1,3 +1,5 @@
+#LOCAL = $(HOME)/local
+
 F90 = gfortran
 #COPTS = -cpp -fPIC -g -O0
 COPTS = -cpp -O2

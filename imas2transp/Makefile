@@ -1,3 +1,5 @@
+#LOCAL = $(HOME)/local
+
 F90 = gfortran
 COPTS = -cpp -O2
 INCLUDES = -I$(IMAS_PREFIX)/include/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
@@ -41,4 +43,4 @@ put_nubeam_data_to_ufiles.o : put_nubeam_data_to_ufiles.f90
 
 .PHONY : clean
 clean :
-	rm -f imas2transp put_nubeam_data_to_ufiles *.o *.mod *~ A32???.???
+	rm -f imas2transp put_nubeam_data_to_ufiles *.o *.mod *~ A?????.??? gindex.dat ids_*.geq
