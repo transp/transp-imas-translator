@@ -3,11 +3,12 @@ module transp2imas_module
 	use ids_schemas
 	use ids_routines
 
-	type (ids_equilibrium) :: eq ! Declaration of the empty core_profiles ids to be filled
+	type (ids_equilibrium) :: eq
 	type (ids_core_profiles) :: cp
 	type (ids_core_transport) :: ct
 	type (ids_edge_sources) :: es
 	type (ids_nbi) :: nbi
+	type (ids_summary) :: sum
 
 	!type (ids_pf_active) :: pf
 	!type (ids_actuator) :: actuator

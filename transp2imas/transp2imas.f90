@@ -2625,6 +2625,13 @@ program transp2imas
          enddo
       endif
 !
+!  copy data to Summary IDS
+!
+   sum%ids_properties%source = 'TRANSP'
+   sum%ids_properties%comment = 'Data translated by transp2imas'
+   sum%ids_properties%provider = 'Johan Carlsson'
+
+!
 !  save ids data
 !
       write(*,*) ' transp2imas: save eq ids'
@@ -2647,6 +2654,7 @@ program transp2imas
       call ids_deallocate(ct)
       call ids_deallocate(es)
       call ids_deallocate(nbi)
+      call ids_deallocate(sum)
       call imas_close(idsidx)
 
 !
