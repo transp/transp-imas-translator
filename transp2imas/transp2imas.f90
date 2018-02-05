@@ -198,7 +198,7 @@ program transp2imas
    allocate(cp%time(nsctime))
    allocate(cp%profiles_1d(nprtime))
    allocate(eq%time(nsctime))
-   allocate(eq%time_slice(nprtime))
+   allocate(eq%time_slice(nprtime)) ! holds both scalar and profile data
    allocate(ct%time(nsctime))
    allocate(ct%model(1))
    allocate(ct%model(1)%profiles_1d(nprtime))
@@ -467,8 +467,10 @@ program transp2imas
             call transp2imas_echo(abray(1,n),prdata,xsizes(istype),nprtime)
             offset=xsizes(istype)
             do it = 1, nprtime
-               do i = 1, iion ! Add density contribution from fast ions of same species [ion(i)]
-                  if ((aa(n)  .eq. cp%profiles_1d(it)%ion(i)%element(1)%a) .and. &
+               ! Add density contribution from fast ions of
+               ! same species [ion(i)]
+               do i = 1, iion
+                  if ((aa(n) .eq. cp%profiles_1d(it)%ion(i)%element(1)%a) .and. &
                      (zz(n)  .eq. cp%profiles_1d(it)%ion(i)%z_ion)        .and. &
                      (izc(n) .eq. cp%profiles_1d(it)%ion(i)%element(1)%z_n)) then
                      if (associated(cp%profiles_1d(it)%ion(i)%density_fast)) then
@@ -717,7 +719,6 @@ program transp2imas
       iion_start = iion_start+nstate ! position in n_species
    end do
    if (allocated(names)) deallocate(names)
-
 !
 !---------------------------------
 ! get the scalar info f(t)
@@ -928,6 +929,8 @@ program transp2imas
    allocate(cp%global_quantities%li(nsctime))
    cp%global_quantities%li(:)= scdata(:)
    eq%time_slice(:)%global_quantities%li_3 = scdata(:)
+   !allocate(sum%global_quantities%li%value(nsctime))
+   !sum%global_quantities%li%value = cp%global_quantities%li
 
    write(iout,*) ' '
    !VSUR0: measured value from VSF ufile
@@ -939,7 +942,8 @@ program transp2imas
    call transp2imas_echo('VSURC',scdata,1,nsctime)
    allocate(cp%global_quantities%v_loop(nsctime))
    cp%global_quantities%v_loop(:)= scdata(:)
-
+   !allocate(sum%global_quantities%v_loop%value(nsctime))
+   !sum%global_quantities%v_loop%value = cp%global_quantities%v_loop
    write(iout,*) ' '
    !ids: Poloidal beta. Defined as betap = 4 int(p dV) / [R_0 * mu_0 * Ip^2]
    call rpscalar('BETAT',scdata,nsctime,iret,ier)
@@ -949,7 +953,9 @@ program transp2imas
    call transp2imas_echo('BETAT',scdata,1,nsctime)
 
    allocate(cp%global_quantities%beta_pol(nsctime))
-   cp%global_quantities%beta_pol(:)= scdata(:)
+   cp%global_quantities%beta_pol(:) = scdata(:)
+   !allocate(sum%global_quantities%beta_pol%value(nsctime))
+   !sum%global_quantities%beta_pol%value = cp%global_quantities%beta_pol
 
    ! fill equilibrium IDS
 
@@ -963,6 +969,8 @@ program transp2imas
    allocate(eq%vacuum_toroidal_field%b0(nsctime))
    eq%vacuum_toroidal_field%b0(:) = scdata(:)
    !cp%vacuum_toroidal_field%b0(:) = eq%vacuum_toroidal_field%b0(:)
+   !allocate(sum%global_quantities%b0%value(nsctime))
+   !sum%global_quantities%b0%value = eq%vacuum_toroidal_field%b0
 
    write(iout,*) ' '
    call rpscalar('BZXR',scdata,nsctime,iret,ier)
@@ -987,9 +995,10 @@ program transp2imas
    call transp2imas_echo('BZXR/BZ (rpcalc)',scdata,1,nsctime)
    ! take the average to fill R0 where vacuum toroidal field B0
    ! is measured
-   eq%vacuum_toroidal_field%r0= &
-      .5* ( scdata(1)+scdata(nsctime) )*1.e-2
+   eq%vacuum_toroidal_field%r0 = &
+      0.5 * (scdata(1)+scdata(nsctime)) * 1.0e-2
    !cp%vacuum_toroidal_field%r0(:) = eq%vacuum_toroidal_field%r0(:)
+   !sum%global_quantities%r0%value = eq%vacuum_toroidal_field%r0
 
    write(iout,*) ' '
    call rpscalar('PSI0_TR',scdata,nsctime,iret,ier)
@@ -1018,6 +1027,9 @@ program transp2imas
    call transp2imas_echo('PVOL',scdata,1,nsctime)
 
    eq%time_slice(:)%global_quantities%volume = scdata(:) * 1.e-6
+   !allocate(sum%global_quantities%volume%value(nprtime))
+   !sum%global_quantities%volume%value = &
+   !   eq%time_slice(:)%global_quantities%volume
 
    write(iout,*) ' '
    call rpscalar('PAREA',scdata,nsctime,iret,ier)
@@ -1037,6 +1049,9 @@ program transp2imas
 
    eq%time_slice(:)%global_quantities%magnetic_axis%r = &
       scdata(:) * 1.e-2
+   !allocate(sum%local%magnetic_axis%position%r(nprtime))
+   !sum%local%magnetic_axis%position%r = &
+   !   eq%time_slice(:)%global_quantities%magnetic_axis%r
 
    write(iout,*) ' '
    call rpscalar('YAXIS',scdata,nsctime,iret,ier)
@@ -1047,6 +1062,9 @@ program transp2imas
 
    eq%time_slice(:)%global_quantities%magnetic_axis%z = &
       scdata(:) * 1.e-2
+   !allocate(sum%local%magnetic_axis%position%z(nprtime))
+   !sum%local%magnetic_axis%position%z = &
+   !   eq%time_slice(:)%global_quantities%magnetic_axis%z
 
    write(iout,*) ' '
    ! PCUR, PCUREQ, PCURC, which one is correct
@@ -1060,6 +1078,8 @@ program transp2imas
    !write(*, *) ' PCURC', nsctime, scdata(nsctime)
 
    eq%time_slice(:)%global_quantities%ip = scdata(1:)
+   !allocate(sum%global_quantities%ip%value(nprtime))
+   !sum%global_quantities%ip%value = eq%time_slice(:)%global_quantities%ip
 
    write(iout,*) ' '
    call rpscalar('Q0',scdata,nsctime,iret,ier)
@@ -1109,6 +1129,9 @@ program transp2imas
    call transp2imas_echo('BTEQ',scdata,1,nsctime)
 
    eq%time_slice(:)%global_quantities%beta_tor = scdata(:)
+   !allocate(sum%global_quantities%beta_tor%value(nsctime))
+   !sum%global_quantities%beta_tor%value = &
+   !   eq%time_slice(:)%global_quantities%beta_tor
 
 !      write(iout,*) ' '
 !      call rpscalar('X',scdata,nsctime,iret,ier)
@@ -1415,11 +1438,19 @@ program transp2imas
 
    offset=xsizes(1)
    allocate(XI(offset,nprtime))
-   do it=1,nprtime
+   do it = 1, nprtime
       XI(1:offset,it) = prdata(1+(it-1)*offset:it*offset)
       allocate(cp%profiles_1d(it)%grid%rho_tor_norm(offset))
-      cp%profiles_1d(it)%grid%rho_tor_norm(1:offset) = XI(1:offset,it) * XI(1:offset,it)
+      cp%profiles_1d(it)%grid%rho_tor_norm(1:offset) = &
+         XI(1:offset,it) * XI(1:offset,it)
    enddo
+#if 0
+   allocate(sum%local%edge%position%rho_tor_norm%value(nprtime))
+   do it = 1, nprtime
+      sum%local%edge%position%rho_tor_norm%value(it) = &
+         cp%profiles_1d(it)%grid%rho_tor_norm(offset)
+   enddo
+#endif
 
    write(iout,*) ' '
    call rprofile('XB',prdata,nprtime*xsizes(2),iret,ier)
@@ -1441,13 +1472,22 @@ program transp2imas
       call transp2imas_exit(' ?? NE read error')
    call transp2imas_echo('NE',prdata,xsizes(1),nprtime)
 
-   offset=xsizes(1)
-   do it=1,nprtime
+   offset = xsizes(1)
+   do it = 1, nprtime
       allocate(cp%profiles_1d(it)%electrons%density(offset))
-      cp%profiles_1d(it)%electrons%density(1:offset)=&
-         prdata(1+(it-1)*offset:it*offset)*1.e6
+      cp%profiles_1d(it)%electrons%density(1:offset) = &
+         prdata(1+(it-1)*offset:it*offset) * 1.e6
    enddo
-
+#if 0
+   allocate(sum%local%magnetic_axis%n_e%value(nprtime))
+   allocate(sum%local%edge%n_e%value(nprtime))
+   do it = 1, nprtime
+      sum%local%magnetic_axis%n_e%value(it) = &
+         cp%profiles_1d(it)%electrons%density(1)
+      sum%local%edge%n_e%value(it) = &
+         cp%profiles_1d(it)%electrons%density(offset)
+   enddo
+#endif
    write(iout,*) ' '
    call rprofile('TE',prdata,nprtime*xsizes(1),iret,ier)
    if (ier.ne.0) call transp2imas_error('rprofile(TE)',ier)
@@ -1455,13 +1495,22 @@ program transp2imas
       call transp2imas_exit(' ?? TE read error')
    call transp2imas_echo('TE',prdata,xsizes(1),nprtime)
 
-   offset=xsizes(1)
-   do it=1,nprtime
+   offset = xsizes(1)
+   do it = 1, nprtime
       allocate(cp%profiles_1d(it)%electrons%temperature(offset))
-      cp%profiles_1d(it)%electrons%temperature(1:offset)=&
+      cp%profiles_1d(it)%electrons%temperature(1:offset) = &
          prdata(1+(it-1)*offset:it*offset)
    enddo
-
+#if 0
+   allocate(sum%local%magnetic_axis%t_e%value(nprtime))
+   allocate(sum%local%edge%t_e%value(nprtime))
+   do it = 1, nprtime
+      sum%local%magnetic_axis%t_e%value(it) = &
+         cp%profiles_1d(it)%electrons%temperature(1)
+      sum%local%edge%t_e%value(it) = &
+         cp%profiles_1d(it)%electrons%temperature(offset)
+   enddo
+#endif
    write(iout,*) ' '
    call rprofile('OMEGA', prdata, nprtime * xsizes(1), iret, ier)
    !if (ier.ne.0) call transp2imas_error('rprofile(OMEGA)',ier)
@@ -1476,7 +1525,7 @@ program transp2imas
             cp%profiles_1d(it)%electrons%velocity_tor(1:offset) = &
                eq%vacuum_toroidal_field%r0 * prdata(1+(it-1)*offset:it*offset)
             ! Assume ions rotate with electrons
-            do iion = 1, n_thi + nlist
+            do iion = 1, nion
                allocate(cp%profiles_1d(it)%ion(iion)%velocity_tor(offset))
                cp%profiles_1d(it)%ion(iion)%velocity_tor(1:offset) = &
                   cp%profiles_1d(it)%electrons%velocity_tor(1:offset)
@@ -1508,7 +1557,14 @@ program transp2imas
       cp%profiles_1d(it)%n_i_total_over_n_e(1:offset)=&
          prdata(1+(it-1)*offset:it*offset)
    enddo
-
+#if 0
+   allocate(sum%local%magnetic_axis%n_i_total%value(nprtime))
+   do it = 1, nprtime
+      sum%local%magnetic_axis%n_i_total%value(it) = &
+         cp%profiles_1d(it)%n_i_total_over_n_e(1) * &
+         cp%profiles_1d(it)%electrons%density(1)
+   enddo
+#endif
    write(iout,*) ' '
    call rprofile('TI',prdata,nprtime*xsizes(1),iret,ier)
    if (ier.ne.0) call transp2imas_error('rprofile(TI)',ier)
@@ -1516,13 +1572,22 @@ program transp2imas
       call transp2imas_exit(' ?? TI read error')
    call transp2imas_echo('TI',prdata,xsizes(1),nprtime)
 
-   offset=xsizes(1)
-   do it=1,nprtime
+   offset = xsizes(1)
+   do it = 1, nprtime
       allocate(cp%profiles_1d(it)%t_i_average(offset))
-      cp%profiles_1d(it)%t_i_average(1:offset)=&
+      cp%profiles_1d(it)%t_i_average(1:offset) = &
          prdata(1+(it-1)*offset:it*offset)
    enddo
-
+#if 0
+   allocate(sum%local%magnetic_axis%t_i_average%value(nprtime))
+   allocate(sum%local%edge%t_i_average%value(nprtime))
+   do it = 1, nprtime
+      sum%local%magnetic_axis%t_i_average%value(it) = &
+         cp%profiles_1d(it)%t_i_average(1)
+      sum%local%edge%t_i_average%value(it) = &
+         cp%profiles_1d(it)%t_i_average(offset)
+   enddo
+#endif
    write(iout,*) ' '
    ! ZEFMD                MAGDIF ZEFF PROFILE
    ! ZEFFP                PLASMA COMPOSITION ZEFF PROFILE
@@ -1533,13 +1598,22 @@ program transp2imas
       call transp2imas_exit(' ?? ZEFFP read error')
    call transp2imas_echo('ZEFFP',prdata,xsizes(1),nprtime)
 
-   offset=xsizes(1)
-   do it=1,nprtime
+   offset = xsizes(1)
+   do it = 1, nprtime
       allocate(cp%profiles_1d(it)%zeff(offset))
-      cp%profiles_1d(it)%zeff(1:offset)=&
+      cp%profiles_1d(it)%zeff(1:offset) = &
          prdata(1+(it-1)*offset:it*offset)
    enddo
-
+#if 0
+   allocate(sum%local%magnetic_axis%zeff%value(nprtime))
+   allocate(sum%local%edge%zeff%value(nprtime))
+   do it = 1, nprtime
+      sum%local%magnetic_axis%zeff%value(it) = &
+         cp%profiles_1d(it)%zeff(1)
+      sum%local%edge%zeff%value(it) = &
+         cp%profiles_1d(it)%zeff(offset)
+   enddo
+#endif
    write(iout,*) ' '
    call rprofile('Q',prdata,nprtime*xsizes(2),iret,ier)
    if (ier.ne.0) call transp2imas_error('rprofile(Q)',ier)
@@ -1850,7 +1924,8 @@ program transp2imas
       ! Make psi a STRICTLY monotonic profile
       do i = 1, offset
          eq%time_slice(it)%profiles_1d%psi(i) = &
-            eq%time_slice(it)%profiles_1d%psi(i) * (1.0 + 1.0e-6 * (i - offset))
+            eq%time_slice(it)%profiles_1d%psi(i) * &
+            (1.0 + 1.0e-6 * (i - offset))
       enddo
 
       xbbuf1(:) = PLFLX(:, it)
@@ -1885,7 +1960,13 @@ program transp2imas
       !write(312,*) PLFLX(ir,it), dXBdPLFLX(ir,it)
       !enddo
    enddo
-
+#if 0
+   allocate(sum%local%edge%position%psi(nprtime))
+   do it = 1, nprtime
+      sum%local%edge%position%psi(it) = &
+         eq%time_slice(it)%profiles_1d%psi(offset)
+   enddo
+#endif
    write(iout,*) ' '
    call rprofile('TRFLX',prdata,nprtime*xsizes(2),iret,ier)
    if (ier.ne.0) call transp2imas_error('rprofile(TRFLX)',ier)
@@ -1896,7 +1977,8 @@ program transp2imas
    offset = xsizes(2)
    do it = 1, nprtime
       allocate(eq%time_slice(it)%profiles_1d%phi(offset))
-      eq%time_slice(it)%profiles_1d%phi(1:offset) = prdata(1+(it-1)*offset:it*offset)
+      eq%time_slice(it)%profiles_1d%phi(1:offset) = &
+         prdata(1+(it-1)*offset:it*offset)
    enddo
 
    write(iout,*) ' '
@@ -2050,7 +2132,8 @@ program transp2imas
    offset = xsizes(2)
    do it = 1, nprtime
       allocate(eq%time_slice(it)%profiles_1d%surface(offset))
-      eq%time_slice(it)%profiles_1d%surface(1:offset) = prdata(1+(it-1)*offset:it*offset) * 1.0e-4
+      eq%time_slice(it)%profiles_1d%surface(1:offset) = &
+         prdata(1+(it-1)*offset:it*offset) * 1.0e-4
    enddo
 
    write(iout,*) ' '
@@ -2063,9 +2146,19 @@ program transp2imas
    offset = xsizes(2)
    do it = 1, nprtime
       allocate(eq%time_slice(it)%profiles_1d%q(offset))
-      eq%time_slice(it)%profiles_1d%q(1:offset) = prdata(1+(it-1)*offset:it*offset)
+      eq%time_slice(it)%profiles_1d%q(1:offset) = &
+         prdata(1+(it-1)*offset:it*offset)
    enddo
-
+#if 0
+   allocate(sum%local%magnetic_axis%q%value(nprtime))
+   allocate(sum%local%edge%q%value(nprtime))
+   do it = 1, nprtime
+      sum%local%magnetic_axis%q%value(it) = &
+         eq%time_slice(it)%profiles_1d%q(1)
+      sum%local%edge%q%value(it) = &
+         eq%time_slice(it)%profiles_1d%q(offset)
+   enddo
+#endif
    write(iout,*) ' '
    call rprofile('SHAT',prdata,nprtime*xsizes(1),iret,ier)
    if (ier.ne.0) call transp2imas_error('rprofile(SHAT)',ier)
@@ -2091,7 +2184,16 @@ program transp2imas
       ! Now write extrapolated boundary value
       eq%time_slice(it)%profiles_1d%magnetic_shear(offset) = rdum
    enddo
-
+#if 0
+   allocate(sum%local%magnetic_axis%magnetic_shear%value(nprtime))
+   allocate(sum%local%edge%magnetic_shear%value(nprtime))
+   do it = 1, nprtime
+      sum%local%magnetic_axis%magnetic_shear%value(it) = &
+         eq%time_slice(it)%profiles_1d%magnetic_shear(1)
+      sum%local%edge%magnetic_shear%value(it) = &
+         eq%time_slice(it)%profiles_1d%magnetic_shear(offset)
+   enddo
+#endif
    write(iout,*) ' '
    call rprofile('GRI',prdata,nprtime*xsizes(1),iret,ier)
    if (ier.ne.0) call transp2imas_error('rprofile(GRI)',ier)
@@ -2333,7 +2435,167 @@ program transp2imas
          deallocate(ilimiter, rlimiter, ylimiter)
       endif
       write(iout,*) ' LIMITER DATA are saved in fort.130'
-
+#if 0
+   ! write on-axis individual ion densities to Summary IDS
+   do i = 1, nion
+      write(*,*) i, cp%profiles_1d(1)%ion(i)%element(1)%a, &
+                    cp%profiles_1d(1)%ion(i)%z_ion, &
+                    cp%profiles_1d(1)%ion(i)%element(1)%z_n
+      ! hydrogen
+      if ((1.0 .eq. cp%profiles_1d(1)%ion(i)%element(1)%a) .and. &
+          (1.0 .eq. cp%profiles_1d(1)%ion(i)%z_ion)) then
+         if (associated(sum%local%magnetic_axis%n_i%hydrogen%value)) then
+            do it = 1, nprtime
+               sum%local%magnetic_axis%n_i%hydrogen%value(it) = &
+                  sum%local%magnetic_axis%n_i%hydrogen%value(it) + &
+                  cp%profiles_1d(it)%ion(i)%density(1)
+            end do
+         else
+            allocate(sum%local%magnetic_axis%n_i%hydrogen%value(nprtime))
+            allocate(sum%local%magnetic_axis%velocity_tor%hydrogen%value(nprtime))
+            do it = 1, nprtime
+               sum%local%magnetic_axis%n_i%hydrogen%value(it) = &
+                  cp%profiles_1d(it)%ion(i)%density(1)
+               sum%local%magnetic_axis%velocity_tor%hydrogen%value(it) = &
+                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+            end do
+         end if
+      end if
+      ! deuterium
+      if ((2.0 .eq. cp%profiles_1d(1)%ion(i)%element(1)%a) .and. &
+          (1.0 .eq. cp%profiles_1d(1)%ion(i)%z_ion)) then
+         if (associated(sum%local%magnetic_axis%n_i%deuterium%value)) then
+            do it = 1, nprtime
+               sum%local%magnetic_axis%n_i%deuterium%value(it) = &
+                  sum%local%magnetic_axis%n_i%deuterium%value(it) + &
+                  cp%profiles_1d(it)%ion(i)%density(1)
+            end do
+         else
+            allocate(sum%local%magnetic_axis%n_i%deuterium%value(nprtime))
+            allocate(sum%local%magnetic_axis%velocity_tor%deuterium%value(nprtime))
+            do it = 1, nprtime
+               sum%local%magnetic_axis%n_i%deuterium%value(it) = &
+                  cp%profiles_1d(it)%ion(i)%density(1)
+               sum%local%magnetic_axis%velocity_tor%deuterium%value(it) = &
+                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+            end do
+         end if
+         write(*,*) 'deuterium: ', i, &
+             sum%local%magnetic_axis%n_i%deuterium%value(1), &
+             sum%local%magnetic_axis%n_i%deuterium%value(nprtime)
+      end if
+      ! tritium
+      if ((3.0 .eq. cp%profiles_1d(1)%ion(i)%element(1)%a) .and. &
+          (1.0 .eq. cp%profiles_1d(1)%ion(i)%z_ion)) then
+         if (associated(sum%local%magnetic_axis%n_i%tritium%value)) then
+            do it = 1, nprtime
+               sum%local%magnetic_axis%n_i%tritium%value(it) = &
+                  sum%local%magnetic_axis%n_i%tritium%value(it) + &
+                  cp%profiles_1d(it)%ion(i)%density(1)
+            end do
+         else
+            allocate(sum%local%magnetic_axis%n_i%tritium%value(nprtime))
+            allocate(sum%local%magnetic_axis%velocity_tor%tritium%value(nprtime))
+            do it = 1, nprtime
+               sum%local%magnetic_axis%n_i%tritium%value(it) = &
+                  cp%profiles_1d(it)%ion(i)%density(1)
+               sum%local%magnetic_axis%velocity_tor%tritium%value(it) = &
+                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+            end do
+         end if
+         write(*,*) 'tritium: ', i, &
+             sum%local%magnetic_axis%n_i%tritium%value(1), &
+             sum%local%magnetic_axis%n_i%tritium%value(nprtime)
+      end if
+      ! helium-3
+      if ((3.0 .eq. cp%profiles_1d(1)%ion(i)%element(1)%a) .and. &
+          (2.0 .eq. cp%profiles_1d(1)%ion(i)%z_ion)) then
+         if (associated(sum%local%magnetic_axis%n_i%helium_3%value)) then
+            do it = 1, nprtime
+               sum%local%magnetic_axis%n_i%helium_3%value(it) = &
+                  sum%local%magnetic_axis%n_i%helium_3%value(it) + &
+                  cp%profiles_1d(it)%ion(i)%density(1)
+            end do
+         else
+            allocate(sum%local%magnetic_axis%n_i%helium_3%value(nprtime))
+            allocate(sum%local%magnetic_axis%velocity_tor%helium_3%value(nprtime))
+            do it = 1, nprtime
+               sum%local%magnetic_axis%n_i%helium_3%value(it) = &
+                  cp%profiles_1d(it)%ion(i)%density(1)
+               sum%local%magnetic_axis%velocity_tor%helium_3%value(it) = &
+                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+            end do
+         end if
+      end if
+      ! helium-4
+      if ((4.0 .eq. cp%profiles_1d(1)%ion(i)%element(1)%a) .and. &
+          (2.0 .eq. cp%profiles_1d(1)%ion(i)%z_ion)) then
+         if (associated(sum%local%magnetic_axis%n_i%helium_4%value)) then
+            do it = 1, nprtime
+               sum%local%magnetic_axis%n_i%helium_4%value(it) = &
+                  sum%local%magnetic_axis%n_i%helium_4%value(it) + &
+                  cp%profiles_1d(it)%ion(i)%density(1)
+            end do
+         else
+            allocate(sum%local%magnetic_axis%n_i%helium_4%value(nprtime))
+            allocate(sum%local%magnetic_axis%velocity_tor%helium_4%value(nprtime))
+            do it = 1, nprtime
+               sum%local%magnetic_axis%n_i%helium_4%value(it) = &
+                  cp%profiles_1d(it)%ion(i)%density(1)
+               sum%local%magnetic_axis%velocity_tor%helium_4%value(it) = &
+                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+            end do
+         end if
+         write(*,*) 'helium-4: ', i, &
+             sum%local%magnetic_axis%n_i%helium_4%value(1), &
+             sum%local%magnetic_axis%n_i%helium_4%value(nprtime)
+      end if
+      ! beryllium
+      if ((4.0 .eq. cp%profiles_1d(1)%ion(i)%z_ion)) then
+         if (associated(sum%local%magnetic_axis%n_i%berylium%value)) then
+            do it = 1, nprtime
+               sum%local%magnetic_axis%n_i%berylium%value(it) = &
+                  sum%local%magnetic_axis%n_i%berylium%value(it) + &
+                  cp%profiles_1d(it)%ion(i)%density(1)
+            end do
+         else
+            allocate(sum%local%magnetic_axis%n_i%berylium%value(nprtime))
+            allocate(sum%local%magnetic_axis%velocity_tor%berylium%value(nprtime))
+            do it = 1, nprtime
+               sum%local%magnetic_axis%n_i%berylium%value(it) = &
+                  cp%profiles_1d(it)%ion(i)%density(1)
+               sum%local%magnetic_axis%velocity_tor%berylium%value(it) = &
+                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+            end do
+         end if
+         write(*,*) 'beryllium: ', i, &
+             sum%local%magnetic_axis%n_i%berylium%value(1), &
+             sum%local%magnetic_axis%n_i%berylium%value(nprtime)
+      end if
+      ! argon
+      if ((18.0 .eq. cp%profiles_1d(1)%ion(i)%z_ion)) then
+         if (associated(sum%local%magnetic_axis%n_i%argon%value)) then
+            do it = 1, nprtime
+               sum%local%magnetic_axis%n_i%argon%value(it) = &
+                  sum%local%magnetic_axis%n_i%argon%value(it) + &
+                  cp%profiles_1d(it)%ion(i)%density(1)
+            end do
+         else
+            allocate(sum%local%magnetic_axis%n_i%argon%value(nprtime))
+            allocate(sum%local%magnetic_axis%velocity_tor%argon%value(nprtime))
+            do it = 1, nprtime
+               sum%local%magnetic_axis%n_i%argon%value(it) = &
+                  cp%profiles_1d(it)%ion(i)%density(1)
+               sum%local%magnetic_axis%velocity_tor%argon%value(it) = &
+                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+            end do
+         end if
+         write(*,*) 'argon: ', i, &
+             sum%local%magnetic_axis%n_i%argon%value(1), &
+             sum%local%magnetic_axis%n_i%argon%value(nprtime)
+      end if
+   end do
+#endif
 #ifdef CJDEBUG
 !
 !  calculator -- simple test
@@ -2627,9 +2889,14 @@ program transp2imas
 !
 !  copy data to Summary IDS
 !
-   sum%ids_properties%source = 'TRANSP'
-   sum%ids_properties%comment = 'Data translated by transp2imas'
-   sum%ids_properties%provider = 'Johan Carlsson'
+   !allocate(sum%code%name(6))
+   !sum%code%name = 'TRANSP'
+   !allocate(sum%ids_properties%source(6))
+   !sum%ids_properties%source = 'TRANSP'
+   !allocate(sum%ids_properties%comment(30))
+   !sum%ids_properties%comment = 'Data translated by transp2imas'
+   !allocate(sum%ids_properties%provider(15))
+   !sum%ids_properties%provider = 'Johan Carlsson'
 
 !
 !  save ids data
@@ -2654,7 +2921,7 @@ program transp2imas
       call ids_deallocate(ct)
       call ids_deallocate(es)
       call ids_deallocate(nbi)
-      call ids_deallocate(sum)
+      !call ids_deallocate(sum)
       call imas_close(idsidx)
 
 !

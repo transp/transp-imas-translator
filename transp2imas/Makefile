@@ -1,8 +1,9 @@
 #LOCAL = $(HOME)/local
 
 F90 = gfortran
-#COPTS = -cpp -fPIC -g -O0
-COPTS = -cpp -O2
+#COPTS = -cpp -g -O0 -fsanitize=address
+COPTS = -cpp -g -O0
+#COPTS = -cpp -O2
 INCLUDES = -I$(IMAS_PREFIX)/include/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
 #LIBS = -L$(IMAS_PREFIX)/lib -limas-gfortran -limas \
 
