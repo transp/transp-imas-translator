@@ -10,3 +10,16 @@ In this case transp2imas uses the namelist 38530B10TR.DAT to convert the
 output data in 38601I02.CDF to the files ids_3860001.tree, 
 ids_3860001.datafile and ids_3860001.characteristics in the directory 
 $MDSPLUS_TREE_BASE_0 .
+
+
+The code has so far been tested and confirmed to work with gcc-4.8.3
+and version 3.7.0 of the IMAS library (the default "module add imas"
+versions) on the ITER cluster. However, it only works with the manually
+built, unoptimized library, without memory debugging(Makefile) or with
+memory debugging enabled (Makefile.debug). When linked with the module
+library (Makefile.module), transp2imas seg faults, possibly due to the
+module library being compiled with too much optimzation.
+
+To work properly transp2imas must thus currently be built with either
+Makefile or Makefile.debug, linking with the manually built, without
+optimzation (-O0, minus oh zero), IMAS 3.7.0 library.
