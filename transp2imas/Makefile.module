@@ -1,4 +1,8 @@
-#LOCAL = $(HOME)/local
+# Makefile to link transp2imas with module IMAS library v. 3.7.0
+#
+# prerequisites:
+# 1) "module add imas" (or "module add imas/3.15.1/ual/3.7.0" if the default changes)
+# 2) a local TRANSP installation (at least the libraries and evironment variables used here)
 
 F90 = gfortran
 COPTS = -cpp -g -O0
