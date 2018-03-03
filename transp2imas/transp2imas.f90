@@ -1414,7 +1414,6 @@ program transp2imas
          tmps1 = adjustl(int2strng) ! delete the leading blanks
          tmpstrng = 'EINJ0'//tmps1(1:1)//'_E1'
          !write(*, *) 'x', trim(tmpstrng), 'x'
-         !stop
          call rpscalar(trim(tmpstrng),scdata,nsctime,iret,ier)
          if (ier.ne.0) call transp2imas_error('rpscalar',ier)
          if (iret.ne.nsctime) &
@@ -2440,12 +2439,13 @@ program transp2imas
          deallocate(ilimiter, rlimiter, ylimiter)
       endif
       write(iout,*) ' LIMITER DATA are saved in fort.130'
-
+!stop
    ! write on-axis individual ion densities to Summary IDS
    do i = 1, nion
       write(*,*) i, cp%profiles_1d(1)%ion(i)%element(1)%a, &
                     cp%profiles_1d(1)%ion(i)%z_ion, &
                     cp%profiles_1d(1)%ion(i)%element(1)%z_n
+
       ! hydrogen
       if ((1.0 .eq. cp%profiles_1d(1)%ion(i)%element(1)%a) .and. &
           (1.0 .eq. cp%profiles_1d(1)%ion(i)%z_ion)) then
@@ -2457,12 +2457,12 @@ program transp2imas
             end do
          else
             allocate(sum%local%magnetic_axis%n_i%hydrogen%value(nprtime))
-            allocate(sum%local%magnetic_axis%velocity_tor%hydrogen%value(nprtime))
+            !allocate(sum%local%magnetic_axis%velocity_tor%hydrogen%value(nprtime))
             do it = 1, nprtime
                sum%local%magnetic_axis%n_i%hydrogen%value(it) = &
                   cp%profiles_1d(it)%ion(i)%density(1)
-               sum%local%magnetic_axis%velocity_tor%hydrogen%value(it) = &
-                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+               !sum%local%magnetic_axis%velocity_tor%hydrogen%value(it) = &
+               !   cp%profiles_1d(it)%electrons%velocity_tor(1)
             end do
          end if
       end if
@@ -2477,13 +2477,13 @@ program transp2imas
             end do
          else
             allocate(sum%local%magnetic_axis%n_i%deuterium%value(nprtime))
-            allocate(sum%local%magnetic_axis%velocity_tor%deuterium%value(nprtime))
+            !allocate(sum%local%magnetic_axis%velocity_tor%deuterium%value(nprtime))
             do it = 1, nprtime
                sum%local%magnetic_axis%n_i%deuterium%value(it) = &
                   cp%profiles_1d(it)%ion(i)%density(1)
-               sum%local%magnetic_axis%velocity_tor%deuterium%value(it) = &
-                  cp%profiles_1d(it)%electrons%velocity_tor(1)
-            end do
+               !sum%local%magnetic_axis%velocity_tor%deuterium%value(it) = &
+               !   cp%profiles_1d(it)%electrons%velocity_tor(1)
+               end do
          end if
          write(*,*) 'deuterium: ', i, &
              sum%local%magnetic_axis%n_i%deuterium%value(1), &
@@ -2500,12 +2500,12 @@ program transp2imas
             end do
          else
             allocate(sum%local%magnetic_axis%n_i%tritium%value(nprtime))
-            allocate(sum%local%magnetic_axis%velocity_tor%tritium%value(nprtime))
+            !allocate(sum%local%magnetic_axis%velocity_tor%tritium%value(nprtime))
             do it = 1, nprtime
                sum%local%magnetic_axis%n_i%tritium%value(it) = &
                   cp%profiles_1d(it)%ion(i)%density(1)
-               sum%local%magnetic_axis%velocity_tor%tritium%value(it) = &
-                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+               !sum%local%magnetic_axis%velocity_tor%tritium%value(it) = &
+               !   cp%profiles_1d(it)%electrons%velocity_tor(1)
             end do
          end if
          write(*,*) 'tritium: ', i, &
@@ -2523,12 +2523,12 @@ program transp2imas
             end do
          else
             allocate(sum%local%magnetic_axis%n_i%helium_3%value(nprtime))
-            allocate(sum%local%magnetic_axis%velocity_tor%helium_3%value(nprtime))
+            !allocate(sum%local%magnetic_axis%velocity_tor%helium_3%value(nprtime))
             do it = 1, nprtime
                sum%local%magnetic_axis%n_i%helium_3%value(it) = &
                   cp%profiles_1d(it)%ion(i)%density(1)
-               sum%local%magnetic_axis%velocity_tor%helium_3%value(it) = &
-                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+               !sum%local%magnetic_axis%velocity_tor%helium_3%value(it) = &
+               !   cp%profiles_1d(it)%electrons%velocity_tor(1)
             end do
          end if
       end if
@@ -2543,12 +2543,12 @@ program transp2imas
             end do
          else
             allocate(sum%local%magnetic_axis%n_i%helium_4%value(nprtime))
-            allocate(sum%local%magnetic_axis%velocity_tor%helium_4%value(nprtime))
+            !allocate(sum%local%magnetic_axis%velocity_tor%helium_4%value(nprtime))
             do it = 1, nprtime
                sum%local%magnetic_axis%n_i%helium_4%value(it) = &
                   cp%profiles_1d(it)%ion(i)%density(1)
-               sum%local%magnetic_axis%velocity_tor%helium_4%value(it) = &
-                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+               !sum%local%magnetic_axis%velocity_tor%helium_4%value(it) = &
+               !   cp%profiles_1d(it)%electrons%velocity_tor(1)
             end do
          end if
          write(*,*) 'helium-4: ', i, &
@@ -2565,12 +2565,12 @@ program transp2imas
             end do
          else
             allocate(sum%local%magnetic_axis%n_i%berylium%value(nprtime))
-            allocate(sum%local%magnetic_axis%velocity_tor%berylium%value(nprtime))
+            !allocate(sum%local%magnetic_axis%velocity_tor%berylium%value(nprtime))
             do it = 1, nprtime
                sum%local%magnetic_axis%n_i%berylium%value(it) = &
                   cp%profiles_1d(it)%ion(i)%density(1)
-               sum%local%magnetic_axis%velocity_tor%berylium%value(it) = &
-                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+               !sum%local%magnetic_axis%velocity_tor%berylium%value(it) = &
+               !   cp%profiles_1d(it)%electrons%velocity_tor(1)
             end do
          end if
          write(*,*) 'beryllium: ', i, &
@@ -2587,12 +2587,12 @@ program transp2imas
             end do
          else
             allocate(sum%local%magnetic_axis%n_i%argon%value(nprtime))
-            allocate(sum%local%magnetic_axis%velocity_tor%argon%value(nprtime))
+            !allocate(sum%local%magnetic_axis%velocity_tor%argon%value(nprtime))
             do it = 1, nprtime
                sum%local%magnetic_axis%n_i%argon%value(it) = &
                   cp%profiles_1d(it)%ion(i)%density(1)
-               sum%local%magnetic_axis%velocity_tor%argon%value(it) = &
-                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+               !sum%local%magnetic_axis%velocity_tor%argon%value(it) = &
+               !   cp%profiles_1d(it)%electrons%velocity_tor(1)
             end do
          end if
          write(*,*) 'argon: ', i, &
