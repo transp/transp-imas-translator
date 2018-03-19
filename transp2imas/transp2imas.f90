@@ -202,6 +202,8 @@ program transp2imas
    allocate(ct%time(nsctime))
    allocate(ct%model(1))
    allocate(ct%model(1)%profiles_1d(nprtime))
+   allocate(cs%time(nprtime))
+   allocate(cs%source(15))
    allocate(es%time(nprtime))
    allocate(es%source(2)) ! Gas-flow (1) and recycling (2) sources, respectively
    allocate(es%source(1)%ggd(1))
@@ -907,6 +909,7 @@ program transp2imas
    write(*,*) 'fill ids prtime'
    cp%profiles_1d(:)%time = prtime
    eq%time_slice(:)%time = prtime
+   cs%time = prtime
    es%time = prtime
    do it = 1, nprtime
       ct%model(1)%profiles_1d(it)%time = prtime(it)
@@ -918,8 +921,10 @@ program transp2imas
 
    ! fill core_profiles IDS
 
-   sum%ids_properties%homogeneous_time = 0
    cp%ids_properties%homogeneous_time = 0
+   cs%ids_properties%homogeneous_time = 0
+   es%ids_properties%homogeneous_time = 0
+   sum%ids_properties%homogeneous_time = 0
 
    write(iout,*) ' '
    ! Inductance Definition for LI_3: source/doc/beta.doc
@@ -962,6 +967,34 @@ program transp2imas
    cp%global_quantities%beta_pol(:) = scdata(:)
    allocate(sum%global_quantities%beta_pol%value(nsctime))
    sum%global_quantities%beta_pol%value = cp%global_quantities%beta_pol
+
+   ! fill cs IDS
+
+   call rprofile('PEECH',prdata,nprtime*xsizes(1),iret,ier)
+   if ((ier .eq. 0) .and. (iret .eq. nprtime * xsizes(1))) then
+      call transp2imas_echo('PEECH', prdata, xsizes(1), nprtime)
+#if 1
+      allocate(cs%source(3)%profiles_1d(nprtime))
+      offset = xsizes(1)
+      do it = 1, nprtime
+         cs%source(3)%profiles_1d(it)%time = prtime(it)
+         allocate(cs%source(3)%profiles_1d(it)%electrons%energy(offset))
+         cs%source(3)%profiles_1d(it)%electrons%energy(1:offset) = &
+            prdata(1+(it-1)*offset:it*offset) * 1.e6
+      enddo
+
+      call rprofile('ECCUR',prdata,nprtime*xsizes(1),iret,ier)
+      if ((ier .eq. 0) .and. (iret .eq. nprtime * xsizes(1))) then
+         call transp2imas_echo('ECCUR', prdata, xsizes(1), nprtime)
+         offset = xsizes(1)
+         do it = 1, nprtime
+            allocate(cs%source(3)%profiles_1d(it)%j_parallel(offset))
+            cs%source(3)%profiles_1d(it)%j_parallel(1:offset) = &
+               prdata(1+(it-1)*offset:it*offset) * 1.e4
+         enddo
+      endif
+#endif
+   endif
 
    ! fill equilibrium IDS
 
