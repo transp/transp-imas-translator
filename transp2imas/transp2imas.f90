@@ -203,11 +203,7 @@ program transp2imas
    allocate(ct%model(1))
    allocate(ct%model(1)%profiles_1d(nprtime))
    allocate(cs%time(nprtime))
-<<<<<<< HEAD
    allocate(cs%source(28))
-=======
-   allocate(cs%source(15))
->>>>>>> e1974ed9f9c90d35230c1a7608477e12abdca702
    allocate(es%time(nprtime))
    allocate(es%source(2)) ! Gas-flow (1) and recycling (2) sources, respectively
    allocate(es%source(1)%ggd(1))
@@ -974,7 +970,6 @@ program transp2imas
 
    ! fill cs IDS
 
-<<<<<<< HEAD
    call rpscalar('PECHT', scdata, nsctime, iret, ier)
    if ((ier .eq. 0) .and. (iret .eq. nsctime)) then
       call transp2imas_echo('PECHT', scdata, 1, nsctime)
@@ -1000,27 +995,12 @@ program transp2imas
                prdata(1+(it-1)*offset:it*offset) * 1.e6
          enddo
       endif
-=======
-   call rprofile('PEECH',prdata,nprtime*xsizes(1),iret,ier)
-   if ((ier .eq. 0) .and. (iret .eq. nprtime * xsizes(1))) then
-      call transp2imas_echo('PEECH', prdata, xsizes(1), nprtime)
-#if 1
-      allocate(cs%source(3)%profiles_1d(nprtime))
-      offset = xsizes(1)
-      do it = 1, nprtime
-         cs%source(3)%profiles_1d(it)%time = prtime(it)
-         allocate(cs%source(3)%profiles_1d(it)%electrons%energy(offset))
-         cs%source(3)%profiles_1d(it)%electrons%energy(1:offset) = &
-            prdata(1+(it-1)*offset:it*offset) * 1.e6
-      enddo
->>>>>>> e1974ed9f9c90d35230c1a7608477e12abdca702
 
       call rprofile('ECCUR',prdata,nprtime*xsizes(1),iret,ier)
       if ((ier .eq. 0) .and. (iret .eq. nprtime * xsizes(1))) then
          call transp2imas_echo('ECCUR', prdata, xsizes(1), nprtime)
          offset = xsizes(1)
          do it = 1, nprtime
-<<<<<<< HEAD
             allocate(cs%source(ncs)%profiles_1d(it)%j_parallel(offset))
             cs%source(ncs)%profiles_1d(it)%j_parallel(1:offset) = &
                prdata(1+(it-1)*offset:it*offset) * 1.e4
@@ -1047,6 +1027,7 @@ program transp2imas
          allocate(cs%source(ncs)%profiles_1d(nprtime))
          offset = xsizes(1)
          do it = 1, nprtime
+            cs%source(ncs)%profiles_1d(it)%time = prtime(it)
             allocate(cs%source(ncs)%profiles_1d(it)%electrons%energy(offset))
             cs%source(ncs)%profiles_1d(it)%electrons%energy(1:offset) = &
                prdata(1+(it-1)*offset:it*offset) * 1.e6
@@ -1069,20 +1050,30 @@ program transp2imas
          call transp2imas_echo('ICCUR', prdata, xsizes(1), nprtime)
          offset = xsizes(1)
          do it = 1, nprtime
-            cs%source(ncs)%profiles_1d(it)%time = prtime(it)
             allocate(cs%source(ncs)%profiles_1d(it)%j_parallel(offset))
             cs%source(ncs)%profiles_1d(it)%j_parallel(1:offset) = &
                prdata(1+(it-1)*offset:it*offset) * 1.e4
          enddo
       endif
-=======
-            allocate(cs%source(3)%profiles_1d(it)%j_parallel(offset))
-            cs%source(3)%profiles_1d(it)%j_parallel(1:offset) = &
-               prdata(1+(it-1)*offset:it*offset) * 1.e4
-         enddo
-      endif
-#endif
->>>>>>> e1974ed9f9c90d35230c1a7608477e12abdca702
+   endif
+
+   call rprofile('CURB',prdata,nprtime*xsizes(1),iret,ier)
+   if ((ier .eq. 0) .and. (iret .eq. nprtime * xsizes(1))) then
+      call transp2imas_echo('CURB', prdata, xsizes(1), nprtime)
+
+      ncs = ncs + 1
+      cs%source(ncs)%identifier%index = 2
+      allocate(cs%source(ncs)%identifier%name(3))
+      cs%source(ncs)%identifier%name = 'NBI'
+
+      allocate(cs%source(ncs)%profiles_1d(nprtime))
+      offset = xsizes(1)
+      do it = 1, nprtime
+         cs%source(ncs)%profiles_1d(it)%time = prtime(it)
+         allocate(cs%source(ncs)%profiles_1d(it)%j_parallel(offset))
+         cs%source(ncs)%profiles_1d(it)%j_parallel(1:offset) = &
+            prdata(1+(it-1)*offset:it*offset) * 1.e4
+      enddo
    endif
 
    ! fill equilibrium IDS
