@@ -83,7 +83,7 @@ program transp2imas
 
    integer :: nstate     ! number of each category of impurity species
    integer :: nion       ! number of ids ions
-   integer :: nbeam, nbgr
+   integer :: nbeam, nbgr, ncs = 0
    character*20 tmpstrng, int2strng
    character*20 tmps1, tmps2, tmps3, tmps4
    integer :: lentmps2, ktype, kerr
@@ -203,7 +203,11 @@ program transp2imas
    allocate(ct%model(1))
    allocate(ct%model(1)%profiles_1d(nprtime))
    allocate(cs%time(nprtime))
+<<<<<<< HEAD
+   allocate(cs%source(28))
+=======
    allocate(cs%source(15))
+>>>>>>> e1974ed9f9c90d35230c1a7608477e12abdca702
    allocate(es%time(nprtime))
    allocate(es%source(2)) ! Gas-flow (1) and recycling (2) sources, respectively
    allocate(es%source(1)%ggd(1))
@@ -970,6 +974,33 @@ program transp2imas
 
    ! fill cs IDS
 
+<<<<<<< HEAD
+   call rpscalar('PECHT', scdata, nsctime, iret, ier)
+   if ((ier .eq. 0) .and. (iret .eq. nsctime)) then
+      call transp2imas_echo('PECHT', scdata, 1, nsctime)
+
+      ncs = ncs + 1
+      cs%source(ncs)%identifier%index = 3
+      allocate(cs%source(ncs)%identifier%name(2))
+      cs%source(ncs)%identifier%name = 'EC'
+
+      ! The container below exists in the 3.7.0 documentation, but not in the source code...
+      !allocate(cs%source(ncs)%global_quantities(nsctime))
+      !cs%source(ncs)%global_quantities(:)%power = scdata(1:)
+
+      call rprofile('PEECH',prdata,nprtime*xsizes(1),iret,ier)
+      if ((ier .eq. 0) .and. (iret .eq. nprtime * xsizes(1))) then
+         call transp2imas_echo('PEECH', prdata, xsizes(1), nprtime)
+         allocate(cs%source(ncs)%profiles_1d(nprtime))
+         offset = xsizes(1)
+         do it = 1, nprtime
+            cs%source(ncs)%profiles_1d(it)%time = prtime(it)
+            allocate(cs%source(ncs)%profiles_1d(it)%electrons%energy(offset))
+            cs%source(ncs)%profiles_1d(it)%electrons%energy(1:offset) = &
+               prdata(1+(it-1)*offset:it*offset) * 1.e6
+         enddo
+      endif
+=======
    call rprofile('PEECH',prdata,nprtime*xsizes(1),iret,ier)
    if ((ier .eq. 0) .and. (iret .eq. nprtime * xsizes(1))) then
       call transp2imas_echo('PEECH', prdata, xsizes(1), nprtime)
@@ -982,18 +1013,76 @@ program transp2imas
          cs%source(3)%profiles_1d(it)%electrons%energy(1:offset) = &
             prdata(1+(it-1)*offset:it*offset) * 1.e6
       enddo
+>>>>>>> e1974ed9f9c90d35230c1a7608477e12abdca702
 
       call rprofile('ECCUR',prdata,nprtime*xsizes(1),iret,ier)
       if ((ier .eq. 0) .and. (iret .eq. nprtime * xsizes(1))) then
          call transp2imas_echo('ECCUR', prdata, xsizes(1), nprtime)
          offset = xsizes(1)
          do it = 1, nprtime
+<<<<<<< HEAD
+            allocate(cs%source(ncs)%profiles_1d(it)%j_parallel(offset))
+            cs%source(ncs)%profiles_1d(it)%j_parallel(1:offset) = &
+               prdata(1+(it-1)*offset:it*offset) * 1.e4
+         enddo
+      endif
+   endif
+
+   call rpscalar('PICHTOT', scdata, nsctime, iret, ier)
+   if ((ier .eq. 0) .and. (iret .eq. nsctime)) then
+      call transp2imas_echo('PICHTOT', scdata, 1, nsctime)
+
+      ncs = ncs + 1
+      cs%source(ncs)%identifier%index = 5
+      allocate(cs%source(ncs)%identifier%name(2))
+      cs%source(ncs)%identifier%name = 'IC'
+
+      ! The container below exists in the 3.7.0 documentation, but not in the source code...
+      !allocate(cs%source(ncs)%global_quantities(nsctime))
+      !cs%source(ncs)%global_quantities(:)%power = scdata(1:)
+
+      call rprofile('PEICH',prdata,nprtime*xsizes(1),iret,ier)
+      if ((ier .eq. 0) .and. (iret .eq. nprtime * xsizes(1))) then
+         call transp2imas_echo('PEICH', prdata, xsizes(1), nprtime)
+         allocate(cs%source(ncs)%profiles_1d(nprtime))
+         offset = xsizes(1)
+         do it = 1, nprtime
+            allocate(cs%source(ncs)%profiles_1d(it)%electrons%energy(offset))
+            cs%source(ncs)%profiles_1d(it)%electrons%energy(1:offset) = &
+               prdata(1+(it-1)*offset:it*offset) * 1.e6
+         enddo
+      endif
+
+      call rprofile('PIICH',prdata,nprtime*xsizes(1),iret,ier)
+      if ((ier .eq. 0) .and. (iret .eq. nprtime * xsizes(1))) then
+         call transp2imas_echo('PIICH', prdata, xsizes(1), nprtime)
+         offset = xsizes(1)
+         do it = 1, nprtime
+            allocate(cs%source(ncs)%profiles_1d(it)%total_ion_energy(offset))
+            cs%source(ncs)%profiles_1d(it)%total_ion_energy(1:offset) = &
+               prdata(1+(it-1)*offset:it*offset) * 1.e6
+         enddo
+      endif
+
+      call rprofile('ICCUR',prdata,nprtime*xsizes(1),iret,ier)
+      if ((ier .eq. 0) .and. (iret .eq. nprtime * xsizes(1))) then
+         call transp2imas_echo('ICCUR', prdata, xsizes(1), nprtime)
+         offset = xsizes(1)
+         do it = 1, nprtime
+            cs%source(ncs)%profiles_1d(it)%time = prtime(it)
+            allocate(cs%source(ncs)%profiles_1d(it)%j_parallel(offset))
+            cs%source(ncs)%profiles_1d(it)%j_parallel(1:offset) = &
+               prdata(1+(it-1)*offset:it*offset) * 1.e4
+         enddo
+      endif
+=======
             allocate(cs%source(3)%profiles_1d(it)%j_parallel(offset))
             cs%source(3)%profiles_1d(it)%j_parallel(1:offset) = &
                prdata(1+(it-1)*offset:it*offset) * 1.e4
          enddo
       endif
 #endif
+>>>>>>> e1974ed9f9c90d35230c1a7608477e12abdca702
    endif
 
    ! fill equilibrium IDS
