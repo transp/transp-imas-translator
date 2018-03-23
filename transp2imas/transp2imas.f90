@@ -1096,6 +1096,10 @@ program transp2imas
                prdata(1+(it-1)*offset:it*offset) * 1.e6
          enddo
       endif
+
+      ! S (TQBE + TQBI) dV
+      ! torque_tor_inside exist only in 3.7.0 documentation, not in source...
+      ! allocate(cs%source(ncs)%profiles_1d(1)%torque_tor_inside(offset))
    endif
 
    ! fill equilibrium IDS
@@ -3029,14 +3033,10 @@ program transp2imas
 !
 !  wite some meta data to Summary IDS
 !
-   allocate(sum%code%name(1))
+   allocate(sum%code%name(6))
    sum%code%name = 'TRANSP'
-   allocate(sum%ids_properties%comment(1))
+   allocate(sum%ids_properties%comment(31))
    sum%ids_properties%comment = 'Data translated by transp2imas'
-   !allocate(sum%ids_properties%source(1))
-   !sum%ids_properties%source = 'TRANSP'
-   !allocate(sum%ids_properties%provider(1))
-   !sum%ids_properties%provider = 'Johan Carlsson'
 
 !
 !  save ids data
@@ -3047,6 +3047,8 @@ program transp2imas
       call ids_put(idsidx, "core_profiles", cp)
       write(*,*) ' transp2imas: save ct ids'
       call ids_put(idsidx, "core_transport", ct)
+      write(*,*) ' transp2imas: save cs ids'
+      call ids_put(idsidx, "core_sources", cs)
       write(*,*) ' transp2imas: save es ids'
       es%source(1)%ggd(1)%time = 0.
       es%source(2)%ggd(1)%time = 0.
