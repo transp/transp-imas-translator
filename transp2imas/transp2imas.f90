@@ -1109,7 +1109,7 @@ program transp2imas
 
       ! S (TQBE + TQBI) dV
       ! torque_tor_inside exist only in 3.7.0 documentation, not in source...
-      ! allocate(cs%source(ncs)%profiles_1d(1)%torque_tor_inside(offset))
+      !allocate(cs%source(ncs)%profiles_1d(1)%torque_tor_inside(offset))
    endif
 
    ! fill equilibrium IDS
