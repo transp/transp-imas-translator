@@ -1597,7 +1597,7 @@ program transp2imas
       XI(1:offset,it) = prdata(1+(it-1)*offset:it*offset)
       allocate(cp%profiles_1d(it)%grid%rho_tor_norm(offset))
       cp%profiles_1d(it)%grid%rho_tor_norm(1:offset) = &
-         XI(1:offset,it) * XI(1:offset,it)
+         XI(1:offset,it) ! * XI(1:offset,it)
    enddo
 
    allocate(sum%local%edge%position%rho_tor_norm(nprtime))
