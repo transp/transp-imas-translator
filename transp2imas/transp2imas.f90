@@ -1074,6 +1074,28 @@ program transp2imas
          cs%source(ncs)%profiles_1d(it)%j_parallel(1:offset) = &
             prdata(1+(it-1)*offset:it*offset) * 1.e4
       enddo
+
+      call rprofile('PBE',prdata,nprtime*xsizes(1),iret,ier)
+      if ((ier .eq. 0) .and. (iret .eq. nprtime * xsizes(1))) then
+         call transp2imas_echo('PBE', prdata, xsizes(1), nprtime)
+         offset = xsizes(1)
+         do it = 1, nprtime
+            allocate(cs%source(ncs)%profiles_1d(it)%electrons%energy(offset))
+            cs%source(ncs)%profiles_1d(it)%electrons%energy(1:offset) = &
+               prdata(1+(it-1)*offset:it*offset) * 1.e6
+         enddo
+      endif
+
+      call rprofile('PBI',prdata,nprtime*xsizes(1),iret,ier)
+      if ((ier .eq. 0) .and. (iret .eq. nprtime * xsizes(1))) then
+         call transp2imas_echo('PBI', prdata, xsizes(1), nprtime)
+         offset = xsizes(1)
+         do it = 1, nprtime
+            allocate(cs%source(ncs)%profiles_1d(it)%total_ion_energy(offset))
+            cs%source(ncs)%profiles_1d(it)%total_ion_energy(1:offset) = &
+               prdata(1+(it-1)*offset:it*offset) * 1.e6
+         enddo
+      endif
    endif
 
    ! fill equilibrium IDS
