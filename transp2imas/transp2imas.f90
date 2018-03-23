@@ -195,10 +195,25 @@ program transp2imas
    allocate(mgslice(nxmax,max(66,naxmgf)))
 
    ! fill ids
-   allocate(cp%time(nsctime))
-   allocate(cp%profiles_1d(nprtime))
+   eq%ids_properties%homogeneous_time = 0
+   cp%ids_properties%homogeneous_time = 0
+   ct%ids_properties%homogeneous_time = 0
+   cs%ids_properties%homogeneous_time = 0
+   es%ids_properties%homogeneous_time = 0
+   nbi%ids_properties%homogeneous_time = 0
+   sum%ids_properties%homogeneous_time = 0
+   ! automatic allocation not done properly by old gfortran version, so do it explicitly
+   !allocate(sum%ids_properties%source(6))
+   !sum%ids_properties%source = 'TRANSP'
+   allocate(sum%ids_properties%comment(31))
+   sum%ids_properties%comment = 'Data translated by transp2imas'
+   allocate(sum%code%name(6))
+   sum%code%name = 'TRANSP'
+
    allocate(eq%time(nsctime))
    allocate(eq%time_slice(nprtime)) ! holds both scalar and profile data
+   allocate(cp%time(nsctime))
+   allocate(cp%profiles_1d(nprtime))
    allocate(ct%time(nsctime))
    allocate(ct%model(1))
    allocate(ct%model(1)%profiles_1d(nprtime))
@@ -920,11 +935,6 @@ program transp2imas
 !
 
    ! fill core_profiles IDS
-
-   cp%ids_properties%homogeneous_time = 0
-   cs%ids_properties%homogeneous_time = 0
-   es%ids_properties%homogeneous_time = 0
-   sum%ids_properties%homogeneous_time = 0
 
    write(iout,*) ' '
    ! Inductance Definition for LI_3: source/doc/beta.doc
@@ -3030,13 +3040,6 @@ program transp2imas
                cp%profiles_1d(it)%neutral(1)%density(:) = rvdum(1) * 1.0e6 ! /cm3 to /m3
          enddo
       endif
-!
-!  wite some meta data to Summary IDS
-!
-   allocate(sum%code%name(6))
-   sum%code%name = 'TRANSP'
-   allocate(sum%ids_properties%comment(31))
-   sum%ids_properties%comment = 'Data translated by transp2imas'
 
 !
 !  save ids data
