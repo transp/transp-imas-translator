@@ -107,7 +107,7 @@ program transp2imas
 !  work stuff
 !
    real :: twopi = 2.*4.*atan(1.)
-   logical :: ozero = .false.
+   logical :: hash_exists, ozero = .false.
    integer :: ideriv = 0
    integer i,j,ij,k
    integer it, ir, offset
@@ -122,6 +122,8 @@ program transp2imas
 
    real :: rdum, rvdum(20), rvdum2(20)
    integer :: ivdum(20)
+
+   character(len=40)::hash_str
 
 !----------------------------------------------------------------
 !
@@ -202,13 +204,61 @@ program transp2imas
    es%ids_properties%homogeneous_time = 0
    nbi%ids_properties%homogeneous_time = 0
    sum%ids_properties%homogeneous_time = 0
-   ! automatic allocation not done properly by old gfortran version, so do it explicitly
+
+   ! automatic allocation not done properly by old gfortran version, so do it explicitly for now
    !allocate(sum%ids_properties%source(6))
    !sum%ids_properties%source = 'TRANSP'
-   allocate(sum%ids_properties%comment(31))
-   sum%ids_properties%comment = 'Data translated by transp2imas'
-   allocate(sum%code%name(6))
-   sum%code%name = 'TRANSP'
+   allocate(sum%ids_properties%comment(29))
+   sum%ids_properties%comment = 'Translated TRANSP output data'
+   allocate(nbi%ids_properties%comment(29))
+   nbi%ids_properties%comment = sum%ids_properties%comment
+   allocate(es%ids_properties%comment(29))
+   es%ids_properties%comment = sum%ids_properties%comment
+   allocate(cs%ids_properties%comment(29))
+   cs%ids_properties%comment = sum%ids_properties%comment
+   allocate(ct%ids_properties%comment(29))
+   ct%ids_properties%comment = sum%ids_properties%comment
+   allocate(cp%ids_properties%comment(29))
+   cp%ids_properties%comment = sum%ids_properties%comment
+   allocate(eq%ids_properties%comment(29))
+   eq%ids_properties%comment = sum%ids_properties%comment
+
+   allocate(sum%code%name(11))
+   sum%code%name = 'transp2imas'
+   allocate(nbi%code%name(11))
+   nbi%code%name = sum%code%name
+   allocate(es%code%name(11))
+   es%code%name = sum%code%name
+   allocate(cs%code%name(11))
+   cs%code%name = sum%code%name
+   allocate(ct%code%name(11))
+   ct%code%name = sum%code%name
+   allocate(cp%code%name(11))
+   cp%code%name = sum%code%name
+   allocate(eq%code%name(11))
+   eq%code%name = sum%code%name
+
+   inquire(file='hash.txt', exist=hash_exists)
+   if (hash_exists) then
+      open(unit=333, file='hash.txt', status='old')
+      allocate(sum%code%version(40))
+      read(unit=333, fmt='(a40)') hash_str ! sum%code%version
+      close(unit=333)
+      sum%code%version = hash_str
+      !write(*,*) hash_str
+      allocate(nbi%code%version(40))
+      nbi%code%version = sum%code%version
+      allocate(es%code%version(40))
+      es%code%version = sum%code%version
+      allocate(cs%code%version(40))
+      cs%code%version = sum%code%version
+      allocate(ct%code%version(40))
+      ct%code%version = sum%code%version
+      allocate(cp%code%version(40))
+      cp%code%version = sum%code%version
+      allocate(eq%code%version(40))
+      eq%code%version = sum%code%version
+   endif
 
    allocate(eq%time(nsctime))
    allocate(eq%time_slice(nprtime)) ! holds both scalar and profile data
