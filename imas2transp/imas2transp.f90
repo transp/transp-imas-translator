@@ -3,7 +3,7 @@ program imas2transp
 !---------------------------------------------------------------------
 !
 !  to run:
-!     ./imas2transp 386 1
+!     ./imas2transp 385 30
 !
 !---------------------------------------------------------------------
 
@@ -96,6 +96,13 @@ program imas2transp
    !N_X_Points       = size(eq%time_slice(ii)%boundary%x_point)
    !N_S_Points       = size(eq%time_slice(ii)%boundary%strike_point)
    !N_Profiles_2D    = size(eq%time_slice(ii)%profiles_2d)
+
+   do i = 1, 6
+      write(*,*) 'i =', i
+      write(*,*) ' a =', cp%profiles_1d(1)%ion(i)%element(1)%a
+      write(*,*) ' z_n =', cp%profiles_1d(1)%ion(i)%element(1)%z_n
+   enddo
+   stop
 
    !set up transp ufile writing
    ilun=33

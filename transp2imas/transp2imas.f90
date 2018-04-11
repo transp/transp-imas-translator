@@ -464,10 +464,12 @@ program transp2imas
 
    iion=0
    do i=1,n_species
+      !if (itype(i) .eq. 1 .or. itype(i) .eq. 2) then
       if (itype(i) .eq. 1) then
          iion=iion+1
+         !write(*,*) 'iion =', iion
          iion_start=i  ! position in n_species
-         write(iout,*) ' specie', i, 'th ion is ', zlbla(i)
+         write(iout,*) ' specie #', i, ', ion is ', zlbla(i)
 
          do it=1,nprtime
             cp%profiles_1d(it)%ion(iion)%element(1)%a=aa(i)
@@ -479,7 +481,8 @@ program transp2imas
             ct%model(1)%profiles_1d(it)%ion(iion)%element(1)%z_n=izc(i)
             ct%model(1)%profiles_1d(it)%ion(iion)%label(1)=zlbla(i)
          enddo
-
+         !write(*,*) 'a =', cp%profiles_1d(1)%ion(iion)%element(1)%a
+         !write(*,*) 'z_n =', cp%profiles_1d(1)%ion(iion)%element(1)%z_n
          call rplabel(abray(1,i),label,units,imulti,istype)
          if (imulti.ne.0) call transp2imas_exit(' ?? imulti.ne.0')
          !write(iout,*) ' ',i,abray(1,i),abray(2,i),&
@@ -3090,6 +3093,12 @@ program transp2imas
                cp%profiles_1d(it)%neutral(1)%density(:) = rvdum(1) * 1.0e6 ! /cm3 to /m3
          enddo
       endif
+
+      do i = 1, nion
+         write(*,*) 'i =', i
+         write(*,*) ' a =', cp%profiles_1d(1)%ion(i)%element(1)%a
+         write(*,*) ' z_n =', cp%profiles_1d(1)%ion(i)%element(1)%z_n
+      enddo
 
 !
 !  save ids data

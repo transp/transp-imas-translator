@@ -1,8 +1,16 @@
-#LOCAL = $(HOME)/local
+# Makefile to link imas2transp with unoptimized (-g -O0) build of IMAS library v. imas/3.17.0/ual/3.8.0
+#
+# prerequisites:
+# 1) IMAS_INSTALL_DIR=/home/ITER/carlssj/local/imas (has unoptimized build of IMAS library)
+# 2) a local TRANSP installation (at least the libraries and evironment variables used here)
 
 F90 = gfortran
-COPTS = -cpp -O2
-INCLUDES = -I$(IMAS_PREFIX)/include/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
+#COPTS = -cpp -g -O0 -fsanitize=address
+COPTS = -cpp -g -O0
+#COPTS = -cpp -O2
+#INCLUDES = -I/home/ITER/carlssj/projects/imas-3.7.0/access-layer/fortraninterface/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
+INCLUDES = -I$(IMAS_INSTALL_DIR)/include/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
+#LIBS = -L$(IMAS_PREFIX)/lib -limas-gfortran -limas \
 
 LIBS = \
 	$(LOCAL)/lib/uflib.a \
@@ -14,8 +22,7 @@ LIBS = \
 	$(LOCAL)/lib/portlib.a \
 	$(LOCAL)/lib/ezcdf.a \
 	$(LOCAL)/lib/comput.a \
-	/work/imas/core/installer/src/3.12.0/ual/3.6.3/fortraninterface/libimas-gfortran.a \
-	/work/imas/core/installer/src/3.12.0/ual/3.6.3/lowlevel/libimas.a \
+	-L$(IMAS_INSTALL_DIR)/lib -limas -l:libimas-gfortran.so.3.17.0 \
 	$(MDSPLUS_DIR)/lib/libMdsObjectsCppShr.a $(MDSPLUS_DIR)/lib/libMdsLib.a \
 	$(MDSPLUS_DIR)/lib/libMdsIpShr.a $(MDSPLUS_DIR)/lib/libTdiShr.a $(MDSPLUS_DIR)/lib/libTreeShr.a \
 	$(MDSPLUS_DIR)/lib/libMdsShr.a $(MDSPLUS_DIR)/lib/libMdsIpShr.a \
