@@ -22,7 +22,7 @@ LIBS = \
 	$(LOCAL)/lib/portlib.a \
 	$(LOCAL)/lib/ezcdf.a \
 	$(LOCAL)/lib/comput.a \
-	-L$(IMAS_INSTALL_DIR)/lib -limas -l:libimas-gfortran.so.3.17.0 \
+	-L$(IMAS_INSTALL_DIR)/lib -l:libimas-gfortran.so.3.17.0 -limas \
 	$(MDSPLUS_DIR)/lib/libMdsObjectsCppShr.a $(MDSPLUS_DIR)/lib/libMdsLib.a \
 	$(MDSPLUS_DIR)/lib/libMdsIpShr.a $(MDSPLUS_DIR)/lib/libTdiShr.a $(MDSPLUS_DIR)/lib/libTreeShr.a \
 	$(MDSPLUS_DIR)/lib/libMdsShr.a $(MDSPLUS_DIR)/lib/libMdsIpShr.a \
