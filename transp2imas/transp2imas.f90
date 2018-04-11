@@ -1728,14 +1728,14 @@ program transp2imas
          call transp2imas_echo('OMEGA', prdata, xsizes(1), nprtime)
          offset = xsizes(1)
          do it = 1, nprtime
-            allocate(cp%profiles_1d(it)%electrons%velocity_tor(offset))
-            cp%profiles_1d(it)%electrons%velocity_tor(1:offset) = &
+            allocate(cp%profiles_1d(it)%electrons%velocity%toroidal(offset))
+            cp%profiles_1d(it)%electrons%velocity%toroidal(1:offset) = &
                eq%vacuum_toroidal_field%r0 * prdata(1+(it-1)*offset:it*offset)
             ! Assume ions rotate with electrons
             do iion = 1, nion
-               allocate(cp%profiles_1d(it)%ion(iion)%velocity_tor(offset))
-               cp%profiles_1d(it)%ion(iion)%velocity_tor(1:offset) = &
-                  cp%profiles_1d(it)%electrons%velocity_tor(1:offset)
+               allocate(cp%profiles_1d(it)%ion(iion)%velocity%toroidal(offset))
+               cp%profiles_1d(it)%ion(iion)%velocity%toroidal(1:offset) = &
+                  cp%profiles_1d(it)%electrons%velocity%toroidal(1:offset)
             enddo
          enddo
       endif
@@ -2664,7 +2664,7 @@ program transp2imas
                sum%local%magnetic_axis%n_i%hydrogen%value(it) = &
                   cp%profiles_1d(it)%ion(i)%density(1)
                sum%local%magnetic_axis%velocity_tor%hydrogen%value(it) = &
-                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+                  cp%profiles_1d(it)%electrons%velocity%toroidal(1)
             end do
          end if
       end if
@@ -2684,7 +2684,7 @@ program transp2imas
                sum%local%magnetic_axis%n_i%deuterium%value(it) = &
                   cp%profiles_1d(it)%ion(i)%density(1)
                sum%local%magnetic_axis%velocity_tor%deuterium%value(it) = &
-                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+                  cp%profiles_1d(it)%electrons%velocity%toroidal(1)
             end do
          end if
          write(*,*) 'deuterium: ', i, &
@@ -2707,7 +2707,7 @@ program transp2imas
                sum%local%magnetic_axis%n_i%tritium%value(it) = &
                   cp%profiles_1d(it)%ion(i)%density(1)
                sum%local%magnetic_axis%velocity_tor%tritium%value(it) = &
-                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+                  cp%profiles_1d(it)%electrons%velocity%toroidal(1)
             end do
          end if
          write(*,*) 'tritium: ', i, &
@@ -2730,7 +2730,7 @@ program transp2imas
                sum%local%magnetic_axis%n_i%helium_3%value(it) = &
                   cp%profiles_1d(it)%ion(i)%density(1)
                sum%local%magnetic_axis%velocity_tor%helium_3%value(it) = &
-                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+                  cp%profiles_1d(it)%electrons%velocity%toroidal(1)
             end do
          end if
       end if
@@ -2750,7 +2750,7 @@ program transp2imas
                sum%local%magnetic_axis%n_i%helium_4%value(it) = &
                   cp%profiles_1d(it)%ion(i)%density(1)
                sum%local%magnetic_axis%velocity_tor%helium_4%value(it) = &
-                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+                  cp%profiles_1d(it)%electrons%velocity%toroidal(1)
             end do
          end if
          write(*,*) 'helium-4: ', i, &
@@ -2772,7 +2772,7 @@ program transp2imas
                sum%local%magnetic_axis%n_i%berylium%value(it) = &
                   cp%profiles_1d(it)%ion(i)%density(1)
                sum%local%magnetic_axis%velocity_tor%berylium%value(it) = &
-                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+                  cp%profiles_1d(it)%electrons%velocity%toroidal(1)
             end do
          end if
          write(*,*) 'beryllium: ', i, &
@@ -2794,7 +2794,7 @@ program transp2imas
                sum%local%magnetic_axis%n_i%argon%value(it) = &
                   cp%profiles_1d(it)%ion(i)%density(1)
                sum%local%magnetic_axis%velocity_tor%argon%value(it) = &
-                  cp%profiles_1d(it)%electrons%velocity_tor(1)
+                  cp%profiles_1d(it)%electrons%velocity%toroidal(1)
             end do
          end if
          write(*,*) 'argon: ', i, &
