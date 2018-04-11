@@ -990,6 +990,19 @@ program transp2imas
    ! fill core_profiles IDS
 
    write(iout,*) ' '
+   call rpscalar('PCURC',scdata,nsctime,iret,ier)
+   if (ier.ne.0) call transp2imas_error('rpscalar',ier)
+   if (iret.ne.nsctime) &
+      call transp2imas_exit(' ?? PCURC read error')
+   call transp2imas_echo('PCURC',scdata,1,nsctime)
+
+   eq%time_slice(:)%global_quantities%ip = scdata(1:)
+   allocate(cp%global_quantities%ip(nsctime))
+   cp%global_quantities%ip(:) = scdata(:)
+   allocate(sum%global_quantities%ip%value(nsctime))
+   sum%global_quantities%ip%value = cp%global_quantities%ip
+
+   write(iout,*) ' '
    ! Inductance Definition for LI_3: source/doc/beta.doc
    ! same as ids li_3 definition : i.e.
    ! li_3 = 2/R0/mu0^2/Ip^2 * int(Bp^2 dV).
@@ -999,11 +1012,11 @@ program transp2imas
       call transp2imas_exit(' ?? LI_3 read error')
    call transp2imas_echo('LI_3',scdata,1,nsctime)
 
-   allocate(cp%global_quantities%li(nsctime))
-   cp%global_quantities%li(:)= scdata(:)
+   allocate(cp%global_quantities%li_3(nsctime))
+   cp%global_quantities%li_3(:) = scdata(:)
    eq%time_slice(:)%global_quantities%li_3 = scdata(:)
    allocate(sum%global_quantities%li%value(nsctime))
-   sum%global_quantities%li%value = cp%global_quantities%li
+   sum%global_quantities%li%value = cp%global_quantities%li_3
 
    write(iout,*) ' '
    !VSUR0: measured value from VSF ufile
@@ -1273,21 +1286,6 @@ program transp2imas
    allocate(sum%local%magnetic_axis%position%z(nprtime))
    sum%local%magnetic_axis%position%z = &
       eq%time_slice(:)%global_quantities%magnetic_axis%z
-
-   write(iout,*) ' '
-   ! PCUR, PCUREQ, PCURC, which one is correct
-   ! PCUR is the measured (from input data) plasma current.
-   ! PCURC is computed from the plasma parameters
-   call rpscalar('PCURC',scdata,nsctime,iret,ier)
-   if (ier.ne.0) call transp2imas_error('rpscalar',ier)
-   if (iret.ne.nsctime) &
-      call transp2imas_exit(' ?? PCURC read error')
-   call transp2imas_echo('PCURC',scdata,1,nsctime)
-   !write(*, *) ' PCURC', nsctime, scdata(nsctime)
-
-   eq%time_slice(:)%global_quantities%ip = scdata(1:)
-   allocate(sum%global_quantities%ip%value(nprtime))
-   sum%global_quantities%ip%value = eq%time_slice(:)%global_quantities%ip
 
    write(iout,*) ' '
    call rpscalar('Q0',scdata,nsctime,iret,ier)
