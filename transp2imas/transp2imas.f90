@@ -1928,8 +1928,15 @@ program transp2imas
    offset=xsizes(1)
    do it=1,nprtime
       allocate(cp%profiles_1d(it)%j_tor(offset))
-      cp%profiles_1d(it)%j_tor(1:offset)=&
+      cp%profiles_1d(it)%j_tor(1:offset) = &
          prdata(1+(it-1)*offset:it*offset) * 1.e4
+      allocate(cp%profiles_1d(it)%j_total(offset))
+      cp%profiles_1d(it)%j_total(1:offset) = &
+         cp%profiles_1d(it)%j_tor(1:offset)
+      allocate(cp%profiles_1d(it)%j_non_inductive(offset))
+      cp%profiles_1d(it)%j_non_inductive(1:offset) = &
+      cp%profiles_1d(it)%j_total(1:offset) - &
+         cp%profiles_1d(it)%j_ohmic(1:offset)
    enddo
 
    write(iout,*) ' '
