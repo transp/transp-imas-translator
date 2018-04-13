@@ -2808,6 +2808,27 @@ program transp2imas
       end if
    end do
 
+   ! write remaining quantities to Summary IDS
+
+   call rpscalar('TAUA1', scdata, nsctime, iret, ier)
+   if (ier .eq. 0 .and. iret .eq. nsctime) then
+      allocate(sum%global_quantities%tau_energy%value(nsctime))
+      sum%global_quantities%tau_energy%value = scdata(:)
+   endif
+
+   ! Could be either H98Y, H98Y1 or H98Y2, but probably the latter
+   call rpscalar('H98Y2',scdata,nsctime,iret,ier)
+   if (ier .eq. 0 .and. iret .eq. nsctime) then
+      allocate(sum%global_quantities%h_98%value(nsctime))
+      sum%global_quantities%h_98%value = scdata(:)
+   endif
+
+   call rpscalar('LHMODE',scdata,nsctime,iret,ier)
+   if (ier .eq. 0 .and. iret .eq. nsctime) then
+      allocate(sum%global_quantities%h_mode%value(nsctime))
+      sum%global_quantities%h_mode%value = scdata(:)
+   endif
+
 #ifdef CJDEBUG
 !
 !  calculator -- simple test
