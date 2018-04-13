@@ -1923,8 +1923,8 @@ program transp2imas
       call transp2imas_exit(' ?? CUR read error')
    call transp2imas_echo('CUR',prdata,xsizes(1),nprtime)
 
-   offset=xsizes(1)
-   do it=1,nprtime
+   offset = xsizes(1)
+   do it = 1, nprtime
       allocate(cp%profiles_1d(it)%j_tor(offset))
       cp%profiles_1d(it)%j_tor(1:offset) = &
          prdata(1+(it-1)*offset:it*offset) * 1.e4
@@ -2020,11 +2020,43 @@ program transp2imas
       call transp2imas_exit(' ?? DAREA read error')
    call transp2imas_echo('DAREA',prdata,xsizes(1),nprtime)
 
-   offset=xsizes(1)
-   do it=1,nprtime
+   offset = xsizes(1)
+   allocate(cp%global_quantities%current_non_inductive(nprtime))
+   allocate(cp%global_quantities%current_bootstrap(nprtime))
+   allocate(sum%global_quantities%current_non_inductive%value(nprtime))
+   allocate(sum%global_quantities%current_bootstrap%value(nprtime))
+   allocate(sum%global_quantities%current_ohm%value(nprtime))
+   do it = 1, nprtime
       allocate(cp%profiles_1d(it)%grid%area(offset))
-      cp%profiles_1d(it)%grid%area(1:offset)= &
+      cp%profiles_1d(it)%grid%area(1:offset) = &
          prdata(1+(it-1)*offset:it*offset) * 1.e-4
+      cp%global_quantities%current_non_inductive(it) = &
+         cp%profiles_1d(it)%j_non_inductive(1) * &
+         cp%profiles_1d(it)%grid%area(1)
+      cp%global_quantities%current_bootstrap(it) = &
+         cp%profiles_1d(it)%j_bootstrap(1) * &
+         cp%profiles_1d(it)%grid%area(1)
+      sum%global_quantities%current_ohm%value(it) = &
+         cp%profiles_1d(it)%j_ohmic(1) * &
+         cp%profiles_1d(it)%grid%area(1)
+      do ir = 2, offset
+         cp%global_quantities%current_non_inductive(it) = &
+            cp%global_quantities%current_non_inductive(it) + &
+            cp%profiles_1d(it)%j_non_inductive(ir) * &
+            cp%profiles_1d(it)%grid%area(ir)
+         cp%global_quantities%current_bootstrap(it) = &
+            cp%global_quantities%current_bootstrap(it) + &
+            cp%profiles_1d(it)%j_bootstrap(ir) * &
+            cp%profiles_1d(it)%grid%area(ir)
+         sum%global_quantities%current_ohm%value(it) = &
+            sum%global_quantities%current_ohm%value(it) + &
+            cp%profiles_1d(it)%j_ohmic(ir) * &
+            cp%profiles_1d(it)%grid%area(ir)
+      enddo
+      sum%global_quantities%current_non_inductive%value(it) = &
+         cp%global_quantities%current_non_inductive(it)
+      sum%global_quantities%current_bootstrap%value(it) = &
+         cp%global_quantities%current_bootstrap(it)
    enddo
 
    !write(iout,*) ' '
