@@ -2006,11 +2006,53 @@ program transp2imas
       call transp2imas_exit(' ?? DVOL read error')
    call transp2imas_echo('DVOL',prdata,xsizes(1),nprtime)
 
-   offset=xsizes(1)
-   do it=1,nprtime
+   offset = xsizes(1)
+   do it = 1, nprtime
       allocate(cp%profiles_1d(it)%grid%volume(offset))
-      cp%profiles_1d(it)%grid%volume(1:offset)= &
+      cp%profiles_1d(it)%grid%volume(1:offset) = &
          prdata(1+(it-1)*offset:it*offset) * 1.e-6
+   enddo
+
+   write(iout,*) ' '
+   call rprofile('UTOTL',prdata,nprtime*xsizes(1),iret,ier)
+   if (ier.ne.0) call transp2imas_error('rprofile(UTOTL)',ier)
+   if (iret.ne.nprtime*xsizes(1)) &
+      call transp2imas_exit(' ?? UTOTL read error')
+   call transp2imas_echo('UTOTL',prdata,xsizes(1),nprtime)
+
+   offset = xsizes(1)
+   allocate(sum%global_quantities%energy_total%value(nprtime))
+   do it = 1, nprtime
+      sum%global_quantities%energy_total%value(it) = &
+         prdata(1+(it-1)*offset) * &
+         cp%profiles_1d(it)%grid%volume(1)
+      do ir = 2, offset
+         sum%global_quantities%energy_total%value(it) = &
+            sum%global_quantities%energy_total%value(it) + &
+            prdata(ir+(it-1)*offset) * &
+            cp%profiles_1d(it)%grid%volume(ir)
+      enddo
+   enddo
+
+   write(iout,*) ' '
+   call rprofile('UTHRM',prdata,nprtime*xsizes(1),iret,ier)
+   if (ier.ne.0) call transp2imas_error('rprofile(UTHRM)',ier)
+   if (iret.ne.nprtime*xsizes(1)) &
+      call transp2imas_exit(' ?? UTHRM read error')
+   call transp2imas_echo('UTHRM',prdata,xsizes(1),nprtime)
+
+   offset = xsizes(1)
+   allocate(sum%global_quantities%energy_thermal%value(nprtime))
+   do it = 1, nprtime
+      sum%global_quantities%energy_thermal%value(it) = &
+         prdata(1+(it-1)*offset) * &
+         cp%profiles_1d(it)%grid%volume(1)
+      do ir = 2, offset
+         sum%global_quantities%energy_thermal%value(it) = &
+            sum%global_quantities%energy_thermal%value(it) + &
+            prdata(ir+(it-1)*offset) * &
+            cp%profiles_1d(it)%grid%volume(ir)
+      enddo
    enddo
 
    write(iout,*) ' '
