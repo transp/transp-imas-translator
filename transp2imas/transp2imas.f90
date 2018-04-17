@@ -208,55 +208,55 @@ program transp2imas
    ! automatic allocation not done properly by old gfortran version, so do it explicitly for now
    !allocate(sum%ids_properties%source(6))
    !sum%ids_properties%source = 'TRANSP'
-   allocate(sum%ids_properties%comment(29))
+   allocate(sum%ids_properties%comment(1))
    sum%ids_properties%comment = 'Translated TRANSP output data'
-   allocate(nbi%ids_properties%comment(29))
+   allocate(nbi%ids_properties%comment(1))
    nbi%ids_properties%comment = sum%ids_properties%comment
-   allocate(es%ids_properties%comment(29))
+   allocate(es%ids_properties%comment(1))
    es%ids_properties%comment = sum%ids_properties%comment
-   allocate(cs%ids_properties%comment(29))
+   allocate(cs%ids_properties%comment(1))
    cs%ids_properties%comment = sum%ids_properties%comment
-   allocate(ct%ids_properties%comment(29))
+   allocate(ct%ids_properties%comment(1))
    ct%ids_properties%comment = sum%ids_properties%comment
-   allocate(cp%ids_properties%comment(29))
+   allocate(cp%ids_properties%comment(1))
    cp%ids_properties%comment = sum%ids_properties%comment
-   allocate(eq%ids_properties%comment(29))
+   allocate(eq%ids_properties%comment(1))
    eq%ids_properties%comment = sum%ids_properties%comment
 
-   allocate(sum%code%name(11))
+   allocate(sum%code%name(1))
    sum%code%name = 'transp2imas'
-   allocate(nbi%code%name(11))
+   allocate(nbi%code%name(1))
    nbi%code%name = sum%code%name
-   allocate(es%code%name(11))
+   allocate(es%code%name(1))
    es%code%name = sum%code%name
-   allocate(cs%code%name(11))
+   allocate(cs%code%name(1))
    cs%code%name = sum%code%name
-   allocate(ct%code%name(11))
+   allocate(ct%code%name(1))
    ct%code%name = sum%code%name
-   allocate(cp%code%name(11))
+   allocate(cp%code%name(1))
    cp%code%name = sum%code%name
-   allocate(eq%code%name(11))
+   allocate(eq%code%name(1))
    eq%code%name = sum%code%name
 
    inquire(file='hash.txt', exist=hash_exists)
    if (hash_exists) then
       open(unit=333, file='hash.txt', status='old')
-      allocate(sum%code%version(40))
+      allocate(sum%code%version(1))
       read(unit=333, fmt='(a40)') hash_str ! sum%code%version
       close(unit=333)
       sum%code%version = hash_str
       !write(*,*) hash_str
-      allocate(nbi%code%version(40))
+      allocate(nbi%code%version(1))
       nbi%code%version = sum%code%version
-      allocate(es%code%version(40))
+      allocate(es%code%version(1))
       es%code%version = sum%code%version
-      allocate(cs%code%version(40))
+      allocate(cs%code%version(1))
       cs%code%version = sum%code%version
-      allocate(ct%code%version(40))
+      allocate(ct%code%version(1))
       ct%code%version = sum%code%version
-      allocate(cp%code%version(40))
+      allocate(cp%code%version(1))
       cp%code%version = sum%code%version
-      allocate(eq%code%version(40))
+      allocate(eq%code%version(1))
       eq%code%version = sum%code%version
    endif
 
@@ -2024,12 +2024,12 @@ program transp2imas
    allocate(sum%global_quantities%energy_total%value(nprtime))
    do it = 1, nprtime
       sum%global_quantities%energy_total%value(it) = &
-         prdata(1+(it-1)*offset) * &
+         prdata(1+(it-1)*offset) * 1.0e6 * &
          cp%profiles_1d(it)%grid%volume(1)
       do ir = 2, offset
          sum%global_quantities%energy_total%value(it) = &
             sum%global_quantities%energy_total%value(it) + &
-            prdata(ir+(it-1)*offset) * &
+            prdata(ir+(it-1)*offset) * 1.0e6 * &
             cp%profiles_1d(it)%grid%volume(ir)
       enddo
    enddo
@@ -2045,12 +2045,12 @@ program transp2imas
    allocate(sum%global_quantities%energy_thermal%value(nprtime))
    do it = 1, nprtime
       sum%global_quantities%energy_thermal%value(it) = &
-         prdata(1+(it-1)*offset) * &
+         prdata(1+(it-1)*offset) * 1.0e6 * &
          cp%profiles_1d(it)%grid%volume(1)
       do ir = 2, offset
          sum%global_quantities%energy_thermal%value(it) = &
             sum%global_quantities%energy_thermal%value(it) + &
-            prdata(ir+(it-1)*offset) * &
+            prdata(ir+(it-1)*offset) * 1.0e6 * &
             cp%profiles_1d(it)%grid%volume(ir)
       enddo
    enddo
@@ -2895,12 +2895,14 @@ program transp2imas
    if (ier .eq. 0 .and. iret .eq. nsctime) then
       allocate(sum%global_quantities%h_98%value(nsctime))
       sum%global_quantities%h_98%value = scdata(:)
+      write(*,*) 'h_98:', scdata(1), scdata(nsctime)
    endif
 
    call rpscalar('LHMODE',scdata,nsctime,iret,ier)
    if (ier .eq. 0 .and. iret .eq. nsctime) then
       allocate(sum%global_quantities%h_mode%value(nsctime))
       sum%global_quantities%h_mode%value = scdata(:)
+      write(*,*) 'h_mode:', scdata(1), scdata(nsctime)
    endif
 
 #ifdef CJDEBUG
