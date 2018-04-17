@@ -205,9 +205,6 @@ program transp2imas
    nbi%ids_properties%homogeneous_time = 0
    sum%ids_properties%homogeneous_time = 0
 
-   ! automatic allocation not done properly by old gfortran version, so do it explicitly for now
-   !allocate(sum%ids_properties%source(6))
-   !sum%ids_properties%source = 'TRANSP'
    allocate(sum%ids_properties%comment(1))
    sum%ids_properties%comment = 'Translated TRANSP output data'
    allocate(nbi%ids_properties%comment(1))
@@ -1339,6 +1336,17 @@ program transp2imas
    sum%global_quantities%beta_tor%value = &
       eq%time_slice(:)%global_quantities%beta_tor
 
+   allocate(cp%global_quantities%beta_tor_norm(nsctime))
+   allocate(sum%global_quantities%beta_tor_norm%value(nsctime))
+   do k = 1, nsctime
+      cp%global_quantities%beta_tor_norm(k) = &
+         1.0e8 * sum%global_quantities%beta_tor%value(k) * &
+         sqrt(eq%time_slice(k)%global_quantities%area / (0.5 * twopi)) * &
+         sum%global_quantities%b0%value(k) / sum%global_quantities%ip%value(k)
+      sum%global_quantities%beta_tor_norm%value(k) = &
+         cp%global_quantities%beta_tor_norm(k)
+   end do
+
 !      write(iout,*) ' '
 !      call rpscalar('X',scdata,nsctime,iret,ier)
 !      if (ier.ne.0) call transp2imas_error('rpscalar',ier)
@@ -2053,6 +2061,30 @@ program transp2imas
             prdata(ir+(it-1)*offset) * 1.0e6 * &
             cp%profiles_1d(it)%grid%volume(ir)
       enddo
+   enddo
+
+   write(iout,*) ' '
+   call rprofile('PPLAS',prdata,nprtime*xsizes(1),iret,ier)
+   if (ier.ne.0) call transp2imas_error('rprofile(PPLAS)',ier)
+   if (iret.ne.nprtime*xsizes(1)) &
+      call transp2imas_exit(' ?? PPLAS read error')
+   call transp2imas_echo('PPLAS',prdata,xsizes(1),nprtime)
+
+   offset = xsizes(1)
+   allocate(cp%global_quantities%energy_diamagnetic(nprtime))
+   allocate(sum%global_quantities%energy_diamagnetic%value(nprtime))
+   do it = 1, nprtime
+      cp%global_quantities%energy_diamagnetic(it) = &
+         prdata(1+(it-1)*offset) * 1.5e6 * &
+         cp%profiles_1d(it)%grid%volume(1)
+      do ir = 2, offset
+         cp%global_quantities%energy_diamagnetic(it) = &
+            cp%global_quantities%energy_diamagnetic(it) + &
+            prdata(ir+(it-1)*offset) * 1.5e6 * &
+            cp%profiles_1d(it)%grid%volume(ir)
+      enddo
+      sum%global_quantities%energy_diamagnetic%value(it) = &
+         cp%global_quantities%energy_diamagnetic(it)
    enddo
 
    write(iout,*) ' '
