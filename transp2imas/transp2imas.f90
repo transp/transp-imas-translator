@@ -993,9 +993,9 @@ program transp2imas
       call transp2imas_exit(' ?? PCURC read error')
    call transp2imas_echo('PCURC',scdata,1,nsctime)
 
-   eq%time_slice(:)%global_quantities%ip = scdata(1:)
+   eq%time_slice(:)%global_quantities%ip = -scdata(1:) ! Hardcode minus sign for ITER for now...
    allocate(cp%global_quantities%ip(nsctime))
-   cp%global_quantities%ip(:) = scdata(:)
+   cp%global_quantities%ip(:) = -scdata(:) ! Hardcode minus sign for ITER for now...
    allocate(sum%global_quantities%ip%value(nsctime))
    sum%global_quantities%ip%value = cp%global_quantities%ip
 
@@ -1024,7 +1024,7 @@ program transp2imas
       call transp2imas_exit(' ?? VSURC read error')
    call transp2imas_echo('VSURC',scdata,1,nsctime)
    allocate(cp%global_quantities%v_loop(nsctime))
-   cp%global_quantities%v_loop(:)= scdata(:)
+   cp%global_quantities%v_loop(:)= -scdata(:) ! Hardcode minus sign for ITER for now...
    allocate(sum%global_quantities%v_loop%value(nsctime))
    sum%global_quantities%v_loop%value = cp%global_quantities%v_loop
 
@@ -1041,6 +1041,20 @@ program transp2imas
    allocate(sum%global_quantities%beta_pol%value(nsctime))
    sum%global_quantities%beta_pol%value = cp%global_quantities%beta_pol
 
+   write(iout,*) ' '
+   call rprofile('DVOL',prdata,nprtime*xsizes(1),iret,ier)
+   if (ier.ne.0) call transp2imas_error('rprofile(DVOL)',ier)
+   if (iret.ne.nprtime*xsizes(1)) &
+      call transp2imas_exit(' ?? DVOL read error')
+   call transp2imas_echo('DVOL',prdata,xsizes(1),nprtime)
+
+   offset = xsizes(1)
+   do it = 1, nprtime
+      allocate(cp%profiles_1d(it)%grid%volume(offset))
+      cp%profiles_1d(it)%grid%volume(1:offset) = &
+         prdata(1+(it-1)*offset:it*offset) * 1.e-6
+   enddo
+
    ! fill cs IDS
 
    call rpscalar('PECHT', scdata, nsctime, iret, ier)
@@ -1049,20 +1063,21 @@ program transp2imas
 
       ncs = ncs + 1
       cs%source(ncs)%identifier%index = 3
-      allocate(cs%source(ncs)%identifier%name(2))
+      allocate(cs%source(ncs)%identifier%name(1))
       cs%source(ncs)%identifier%name = 'EC'
 
-      ! The container below exists in the 3.7.0 documentation, but not in the source code...
-      !allocate(cs%source(ncs)%global_quantities(nsctime))
-      !cs%source(ncs)%global_quantities(:)%power = scdata(1:)
+      allocate(cs%source(ncs)%global_quantities(nsctime))
+      cs%source(ncs)%global_quantities(:)%power = scdata(1:)
+      cs%source(ncs)%global_quantities(:)%time = sctime
+
+      allocate(cs%source(ncs)%profiles_1d(nprtime))
+      cs%source(ncs)%profiles_1d(:)%time = prtime
 
       call rprofile('PEECH',prdata,nprtime*xsizes(1),iret,ier)
       if ((ier .eq. 0) .and. (iret .eq. nprtime * xsizes(1))) then
          call transp2imas_echo('PEECH', prdata, xsizes(1), nprtime)
-         allocate(cs%source(ncs)%profiles_1d(nprtime))
          offset = xsizes(1)
          do it = 1, nprtime
-            cs%source(ncs)%profiles_1d(it)%time = prtime(it)
             allocate(cs%source(ncs)%profiles_1d(it)%electrons%energy(offset))
             cs%source(ncs)%profiles_1d(it)%electrons%energy(1:offset) = &
                prdata(1+(it-1)*offset:it*offset) * 1.e6
@@ -1076,7 +1091,7 @@ program transp2imas
          do it = 1, nprtime
             allocate(cs%source(ncs)%profiles_1d(it)%j_parallel(offset))
             cs%source(ncs)%profiles_1d(it)%j_parallel(1:offset) = &
-               prdata(1+(it-1)*offset:it*offset) * 1.e4
+               -prdata(1+(it-1)*offset:it*offset) * 1.e4 ! Hardcode minus sign for ITER for now...
          enddo
       endif
    endif
@@ -1087,20 +1102,21 @@ program transp2imas
 
       ncs = ncs + 1
       cs%source(ncs)%identifier%index = 5
-      allocate(cs%source(ncs)%identifier%name(2))
+      allocate(cs%source(ncs)%identifier%name(1))
       cs%source(ncs)%identifier%name = 'IC'
 
-      ! The container below exists in the 3.7.0 documentation, but not in the source code...
-      !allocate(cs%source(ncs)%global_quantities(nsctime))
-      !cs%source(ncs)%global_quantities(:)%power = scdata(1:)
+      allocate(cs%source(ncs)%global_quantities(nsctime))
+      cs%source(ncs)%global_quantities(:)%power = scdata(1:)
+      cs%source(ncs)%global_quantities(:)%time = sctime
+
+      allocate(cs%source(ncs)%profiles_1d(nprtime))
+      cs%source(ncs)%profiles_1d(:)%time = prtime
 
       call rprofile('PEICH',prdata,nprtime*xsizes(1),iret,ier)
       if ((ier .eq. 0) .and. (iret .eq. nprtime * xsizes(1))) then
          call transp2imas_echo('PEICH', prdata, xsizes(1), nprtime)
-         allocate(cs%source(ncs)%profiles_1d(nprtime))
          offset = xsizes(1)
          do it = 1, nprtime
-            cs%source(ncs)%profiles_1d(it)%time = prtime(it)
             allocate(cs%source(ncs)%profiles_1d(it)%electrons%energy(offset))
             cs%source(ncs)%profiles_1d(it)%electrons%energy(1:offset) = &
                prdata(1+(it-1)*offset:it*offset) * 1.e6
@@ -1125,7 +1141,7 @@ program transp2imas
          do it = 1, nprtime
             allocate(cs%source(ncs)%profiles_1d(it)%j_parallel(offset))
             cs%source(ncs)%profiles_1d(it)%j_parallel(1:offset) = &
-               prdata(1+(it-1)*offset:it*offset) * 1.e4
+               -prdata(1+(it-1)*offset:it*offset) * 1.e4 ! Hardcode minus sign for ITER for now...
          enddo
       endif
    endif
@@ -1136,16 +1152,20 @@ program transp2imas
 
       ncs = ncs + 1
       cs%source(ncs)%identifier%index = 2
-      allocate(cs%source(ncs)%identifier%name(3))
+      allocate(cs%source(ncs)%identifier%name(1))
       cs%source(ncs)%identifier%name = 'NBI'
 
+      allocate(cs%source(ncs)%global_quantities(nprtime))
+      cs%source(ncs)%global_quantities(:)%time = prtime
+
       allocate(cs%source(ncs)%profiles_1d(nprtime))
+      cs%source(ncs)%profiles_1d(:)%time = prtime
+
       offset = xsizes(1)
       do it = 1, nprtime
-         cs%source(ncs)%profiles_1d(it)%time = prtime(it)
          allocate(cs%source(ncs)%profiles_1d(it)%j_parallel(offset))
          cs%source(ncs)%profiles_1d(it)%j_parallel(1:offset) = &
-            prdata(1+(it-1)*offset:it*offset) * 1.e4
+            -prdata(1+(it-1)*offset:it*offset) * 1.e4 ! Hardcode minus sign for ITER for now...
       enddo
 
       call rprofile('PBE',prdata,nprtime*xsizes(1),iret,ier)
@@ -1170,9 +1190,26 @@ program transp2imas
          enddo
       endif
 
-      ! S (TQBE + TQBI) dV
-      ! torque_tor_inside exist only in 3.7.0 documentation, not in source...
-      !allocate(cs%source(ncs)%profiles_1d(1)%torque_tor_inside(offset))
+      call rprofile('TQBCO',prdata,nprtime*xsizes(1),iret,ier)
+      if ((ier .eq. 0) .and. (iret .eq. nprtime * xsizes(1))) then
+         call transp2imas_echo('TQBCO', prdata, xsizes(1), nprtime)
+         offset = xsizes(1)
+         do it = 1, nprtime
+            allocate(cs%source(ncs)%profiles_1d(it)%torque_tor_inside(offset))
+            cs%source(ncs)%profiles_1d(it)%torque_tor_inside(1:offset) = &
+               -prdata(1+(it-1)*offset:it*offset) * 1.e6 ! Hardcode minus sign for ITER for now...
+            cs%source(ncs)%global_quantities(it)%torque_tor = &
+               cs%source(ncs)%profiles_1d(it)%torque_tor_inside(1) * &
+               cp%profiles_1d(it)%grid%volume(1)
+            do ir = 2, offset
+               cs%source(ncs)%global_quantities(it)%torque_tor = &
+                  cs%source(ncs)%global_quantities(it)%torque_tor + &
+                  cs%source(ncs)%profiles_1d(it)%torque_tor_inside(ir) * &
+                  cp%profiles_1d(it)%grid%volume(ir)
+            enddo
+         enddo
+      endif
+
    endif
 
    ! fill equilibrium IDS
@@ -2005,20 +2042,6 @@ program transp2imas
       cp%profiles_1d(it)%grid%rho_tor(1) = &
          cp%profiles_1d(it)%grid%rho_tor(1) + &
          0.5 * 0.0
-   enddo
-
-   write(iout,*) ' '
-   call rprofile('DVOL',prdata,nprtime*xsizes(1),iret,ier)
-   if (ier.ne.0) call transp2imas_error('rprofile(DVOL)',ier)
-   if (iret.ne.nprtime*xsizes(1)) &
-      call transp2imas_exit(' ?? DVOL read error')
-   call transp2imas_echo('DVOL',prdata,xsizes(1),nprtime)
-
-   offset = xsizes(1)
-   do it = 1, nprtime
-      allocate(cp%profiles_1d(it)%grid%volume(offset))
-      cp%profiles_1d(it)%grid%volume(1:offset) = &
-         prdata(1+(it-1)*offset:it*offset) * 1.e-6
    enddo
 
    write(iout,*) ' '
