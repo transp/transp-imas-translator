@@ -1222,7 +1222,7 @@ program transp2imas
    call transp2imas_echo('BZ',scdata,1,nsctime)
 
    allocate(eq%vacuum_toroidal_field%b0(nsctime))
-   eq%vacuum_toroidal_field%b0(:) = scdata(:)
+   eq%vacuum_toroidal_field%b0(:) = -scdata(:) ! Hardcode minus sign for ITER for now...
    !cp%vacuum_toroidal_field%b0(:) = eq%vacuum_toroidal_field%b0(:)
    allocate(sum%global_quantities%b0%value(nsctime))
    sum%global_quantities%b0%value = eq%vacuum_toroidal_field%b0
@@ -1262,7 +1262,7 @@ program transp2imas
       call transp2imas_exit(' ?? PSI0_TR read error')
    call transp2imas_echo('PSI0_TR',scdata,1,nsctime)
 
-   eq%time_slice(:)%global_quantities%psi_axis= scdata(:) * twopi
+   eq%time_slice(:)%global_quantities%psi_axis = -scdata(:) * twopi ! Hardcode minus sign for ITER for now...
 
    write(iout,*) ' '
    call rpscalar('PLFLXA',scdata,nsctime,iret,ier)
@@ -1271,7 +1271,7 @@ program transp2imas
       call transp2imas_exit(' ?? PLFLXA read error')
    call transp2imas_echo('PLFLXA',scdata,1,nsctime)
    eq%time_slice(:)%global_quantities%psi_boundary = &
-      scdata(:) * twopi
+      -scdata(:) * twopi ! Hardcode minus sign for ITER for now...
 
    write(iout,*) ' '
    ! PVOL, PVOLB, PVOLF, PVOL is the total volume of plasma
@@ -1693,14 +1693,14 @@ program transp2imas
       XI(1:offset,it) = prdata(1+(it-1)*offset:it*offset)
       allocate(cp%profiles_1d(it)%grid%rho_tor_norm(offset))
       cp%profiles_1d(it)%grid%rho_tor_norm(1:offset) = &
-         XI(1:offset,it) ! * XI(1:offset,it)
+         1.0 - XI(1:offset,it) ! Hardcode minus sign for ITER for now...
    enddo
 
-   allocate(sum%local%edge%position%rho_tor_norm(nprtime))
-   do it = 1, nprtime
-      sum%local%edge%position%rho_tor_norm(it) = &
-         cp%profiles_1d(it)%grid%rho_tor_norm(offset)
-   enddo
+   !allocate(sum%local%edge%position%rho_tor_norm(nprtime))
+   !do it = 1, nprtime
+   !   sum%local%edge%position%rho_tor_norm(it) = &
+   !      cp%profiles_1d(it)%grid%rho_tor_norm(offset)
+   !enddo
 
    write(iout,*) ' '
    call rprofile('XB',prdata,nprtime*xsizes(2),iret,ier)
@@ -1730,12 +1730,12 @@ program transp2imas
    enddo
 
    allocate(sum%local%magnetic_axis%n_e%value(nprtime))
-   allocate(sum%local%edge%n_e%value(nprtime))
+   !allocate(sum%local%edge%n_e%value(nprtime))
    do it = 1, nprtime
       sum%local%magnetic_axis%n_e%value(it) = &
          cp%profiles_1d(it)%electrons%density(1)
-      sum%local%edge%n_e%value(it) = &
-         cp%profiles_1d(it)%electrons%density(offset)
+      !sum%local%edge%n_e%value(it) = &
+      !   cp%profiles_1d(it)%electrons%density(offset)
    enddo
 
    write(iout,*) ' '
@@ -1753,12 +1753,12 @@ program transp2imas
    enddo
 
    allocate(sum%local%magnetic_axis%t_e%value(nprtime))
-   allocate(sum%local%edge%t_e%value(nprtime))
+   !allocate(sum%local%edge%t_e%value(nprtime))
    do it = 1, nprtime
       sum%local%magnetic_axis%t_e%value(it) = &
          cp%profiles_1d(it)%electrons%temperature(1)
-      sum%local%edge%t_e%value(it) = &
-         cp%profiles_1d(it)%electrons%temperature(offset)
+      !sum%local%edge%t_e%value(it) = &
+      !   cp%profiles_1d(it)%electrons%temperature(offset)
    enddo
 
    write(iout,*) ' '
@@ -1773,7 +1773,7 @@ program transp2imas
          do it = 1, nprtime
             allocate(cp%profiles_1d(it)%electrons%velocity%toroidal(offset))
             cp%profiles_1d(it)%electrons%velocity%toroidal(1:offset) = &
-               eq%vacuum_toroidal_field%r0 * prdata(1+(it-1)*offset:it*offset)
+               -eq%vacuum_toroidal_field%r0 * prdata(1+(it-1)*offset:it*offset) ! Hardcode minus sign for ITER for now...
             ! Assume ions rotate with electrons
             do iion = 1, nion
                allocate(cp%profiles_1d(it)%ion(iion)%velocity%toroidal(offset))
@@ -1830,12 +1830,12 @@ program transp2imas
    enddo
 
    allocate(sum%local%magnetic_axis%t_i_average%value(nprtime))
-   allocate(sum%local%edge%t_i_average%value(nprtime))
+   !allocate(sum%local%edge%t_i_average%value(nprtime))
    do it = 1, nprtime
       sum%local%magnetic_axis%t_i_average%value(it) = &
          cp%profiles_1d(it)%t_i_average(1)
-      sum%local%edge%t_i_average%value(it) = &
-         cp%profiles_1d(it)%t_i_average(offset)
+      !sum%local%edge%t_i_average%value(it) = &
+      !   cp%profiles_1d(it)%t_i_average(offset)
    enddo
 
    write(iout,*) ' '
@@ -1856,12 +1856,12 @@ program transp2imas
    enddo
 
    allocate(sum%local%magnetic_axis%zeff%value(nprtime))
-   allocate(sum%local%edge%zeff%value(nprtime))
+   !allocate(sum%local%edge%zeff%value(nprtime))
    do it = 1, nprtime
       sum%local%magnetic_axis%zeff%value(it) = &
          cp%profiles_1d(it)%zeff(1)
-      sum%local%edge%zeff%value(it) = &
-         cp%profiles_1d(it)%zeff(offset)
+      !sum%local%edge%zeff%value(it) = &
+      !   cp%profiles_1d(it)%zeff(offset)
    enddo
 
    write(iout,*) ' '
@@ -1898,8 +1898,8 @@ program transp2imas
    offset=xsizes(1)
    do it=1,nprtime
       allocate(cp%profiles_1d(it)%j_bootstrap(offset))
-      cp%profiles_1d(it)%j_bootstrap(1:offset)=&
-         prdata(1+(it-1)*offset:it*offset) * 1.e4
+      cp%profiles_1d(it)%j_bootstrap(1:offset) = &
+         -prdata(1+(it-1)*offset:it*offset) * 1.e4 ! Hardcode minus sign for ITER for now...
    enddo
 
    write(iout,*) ' '
@@ -1912,8 +1912,8 @@ program transp2imas
    offset=xsizes(1)
    do it=1,nprtime
       allocate(cp%profiles_1d(it)%j_ohmic(offset))
-      cp%profiles_1d(it)%j_ohmic(1:offset)=&
-         prdata(1+(it-1)*offset:it*offset) * 1.e4
+      cp%profiles_1d(it)%j_ohmic(1:offset) = &
+         -prdata(1+(it-1)*offset:it*offset) * 1.e4 ! Hardcode minus sign for ITER for now...
    enddo
 
    write(iout, *) ' '
@@ -1972,7 +1972,7 @@ program transp2imas
    do it = 1, nprtime
       allocate(cp%profiles_1d(it)%j_tor(offset))
       cp%profiles_1d(it)%j_tor(1:offset) = &
-         prdata(1+(it-1)*offset:it*offset) * 1.e4
+         -prdata(1+(it-1)*offset:it*offset) * 1.e4 ! Hardcode minus sign for ITER for now...
       allocate(cp%profiles_1d(it)%j_total(offset))
       cp%profiles_1d(it)%j_total(1:offset) = &
          cp%profiles_1d(it)%j_tor(1:offset)
@@ -2009,7 +2009,7 @@ program transp2imas
    do it = 1, nprtime
       allocate(cp%profiles_1d(it)%grid%psi(offset))
       cp%profiles_1d(it)%grid%psi(1:offset) = &
-         0.5 * prdata(1+(it-1)*offset:it*offset)
+         -0.5 * prdata(1+(it-1)*offset:it*offset) ! Hardcode minus sign for ITER for now...
       do ir = offset, 2, -1
          cp%profiles_1d(it)%grid%psi(ir) = &
             cp%profiles_1d(it)%grid%psi(ir) + &
@@ -2033,7 +2033,7 @@ program transp2imas
    do it = 1, nprtime
       allocate(cp%profiles_1d(it)%grid%rho_tor(offset))
       cp%profiles_1d(it)%grid%rho_tor(1:offset) = &
-         0.5 * prdata(1+(it-1)*offset:it*offset)
+         -0.5 * prdata(1+(it-1)*offset:it*offset) ! Hardcode minus sign for ITER for now...
       do ir = offset, 2, -1
          cp%profiles_1d(it)%grid%rho_tor(ir) = &
             cp%profiles_1d(it)%grid%rho_tor(ir) + &
@@ -2261,7 +2261,7 @@ program transp2imas
    do it = 1, nprtime
       PLFLX(:, it) = prdata(1+(it-1)*offset:it*offset)
       allocate(eq%time_slice(it)%profiles_1d%psi(offset))
-      eq%time_slice(it)%profiles_1d%psi(1:offset) = PLFLX(:, it)
+      eq%time_slice(it)%profiles_1d%psi(1:offset) = -PLFLX(:, it) ! Hardcode minus sign for ITER for now...
       ! Make psi a STRICTLY monotonic profile
       do i = 1, offset
          eq%time_slice(it)%profiles_1d%psi(i) = &
@@ -2302,11 +2302,11 @@ program transp2imas
       !enddo
    enddo
 
-   allocate(sum%local%edge%position%psi(nprtime))
-   do it = 1, nprtime
-      sum%local%edge%position%psi(it) = &
-         eq%time_slice(it)%profiles_1d%psi(offset)
-   enddo
+   !allocate(sum%local%edge%position%psi(nprtime))
+   !do it = 1, nprtime
+   !   sum%local%edge%position%psi(it) = &
+   !      eq%time_slice(it)%profiles_1d%psi(offset)
+   !enddo
 
    write(iout,*) ' '
    call rprofile('TRFLX',prdata,nprtime*xsizes(2),iret,ier)
@@ -2319,7 +2319,7 @@ program transp2imas
    do it = 1, nprtime
       allocate(eq%time_slice(it)%profiles_1d%phi(offset))
       eq%time_slice(it)%profiles_1d%phi(1:offset) = &
-         prdata(1+(it-1)*offset:it*offset)
+         -prdata(1+(it-1)*offset:it*offset) ! Hardcode minus sign for ITER for now...
    enddo
 
    write(iout,*) ' '
@@ -2375,16 +2375,8 @@ program transp2imas
 
       ! dp/dPLFLX = dp/dXB * dXB/dPLFLX
       allocate(eq%time_slice(it)%profiles_1d%dpressure_dpsi(offset))
-      eq%time_slice(it)%profiles_1d%dpressure_dpsi(1:offset) = xbbuf3(:) * dXBdPLFLX(:, it)
-#if 0
-      do ir = 2, offset-1
-         eq%time_slice(it)%profiles_1d%dpressure_dpsi(ir) = &
-            (eq%time_slice(it)%profiles_1d%pressure(ir+1) - eq%time_slice(it)%profiles_1d%pressure(ir-1)) / &
-            (eq%time_slice(it)%profiles_1d%psi(ir+1) - eq%time_slice(it)%profiles_1d%psi(ir-1))
-      enddo
-      eq%time_slice(it)%profiles_1d%dpressure_dpsi(1) = eq%time_slice(it)%profiles_1d%dpressure_dpsi(2)
-      eq%time_slice(it)%profiles_1d%dpressure_dpsi(offset) = eq%time_slice(it)%profiles_1d%dpressure_dpsi(offset-1)
-#endif
+      eq%time_slice(it)%profiles_1d%dpressure_dpsi(1:offset) = &
+         -xbbuf3(:) * dXBdPLFLX(:, it) ! Hardcode minus sign for ITER for now...
 
       call ezspline_free(spln1, ier)
       call ezspline_error(ier)
@@ -2406,7 +2398,8 @@ program transp2imas
    offset = xsizes(2)
    do it = 1, nprtime
       allocate(eq%time_slice(it)%profiles_1d%elongation(offset))
-      eq%time_slice(it)%profiles_1d%elongation(1:offset) = prdata(1+(it-1)*offset:it*offset)
+      eq%time_slice(it)%profiles_1d%elongation(1:offset) = &
+         prdata(1+(it-1)*offset:it*offset)
    enddo
 
    write(iout,*) ' '
@@ -2419,7 +2412,8 @@ program transp2imas
    offset = xsizes(2)
    do it = 1, nprtime
       allocate(eq%time_slice(it)%profiles_1d%triangularity_upper(offset))
-      eq%time_slice(it)%profiles_1d%triangularity_upper(1:offset) = prdata(1+(it-1)*offset:it*offset)
+      eq%time_slice(it)%profiles_1d%triangularity_upper(1:offset) = &
+         prdata(1+(it-1)*offset:it*offset)
    enddo
 
    write(iout,*) ' '
@@ -2432,7 +2426,8 @@ program transp2imas
    offset = xsizes(2)
    do it = 1, nprtime
       allocate(eq%time_slice(it)%profiles_1d%triangularity_lower(offset))
-      eq%time_slice(it)%profiles_1d%triangularity_lower(1:offset) = prdata(1+(it-1)*offset:it*offset)
+      eq%time_slice(it)%profiles_1d%triangularity_lower(1:offset) = &
+         prdata(1+(it-1)*offset:it*offset)
    enddo
 
    write(iout,*) ' '
@@ -2492,12 +2487,12 @@ program transp2imas
    enddo
 
    allocate(sum%local%magnetic_axis%q%value(nprtime))
-   allocate(sum%local%edge%q%value(nprtime))
+   !allocate(sum%local%edge%q%value(nprtime))
    do it = 1, nprtime
       sum%local%magnetic_axis%q%value(it) = &
          eq%time_slice(it)%profiles_1d%q(1)
-      sum%local%edge%q%value(it) = &
-         eq%time_slice(it)%profiles_1d%q(offset)
+      !sum%local%edge%q%value(it) = &
+      !   eq%time_slice(it)%profiles_1d%q(offset)
    enddo
 
    write(iout,*) ' '
@@ -2527,12 +2522,12 @@ program transp2imas
    enddo
 
    allocate(sum%local%magnetic_axis%magnetic_shear%value(nprtime))
-   allocate(sum%local%edge%magnetic_shear%value(nprtime))
+   !allocate(sum%local%edge%magnetic_shear%value(nprtime))
    do it = 1, nprtime
       sum%local%magnetic_axis%magnetic_shear%value(it) = &
          eq%time_slice(it)%profiles_1d%magnetic_shear(1)
-      sum%local%edge%magnetic_shear%value(it) = &
-         eq%time_slice(it)%profiles_1d%magnetic_shear(offset)
+      !sum%local%edge%magnetic_shear%value(it) = &
+      !   eq%time_slice(it)%profiles_1d%magnetic_shear(offset)
    enddo
 
    write(iout,*) ' '
@@ -2672,7 +2667,7 @@ program transp2imas
       ! Multiply to get F...
       xbbuf2(:) = prdata(1+(it-1)*offset:it*offset) * bzxr(it) * 1.0e-2 ! T * cm -> T * m
       allocate(eq%time_slice(it)%profiles_1d%f(offset))
-      eq%time_slice(it)%profiles_1d%f(1:offset) = xbbuf2(:)
+      eq%time_slice(it)%profiles_1d%f(1:offset) = -xbbuf2(:) ! Hardcode minus sign for ITER for now...
       eq%time_slice(it)%global_quantities%magnetic_axis%b_field_tor = &
          eq%time_slice(it)%profiles_1d%f(1) / eq%time_slice(it)%global_quantities%magnetic_axis%r
 
@@ -2699,15 +2694,6 @@ program transp2imas
       ! F' = dF/dPLFLX = dF/dXB * dXB/dPLFLX => FF' = F * dF/dXB * dXB/dPLFLX
       allocate(eq%time_slice(it)%profiles_1d%f_df_dpsi(offset))
       eq%time_slice(it)%profiles_1d%f_df_dpsi(1:offset) = xbbuf2(:) * xbbuf3(:) * dXBdPLFLX(:, it)
-#if 0
-      do ir = 2, offset-1
-         eq%time_slice(it)%profiles_1d%f_df_dpsi(ir) = eq%time_slice(it)%profiles_1d%f(ir) * &
-            (eq%time_slice(it)%profiles_1d%f(ir+1) - eq%time_slice(it)%profiles_1d%f(ir-1)) / &
-            (eq%time_slice(it)%profiles_1d%psi(ir+1) - eq%time_slice(it)%profiles_1d%psi(ir-1))
-      enddo
-      eq%time_slice(it)%profiles_1d%f_df_dpsi(1) = eq%time_slice(it)%profiles_1d%f_df_dpsi(2)
-      eq%time_slice(it)%profiles_1d%f_df_dpsi(offset) = eq%time_slice(it)%profiles_1d%f_df_dpsi(offset-1)
-#endif
 
       call ezspline_free(spln1, ier)
       call ezspline_error(ier)
@@ -2892,6 +2878,7 @@ program transp2imas
              sum%local%magnetic_axis%n_i%helium_4%value(nprtime)
       end if
       ! beryllium
+#if 0
       if ((4.0 .eq. cp%profiles_1d(1)%ion(i)%z_ion)) then
          if (associated(sum%local%magnetic_axis%n_i%berylium%value)) then
             do it = 1, nprtime
@@ -2909,10 +2896,11 @@ program transp2imas
                   cp%profiles_1d(it)%electrons%velocity%toroidal(1)
             end do
          end if
-         write(*,*) 'beryllium: ', i, &
+         write(*,*) 'berylium: ', i, &
              sum%local%magnetic_axis%n_i%berylium%value(1), &
              sum%local%magnetic_axis%n_i%berylium%value(nprtime)
       end if
+#endif
       ! argon
       if ((18.0 .eq. cp%profiles_1d(1)%ion(i)%z_ion)) then
          if (associated(sum%local%magnetic_axis%n_i%argon%value)) then
@@ -3177,7 +3165,7 @@ program transp2imas
          enddo
          ! Direction must be calculated from sign of plasma current?
          do i = 1, nbeam
-            nbi%unit(i)%beamlets_group(1)%direction = 1
+            nbi%unit(i)%beamlets_group(1)%direction = -1 ! Hardcode minus sign for ITER for now...
          enddo
          call tr_getnl_r4vec('ABEAMA', rvdum, nbeam, istat)
          do i = 1, nbeam
