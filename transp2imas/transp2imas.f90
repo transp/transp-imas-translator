@@ -2878,29 +2878,27 @@ program transp2imas
              sum%local%magnetic_axis%n_i%helium_4%value(nprtime)
       end if
       ! beryllium
-#if 0
       if ((4.0 .eq. cp%profiles_1d(1)%ion(i)%z_ion)) then
-         if (associated(sum%local%magnetic_axis%n_i%berylium%value)) then
+         if (associated(sum%local%magnetic_axis%n_i%beryllium%value)) then
             do it = 1, nprtime
-               sum%local%magnetic_axis%n_i%berylium%value(it) = &
-                  sum%local%magnetic_axis%n_i%berylium%value(it) + &
+               sum%local%magnetic_axis%n_i%beryllium%value(it) = &
+                  sum%local%magnetic_axis%n_i%beryllium%value(it) + &
                   cp%profiles_1d(it)%ion(i)%density(1)
             end do
          else
-            allocate(sum%local%magnetic_axis%n_i%berylium%value(nprtime))
-            allocate(sum%local%magnetic_axis%velocity_tor%berylium%value(nprtime))
+            allocate(sum%local%magnetic_axis%n_i%beryllium%value(nprtime))
+            allocate(sum%local%magnetic_axis%velocity_tor%beryllium%value(nprtime))
             do it = 1, nprtime
-               sum%local%magnetic_axis%n_i%berylium%value(it) = &
+               sum%local%magnetic_axis%n_i%beryllium%value(it) = &
                   cp%profiles_1d(it)%ion(i)%density(1)
-               sum%local%magnetic_axis%velocity_tor%berylium%value(it) = &
+               sum%local%magnetic_axis%velocity_tor%beryllium%value(it) = &
                   cp%profiles_1d(it)%electrons%velocity%toroidal(1)
             end do
          end if
-         write(*,*) 'berylium: ', i, &
-             sum%local%magnetic_axis%n_i%berylium%value(1), &
-             sum%local%magnetic_axis%n_i%berylium%value(nprtime)
+         write(*,*) 'beryllium: ', i, &
+             sum%local%magnetic_axis%n_i%beryllium%value(1), &
+             sum%local%magnetic_axis%n_i%beryllium%value(nprtime)
       end if
-#endif
       ! argon
       if ((18.0 .eq. cp%profiles_1d(1)%ion(i)%z_ion)) then
          if (associated(sum%local%magnetic_axis%n_i%argon%value)) then

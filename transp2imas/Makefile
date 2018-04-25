@@ -1,14 +1,13 @@
-# Makefile to link transp2imas with unoptimized (-g -O0) build of IMAS library v. imas/3.17.0/ual/3.8.0
+# Makefile to link transp2imas with module IMAS library v. 3.8.1
 #
 # prerequisites:
-# 1) IMAS_INSTALL_DIR=/home/ITER/carlssj/local/imas (has unoptimized build of IMAS library)
+# 1) "module add imas" (or "module add imas/3.17.2/ual/3.8.1" if the default changes)
 # 2) a local TRANSP installation (at least the libraries and evironment variables used here)
 
 F90 = gfortran
-#COPTS = -cpp -g -O0 -fsanitize=address
 COPTS = -cpp -g -O0
-#INCLUDES = -I/home/ITER/carlssj/projects/imas-3.7.0/access-layer/fortraninterface/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
-INCLUDES = -I$(IMAS_INSTALL_DIR)/include/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
+#COPTS = -cpp -O2
+INCLUDES = -I$(IMAS_PREFIX)/include/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
 #LIBS = -L$(IMAS_PREFIX)/lib -limas-gfortran -limas \
 
 LIBS = \
@@ -40,12 +39,12 @@ LIBS = \
 	$(LOCAL)/lib/lsode.a \
 	$(LOCAL)/lib/lsode_linpack.a \
 	$(LOCAL)/lib/portlib.a \
-	-L$(IMAS_INSTALL_DIR)/lib -l:libimas-gfortran.so.3.17.0 -limas \
+	-L$(IMAS_PREFIX)/lib -limas-gfortran -limas \
 	$(MDSPLUS_DIR)/lib/libMdsObjectsCppShr.a $(MDSPLUS_DIR)/lib/libMdsLib.a \
 	$(MDSPLUS_DIR)/lib/libMdsIpShr.a $(MDSPLUS_DIR)/lib/libTdiShr.a $(MDSPLUS_DIR)/lib/libTreeShr.a \
 	$(MDSPLUS_DIR)/lib/libMdsShr.a $(MDSPLUS_DIR)/lib/libMdsIpShr.a \
 	$(NETCDFHOME)/lib/libnetcdff.a $(NETCDFHOME)/lib/libnetcdf.a $(EBROOTOPENBLAS)/lib/libopenblas.a \
-	-lxml2 -lrt -lpthread -L$(EBROOTGCC)/lib64 -lstdc++ -ldl -Wl,-rpath,$(IMAS_INSTALL_DIR)/lib
+	-lxml2 -lrt -lpthread -L$(EBROOTGCC)/lib64 -lstdc++ -ldl
 
 transp2imas : transp2imas_mod.o transp2imas.o t1mhdgeq.o
 	@echo "   * $^ -> $@"
@@ -58,8 +57,8 @@ t1mhdgeq.o : t1mhdgeq.f90
 	$(F90) $(COPTS) -I. $(INCLUDES) -c $<
 
 transp2imas.o : transp2imas.f90
-	git rev-parse HEAD > hash.txt && $(F90) $(COPTS) -I. $(INCLUDES) -c $<
+	$(F90) $(COPTS) -I. $(INCLUDES) -c $<
 
 .PHONY : clean
 clean :
-	rm -f transp2imas eqdskin fort.* transp2imas.msgs *.o *.mod hash.txt *~
+	rm -f transp2imas eqdskin fort.* transp2imas.msgs *.o *.mod *~

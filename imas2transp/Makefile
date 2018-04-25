@@ -9,7 +9,8 @@ F90 = gfortran
 COPTS = -cpp -g -O0
 #COPTS = -cpp -O2
 #INCLUDES = -I/home/ITER/carlssj/projects/imas-3.7.0/access-layer/fortraninterface/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
-INCLUDES = -I$(IMAS_INSTALL_DIR)/include/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
+#INCLUDES = -I$(IMAS_INSTALL_DIR)/include/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
+INCLUDES = -I$(IMAS_PREFIX)/include/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
 #LIBS = -L$(IMAS_PREFIX)/lib -limas-gfortran -limas \
 
 LIBS = \
@@ -22,12 +23,13 @@ LIBS = \
 	$(LOCAL)/lib/portlib.a \
 	$(LOCAL)/lib/ezcdf.a \
 	$(LOCAL)/lib/comput.a \
-	-L$(IMAS_INSTALL_DIR)/lib -l:libimas-gfortran.so.3.17.0 -limas \
+	-L$(IMAS_PREFIX)/lib -limas-gfortran -limas \
 	$(MDSPLUS_DIR)/lib/libMdsObjectsCppShr.a $(MDSPLUS_DIR)/lib/libMdsLib.a \
 	$(MDSPLUS_DIR)/lib/libMdsIpShr.a $(MDSPLUS_DIR)/lib/libTdiShr.a $(MDSPLUS_DIR)/lib/libTreeShr.a \
 	$(MDSPLUS_DIR)/lib/libMdsShr.a $(MDSPLUS_DIR)/lib/libMdsIpShr.a \
 	$(NETCDFHOME)/lib/libnetcdff.a $(NETCDFHOME)/lib/libnetcdf.a $(EBROOTOPENBLAS)/lib/libopenblas.a \
 	-lxml2 -lrt -lpthread -L$(EBROOTGCC)/lib64 -lstdc++ -ldl
+#	-L$(IMAS_INSTALL_DIR)/lib -l:libimas-gfortran.so.3.17.0 -limas \
 
 imas2transp : put_data_to_ufiles_module.o put_data_to_ufiles.o imas2transp.o
 	@echo "   * $^ -> $@"
