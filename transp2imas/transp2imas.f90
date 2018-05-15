@@ -120,8 +120,8 @@ program transp2imas
 
    type(ezspline1_r8) :: spln1
 
-   real :: rdum, rvdum(20), rvdum2(20)
-   integer :: ivdum(20)
+   real :: rdum, rvdum(20), rvdum2(20), qmin
+   integer :: ivdum(20), imin
 
    character(len=40)::hash_str
 
@@ -1223,7 +1223,8 @@ program transp2imas
 
    allocate(eq%vacuum_toroidal_field%b0(nsctime))
    eq%vacuum_toroidal_field%b0(:) = -scdata(:) ! Hardcode minus sign for ITER for now...
-   !cp%vacuum_toroidal_field%b0(:) = eq%vacuum_toroidal_field%b0(:)
+   allocate(cp%vacuum_toroidal_field%b0(nsctime))
+   cp%vacuum_toroidal_field%b0(:) = eq%vacuum_toroidal_field%b0(:)
    allocate(sum%global_quantities%b0%value(nsctime))
    sum%global_quantities%b0%value = eq%vacuum_toroidal_field%b0
 
@@ -1252,8 +1253,8 @@ program transp2imas
    ! is measured
    eq%vacuum_toroidal_field%r0 = &
       0.5 * (scdata(1)+scdata(nsctime)) * 1.0e-2
-   !cp%vacuum_toroidal_field%r0(:) = eq%vacuum_toroidal_field%r0(:)
-   !sum%global_quantities%r0%value = eq%vacuum_toroidal_field%r0
+   cp%vacuum_toroidal_field%r0 = eq%vacuum_toroidal_field%r0
+   sum%global_quantities%r0%value = eq%vacuum_toroidal_field%r0
 
    write(iout,*) ' '
    call rpscalar('PSI0_TR',scdata,nsctime,iret,ier)
@@ -1329,6 +1330,15 @@ program transp2imas
    call transp2imas_echo('Q0',scdata,1,nsctime)
 
    eq%time_slice(:)%global_quantities%q_axis = scdata(:)
+
+   write(iout,*) ' '
+   call rpscalar('Q95',scdata,nsctime,iret,ier)
+   if (ier.ne.0) call transp2imas_error('rpscalar',ier)
+   if (iret.ne.nsctime) &
+      call transp2imas_exit(' ?? Q95 read error')
+   call transp2imas_echo('Q95',scdata,1,nsctime)
+
+   eq%time_slice(:)%global_quantities%q_95 = scdata(:)
 
    !? which one to choose
    !BPDM                 MAGNETICS EST. BETA(DIA)
@@ -1878,14 +1888,26 @@ program transp2imas
       allocate(cp%profiles_1d(it)%q(offset))
       cp%profiles_1d(it)%q(1:offset) = &
          0.5 * prdata(1+(it-1)*offset:it*offset)
+      qmin = 1.0e6
       do ir = offset, 2, -1
          cp%profiles_1d(it)%q(ir) = &
             cp%profiles_1d(it)%q(ir) + &
             cp%profiles_1d(it)%q(ir-1)
+         if (cp%profiles_1d(it)%q(ir) .lt. qmin) then
+            qmin = cp%profiles_1d(it)%q(ir)
+            imin = ir
+         endif
       enddo
       cp%profiles_1d(it)%q(1) = &
          cp%profiles_1d(it)%q(1) + &
          0.5 * eq%time_slice(it)%global_quantities%q_axis
+      if (cp%profiles_1d(it)%q(1) .lt. qmin) then
+         qmin = cp%profiles_1d(it)%q(1)
+         imin = 1
+      endif
+      eq%time_slice(it)%global_quantities%q_min%value = qmin
+      eq%time_slice(it)%global_quantities%q_min%rho_tor_norm = &
+         cp%profiles_1d(it)%grid%rho_tor_norm(imin)
    enddo
 
    write(iout,*) ' '
