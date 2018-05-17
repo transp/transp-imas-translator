@@ -120,7 +120,7 @@ program transp2imas
 
    type(ezspline1_r8) :: spln1
 
-   real :: rdum, rvdum(20), rvdum2(20), qmin
+   real :: rdum, rvdum(20), rvdum2(20), qmin, psimin, psimax
    integer :: ivdum(20), imin
 
    character(len=40)::hash_str
@@ -1274,6 +1274,9 @@ program transp2imas
    eq%time_slice(:)%global_quantities%psi_boundary = &
       -scdata(:) * twopi ! Hardcode minus sign for ITER for now...
 
+   !write(*,*) 'psi on axis and at edge:', eq%time_slice(nsctime)%global_quantities%psi_axis, &
+   !   eq%time_slice(nsctime)%global_quantities%psi_boundary
+
    write(iout,*) ' '
    ! PVOL, PVOLB, PVOLF, PVOL is the total volume of plasma
    call rpscalar('PVOL',scdata,nsctime,iret,ier)
@@ -2028,6 +2031,8 @@ program transp2imas
    ! Use linear interpolation to transform PLFLX2PI(XB) -> PLFLX2PI(X),
    ! from zone boundary (XB) to zone center (X)
    offset = xsizes(1)
+   psimin = eq%time_slice(nsctime)%global_quantities%psi_axis
+   psimax = eq%time_slice(nsctime)%global_quantities%psi_boundary
    do it = 1, nprtime
       allocate(cp%profiles_1d(it)%grid%psi(offset))
       cp%profiles_1d(it)%grid%psi(1:offset) = &
@@ -2036,11 +2041,28 @@ program transp2imas
          cp%profiles_1d(it)%grid%psi(ir) = &
             cp%profiles_1d(it)%grid%psi(ir) + &
             cp%profiles_1d(it)%grid%psi(ir-1)
+         !if (it .eq. nprtime .and. psimax .lt. cp%profiles_1d(it)%grid%psi(ir)) &
+         !   psimax = cp%profiles_1d(it)%grid%psi(ir)
+         !if (it .eq. nprtime .and. psimin .gt. cp%profiles_1d(it)%grid%psi(ir)) &
+         !   psimin = cp%profiles_1d(it)%grid%psi(ir)
       enddo
       cp%profiles_1d(it)%grid%psi(1) = &
          cp%profiles_1d(it)%grid%psi(1) + &
          0.5 * eq%time_slice(it)%global_quantities%psi_axis
+      !if (it .eq. nprtime .and. psimax .lt. cp%profiles_1d(it)%grid%psi(1)) &
+      !   psimax = cp%profiles_1d(it)%grid%psi(1)
+      !if (it .eq. nprtime .and. psimin .gt. cp%profiles_1d(it)%grid%psi(1)) &
+      !   psimin = cp%profiles_1d(it)%grid%psi(1)
+      do ir = offset, 1, -1
+         cp%profiles_1d(it)%grid%psi(ir) = &
+            cp%profiles_1d(it)%grid%psi(ir) + &
+            eq%time_slice(it)%global_quantities%psi_axis - &
+            cp%profiles_1d(it)%grid%psi(1)
+      enddo
    enddo
+
+   !write(*,*) 'psi min / max =', psimin, psimax
+   !stop
 
    write(iout,*) ' '
    call rprofile('TRFLX',prdata,nprtime*xsizes(2),iret,ier)
@@ -2343,7 +2365,15 @@ program transp2imas
       eq%time_slice(it)%profiles_1d%phi(1:offset) = &
          -prdata(1+(it-1)*offset:it*offset) ! Hardcode minus sign for ITER for now...
    enddo
-
+#if 0
+   ! Compare TRANSP q w/ q calculated from Eq. 9 of CoCoS paper
+   do i = 2, offset
+      write(*,*) i-1, cp%profiles_1d(nprtime)%q(i), &
+      (eq%time_slice(nprtime)%profiles_1d%phi(i) - eq%time_slice(nprtime)%profiles_1d%phi(i-1)) / &
+      (eq%time_slice(nprtime)%profiles_1d%psi(i) - eq%time_slice(nprtime)%profiles_1d%psi(i-1))
+   enddo
+   stop
+#endif
    write(iout,*) ' '
    call rprofile('PMHD_IN',prdata,nprtime*xsizes(1),iret,ier)
    if (ier.ne.0) call transp2imas_error('rprofile(PMHD_IN)',ier)
