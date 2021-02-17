@@ -27,6 +27,7 @@ program transp2imas
    character*32 rlabel               ! run label
    character*32 zlabel
    character*16 zunits
+   character*64 user
 !
 !  sizes:  scalar & profile databases, max x axis, max item over
 !
@@ -118,7 +119,7 @@ program transp2imas
    real, dimension(:, :), allocatable ::  PLFLX, dXBdPLFLX
    real*8, dimension(:), allocatable ::  xibuf1, xibuf2, xbbuf1, xbbuf2, xbbuf3
 
-   type(ezspline1_r8) :: spln1
+    type(ezspline1) :: spln1
 
    real :: rdum, rvdum(20), rvdum2(20), qmin, psimin, psimax
    integer :: ivdum(20), imin
@@ -152,24 +153,7 @@ program transp2imas
    if (iout .eq. 66) then
       open(unit=iout,file='transp2imas.output',status='unknown')
    endif
-!
-!--------------------------
-!  open imas data tree to write
 
-   write(*,*) 'Open shot and write in IMAS !'
-
-   shot =385
-   run = 1
-   !shot =120
-   !run = 28
-   refshot = 100
-   refrun = 000
-   treename = 'ids'
-   ! get ids shot & run number
-   call getids_shotid(rpfile,shot,run)
-
-   call imas_create(treename,shot,run,refshot,refrun,idsidx)
-!
 !--------------------------
 !  connect to run
 !
@@ -307,8 +291,8 @@ program transp2imas
          allocate(nbi%unit(k)%beamlets_group(1)%beamlets%positions%z(1))
          allocate(nbi%unit(k)%beamlets_group(1)%beamlets%positions%phi(1))
          !allocate(nbi%unit(k)%beamlets_group(1)%divergence_component)
-         allocate(nbi%unit(k)%power%time(nsctime))
-         allocate(nbi%unit(k)%power%data(nsctime))
+         allocate(nbi%unit(k)%power_launched%time(nsctime))
+         allocate(nbi%unit(k)%power_launched%data(nsctime))
          allocate(nbi%unit(k)%energy%time(nsctime))
          allocate(nbi%unit(k)%energy%data(nsctime))
          allocate(nbi%unit(k)%beam_power_fraction%time(nsctime))
@@ -955,7 +939,7 @@ program transp2imas
    ct%time = sctime
    if (nbeam .gt. 0) nbi%time = sctime
    do k = 1, nbeam
-      nbi%unit(k)%power%time(:) = sctime(:)
+      nbi%unit(k)%power_launched%time(:) = sctime(:)
       nbi%unit(k)%energy%time = sctime
       nbi%unit(k)%beam_power_fraction%time = sctime
    end do
@@ -1662,7 +1646,7 @@ program transp2imas
          if (iret.ne.nsctime) &
             call transp2imas_exit(' ?? '//trim(tmpstrng)//' read error')
          call transp2imas_echo(trim(tmpstrng),scdata,1,nsctime)
-         nbi%unit(k)%power%data = scdata(:)
+         nbi%unit(k)%power_launched%data = scdata(:)
       end do
 
       do k = 1, nbeam
@@ -3178,7 +3162,7 @@ program transp2imas
          call tr_getnl_r4vec('FHALFA', rvdum2, nbeam, istat)
          do i = 1, nbeam
             do k = 1, nsctime
-               if (nbi%unit(i)%power%data(k) .gt. 0.0) then ! Is beam on?
+               if (nbi%unit(i)%power_launched%data(k) .gt. 0.0) then ! Is beam on?
                   rdum = & ! Normalization constant
                      nbi%unit(i)%energy%data(k) * rvdum(i) + &
                      nbi%unit(i)%energy%data(k) / 2.0 * rvdum2(i) + &
@@ -3295,6 +3279,25 @@ program transp2imas
          write(*,*) ' z_n =', cp%profiles_1d(1)%ion(i)%element(1)%z_n
       enddo
 
+!
+!--------------------------
+!  open imas data tree to write
+
+   write(*,*) 'Open shot and write in IMAS !'
+
+   shot =385
+   run = 1
+   !shot =120
+   !run = 28
+   refshot = 0  ! 100
+   refrun = 0   ! 00
+   treename = ''
+   ! get ids shot & run number
+   call getids_shotid(rpfile,shot,run)
+   ! shot=174819
+
+   call getenv('USER',user)
+   call imas_create_env(treename,shot,run,refshot,refrun,idsidx, trim(user),'d3d','3') 
 !
 !  save ids data
 !

@@ -1646,12 +1646,12 @@ subroutine wrgeqdsk(ishot, eq)
    REAL, ALLOCATABLE, DIMENSION(:) :: rbbbs,zbbbs,rlim,zlim
 
 !============
-   TYPE (EZspline1_r8) :: spln
+   TYPE (EZspline1) :: spln
    integer :: bcs1(2), nt, n1, n1_new, ierr
 !REAL, ALLOCATABLE, DIMENSION(:) :: x1, f1
 !REAL, ALLOCATABLE, DIMENSION(:) :: x1_new, f1_new
-   real(ezspline_r8), allocatable, dimension(:) :: x1, f1
-   real(ezspline_r8), allocatable, dimension(:) :: x1_new, f1_new
+   real*8, allocatable, dimension(:) :: x1, f1
+   real*8, allocatable, dimension(:) :: x1_new, f1_new
    REAL :: deltax, deltax_new
 
 !============
