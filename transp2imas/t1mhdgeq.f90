@@ -2249,8 +2249,8 @@ subroutine t1mhdeqi_geqdsk(lun_geqdsk,geqdsk_lbl, &
    real*8, parameter :: C2PI = 6.2831853071795862_R8
 
    integer id_Bphi,id_BR,id_BZ,id_Bmod
-   type(ezspline1_r8) :: spln1
-   type(ezspline2_r8) :: spln2
+   type(ezspline1) :: spln1
+   type(ezspline2) :: spln2
    integer it, iprofile
    real*8 mu0
    REAL twopi

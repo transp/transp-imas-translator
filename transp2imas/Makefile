@@ -5,9 +5,9 @@
 # 2) a local TRANSP installation (at least the libraries and evironment variables used here)
 
 F90 = gfortran
-COPTS = -cpp -g -O0
+COPTS = -cpp -g -O0 -fPIE
 #COPTS = -cpp -O2
-INCLUDES = -I$(IMAS_PREFIX)/include/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
+INCLUDES = -I$(IMAS_PREFIX)/include/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod -I$(PSPLINE_HOME)/include
 #LIBS = -L$(IMAS_PREFIX)/lib -limas-gfortran -limas \
 
 LIBS = \
@@ -30,20 +30,19 @@ LIBS = \
 	$(LOCAL)/lib/fluxav.a \
 	$(LOCAL)/lib/r8bloat.a \
 	$(LOCAL)/lib/mclib.a \
+	$(LOCAL)/lib/r4smlib.a \
 	$(LOCAL)/lib/smlib.a \
 	$(LOCAL)/lib/interp_sub.a \
 	$(LOCAL)/lib/comput.a \
 	$(LOCAL)/lib/vaxonly.a \
-	$(LOCAL)/lib/pspline.a \
+	$(PSPLINE_HOME)/lib/libpspline.a \
 	$(LOCAL)/lib/ezcdf.a \
 	$(LOCAL)/lib/lsode.a \
 	$(LOCAL)/lib/lsode_linpack.a \
 	$(LOCAL)/lib/portlib.a \
 	-L$(IMAS_PREFIX)/lib -limas-gfortran -limas \
-	$(MDSPLUS_DIR)/lib/libMdsObjectsCppShr.a $(MDSPLUS_DIR)/lib/libMdsLib.a \
-	$(MDSPLUS_DIR)/lib/libMdsIpShr.a $(MDSPLUS_DIR)/lib/libTdiShr.a $(MDSPLUS_DIR)/lib/libTreeShr.a \
-	$(MDSPLUS_DIR)/lib/libMdsShr.a $(MDSPLUS_DIR)/lib/libMdsIpShr.a \
-	$(NETCDFHOME)/lib/libnetcdff.a $(NETCDFHOME)/lib/libnetcdf.a $(EBROOTOPENBLAS)/lib/libopenblas.a \
+	-L$(MDSPLUS_DIR)/lib -lMdsLib -lMdsShr \
+	$(NETCDFHOME)/lib/libnetcdff.a $(NETCDFHOME)/lib/libnetcdf.so $(BLAS_LIBS) \
 	-lxml2 -lrt -lpthread -L$(EBROOTGCC)/lib64 -lstdc++ -ldl
 
 transp2imas : transp2imas_mod.o transp2imas.o t1mhdgeq.o
