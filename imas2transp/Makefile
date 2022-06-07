@@ -6,7 +6,7 @@
 
 F90 = gfortran
 #COPTS = -cpp -g -O0 -fsanitize=address
-COPTS = -cpp -g -O0
+COPTS = -cpp -g -O0 -fdefault-real-8
 #COPTS = -cpp -O2
 #INCLUDES = -I/home/ITER/carlssj/projects/imas-3.7.0/access-layer/fortraninterface/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
 #INCLUDES = -I$(IMAS_INSTALL_DIR)/include/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod
@@ -25,8 +25,8 @@ LIBS = \
 	$(LOCAL)/lib/comput.a \
 	-L$(IMAS_PREFIX)/lib -limas-gfortran -limas \
 	$(MDSPLUS_DIR)/lib/libMdsObjectsCppShr.a $(MDSPLUS_DIR)/lib/libMdsLib.a \
-	$(MDSPLUS_DIR)/lib/libMdsIpShr.a $(MDSPLUS_DIR)/lib/libTdiShr.a $(MDSPLUS_DIR)/lib/libTreeShr.a \
-	$(MDSPLUS_DIR)/lib/libMdsShr.a $(MDSPLUS_DIR)/lib/libMdsIpShr.a \
+	$(MDSPLUS_DIR)/lib/libTdiShr.a $(MDSPLUS_DIR)/lib/libTreeShr.a \
+	$(MDSPLUS_DIR)/lib/libMdsShr.a $(MDSPLUS_DIR)/lib/libMdsIpShr.so \
 	$(NETCDFHOME)/lib/libnetcdff.a $(NETCDFHOME)/lib/libnetcdf.so $(BLAS_LIB) \
 	-lxml2 -lrt -lpthread -lstdc++ -ldl
 #	-L$(IMAS_INSTALL_DIR)/lib -l:libimas-gfortran.so.3.17.0 -limas \

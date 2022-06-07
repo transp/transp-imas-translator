@@ -29,59 +29,80 @@ program imas2transp
    type(transp_ufiles_3d_data) :: t_uf3d
 
    character(len=132) :: longstring
-   character(len=5)   :: treename
+   character(len=5)   :: treename = 'ids'
 
-   integer :: idx, shot, run
    integer :: i,j,k,ii
    integer :: N_Psi, N_Phi, N_Rho_Tor_Norm, N_Rho_Tor, N_Ions, N_q, N_r, N_z
    integer :: N_X_Points,N_S_Points, N_Outline_Points
    integer :: N_Profiles_2D, N_Dim1, N_Dim2
    integer :: N_C_Dim1, N_C_Dim2
    integer :: N_PF_Coils
+   integer :: idx
+   
+   character(LEN=8)  :: IMAS_VERSION = "3.36.0"
+   character(LEN=25) :: IMAS_BACKEND = 'MDSPLUS' ! ASCII_BACKEND/HDF5_BACKEND/MDSPLUS_BACKEND
+   character(LEN=10) :: IMAS_TOK_ID = ''
+   character(LEN=32) :: usr
+   integer :: IMAS_SHOT, IMAS_RUN
+   integer, parameter :: imas_interp = LINEAR_INTERP ! other options UNDEFINED_INTERP, CLOSEST_INTERP, PREVIOUS_INTERP
+   integer :: ibackend, ilen
 
    !prepare to write transp ufile
    integer :: ilun
    CHARACTER(len=16) :: prefix, suffix, disk, directory
-   integer :: ishot
    CHARACTER(len=10) :: shdate
-   CHARACTER(len=4) :: tdev !(tokamak id)
    integer :: ndim
    CHARACTER(len=160) :: comment
    integer :: tlen, xlen, ylen, zlen, tmplen
    integer :: is,jj,kk,ll,Ntmp,ierr
-   real :: tmp1, tmp2, tmp3, eps = 1.e-6
-   real :: r0 !vacuum major radius
-   REAL :: twopi
+   real*8 :: tmp1, tmp2, tmp3, eps = 1.e-6
+   real*8 :: r0 !vacuum major radius
+   REAL*8 :: twopi
    integer :: iarg,nargs
-   character*3 :: args(2),cshot,crun
+   character(LEN=25) :: zstr
    integer :: nsctime, nprtime
 
+   call get_arg_count(nargs)
+   if(nargs < 3) then
+     print *, 'Error. Provide correct number of arguments:'
+     print *, '> imas2transp <IMAS_TOK_ID> <IMAS_SHOT> <IMAS_RUN> [<IMAS_BACKEND>]'
+     print *, 'Here, IMAS_TOK_ID is tokamak name. For example, ITER'
+     print *, '      IMAS_SHOR is the shot number. For example, 101006'
+     print *, '      IMAS_RUN is the run number. For example, 60'
+     print *, '      IMAS_BACKEND is IMAS backend. This is optional variable. For example, HDF5'
+     stop
+   endif
+   call get_command_argument(number=1, length=ilen)
+   call get_command_argument(number=1, value=IMAS_TOK_ID(1:ilen))
+   call get_command_argument(number=2, length=ilen)
+   call get_command_argument(number=2, value=zstr(1:ilen))
+   read(zstr(1:ilen), *) IMAS_SHOT
+   zstr = ''
+   call get_command_argument(number=3, length=ilen)
+   call get_command_argument(number=3, value=zstr(1:ilen))
+   read(zstr(1:ilen), *) IMAS_RUN
+   if (nargs > 3) then 
+     call get_command_argument(number=4, length=ilen)
+     call get_command_argument(number=4, value=IMAS_BACKEND(1:ilen))
+   endif  
+   
+   select case (IMAS_BACKEND)
+     case ("ASCII")
+       ibackend = ASCII_BACKEND
+     case ("HDF5")
+       ibackend = HDF5_BACKEND
+     case default
+       ibackend = MDSPLUS_BACKEND
+   end select
+   
    twopi=2.*4.*atan(1.)
 
-   treename = 'ids'
-   !shot = 20
-   !run = 107
-   cshot = ' '
-   crun = ' '
-   call get_arg_count(nargs)
-   if (nargs.lt.2) then
-      write(*,*) 'imas2transp should be given shot and run number'
-      write(*,*) 'syntax: ./imas2transp shotnumber runnumber'
-      write(*,*) 'shotnumber and runnumber are <3 digits integers'
-   endif
-   iarg=1
-   call get_arg(iarg,args(iarg))
-   cshot=args(iarg)
-   iarg=2
-   call get_arg(iarg,args(iarg))
-   crun=args(iarg)
-   write(*,*) 'imas2transp runid=',trim(cshot), trim(crun)
-   !convert string into integer
-   read(cshot,*,iostat=ierr) shot
-   read(crun,*,iostat=ierr) run
-   write(*,'(a,2i3,a)') 'Open shot', shot, run, 'in MDS'
+   call get_environment_variable("USER",usr)
 
-   call imas_open(treename,shot,run,idx)
+   call ual_begin_pulse_action(ibackend, IMAS_SHOT, IMAS_RUN, TRIM(usr), TRIM(IMAS_TOK_ID), &
+                                IMAS_VERSION, idx, ierr)
+   call ual_open_pulse(idx, OPEN_PULSE, "", ierr)
+ 
    call ids_get(idx,"core_profiles", cp)
    call ids_get(idx,"equilibrium", eq)
    call ids_get(idx,"nbi", nbi)
@@ -97,23 +118,20 @@ program imas2transp
    !N_S_Points       = size(eq%time_slice(ii)%boundary%strike_point)
    !N_Profiles_2D    = size(eq%time_slice(ii)%profiles_2d)
 
-   do i = 1, 6
-      write(*,*) 'i =', i
-      write(*,*) ' a =', cp%profiles_1d(1)%ion(i)%element(1)%a
-      write(*,*) ' z_n =', cp%profiles_1d(1)%ion(i)%element(1)%z_n
+   do i = 1, size(cp%profiles_1d(1)%ion(i)%element)
+      write(*,*) 'i =', i, ',    a =', cp%profiles_1d(1)%ion(i)%element(1)%a, &
+          ',   z_n =', cp%profiles_1d(1)%ion(i)%element(1)%z_n
    enddo
-   stop
 
    !set up transp ufile writing
    ilun=33
    disk=''
    directory='./'
-   ! These subroutines are hardcoded for ITER. Commenting out. JAC 12/6/16
-   ! call write_shotnumber(shot,run,ishot)
-   ! tdev='ITER'
-   ! call write_shdate(shdate)
-   ! call write_omment(comment)
-   ! write(*,*) "shot number=",ishot,"shot date=",shdate, "comment=",trim(comment)
+   ! These subroutines are hardcoded for ITER. 
+   ! call write_shotnumber(IMAS_SHOT,IMAS_RUN,IMAS_SHOT)
+   IMAS_TOK_ID='ITER'
+   call write_shdate(shdate)
+   write(*,*) "shot number=",IMAS_SHOT,"shot date=",shdate, "comment=",trim(comment)
    write(*,*)
    write(*,*)
    write(*,*) "========START UFILE WRITING======================"
@@ -130,23 +148,24 @@ program imas2transp
    prefix='A'
    suffix='CUR'
    t_uf1d%nsc=0
-   write(comment,'(a)') 'imported from equilibrium IDS time_slice global_quantities ip'
+   comment = 'From run '//zstr(1:ilen)//' imported from equilibrium IDS time_slice global_quantities ip'
 
    t_uf1d%nx=nsctime
    if (t_uf1d%nx > 0) then
-      t_uf1d%labelx='time:'
+      t_uf1d%labelx='time'
       t_uf1d%unitsx='second'
-      t_uf1d%labelf='plasma current:'
+      t_uf1d%labelf='plasma current'
       t_uf1d%unitsf='amps'
       t_uf1d%iproc=0
       allocate(t_uf1d%X(t_uf1d%nx))
       allocate(t_uf1d%F(t_uf1d%nx))
       t_uf1d%X=eq%time
-      t_uf1d%F(:)=eq%time_slice(:)%global_quantities%ip
+      t_uf1d%F(:)=abs(eq%time_slice(:)%global_quantities%ip)
+      print *, 'Current', eq%time_slice(:)%global_quantities%ip, eq%time
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -202,7 +221,8 @@ program imas2transp
    prefix='A'
    suffix='PFC'
    t_uf2d%nsc=0
-   write(comment,'(a,i3)') 'imported from ids pf coil current, total',ylen
+   write(comment,'(a,i3)') ' imported from ids pf coil current, total',ylen
+   comment = 'From run '//zstr(1:ilen)//comment
 
    t_uf2d%nx=tlen  !time
    t_uf2d%ny=ylen  !ccindex
@@ -227,8 +247,8 @@ program imas2transp
       enddo
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -264,7 +284,8 @@ program imas2transp
    prefix='A'
    suffix='RBZ'
    t_uf1d%nsc=0
-   write(comment,'(a)') 'imported from equilibrium IDS vacuum_toroidal_field r0 * b0'
+   write(comment,'(a)') ' imported from equilibrium IDS vacuum_toroidal_field r0 * b0'
+   comment = 'From run '//zstr(1:ilen)//comment
 
    t_uf1d%nx=size(eq%time)
    if (t_uf1d%nx > 0) then
@@ -281,8 +302,8 @@ program imas2transp
       t_uf1d%F=100. * r0 * eq%vacuum_toroidal_field%b0
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -309,7 +330,8 @@ program imas2transp
    prefix='A'
    suffix='VSF'
    t_uf1d%nsc=0
-   write(comment,'(a)') 'imported from ids cp global_quantities v_loop'
+   write(comment,'(a)') ' imported from ids cp global_quantities v_loop'
+   comment = 'From run '//zstr(1:ilen)//comment
 
    t_uf1d%nx=tlen
    if (t_uf1d%nx > 0) then
@@ -324,8 +346,8 @@ program imas2transp
       t_uf1d%F=cp%global_quantities%v_loop
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -360,7 +382,8 @@ program imas2transp
    prefix='A'
    suffix='ZEF'
    t_uf1d%nsc=0
-   write(comment,'(a)') 'imported from ids cp profiles_1d(time) zeff(1:1)'
+   write(comment,'(a)') ' imported from ids cp profiles_1d(time) zeff(1:1)'
+   comment = 'From run '//zstr(1:ilen)//comment
 
    t_uf1d%nx=tlen
    if (t_uf1d%nx > 0) then
@@ -377,8 +400,8 @@ program imas2transp
       enddo
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -409,8 +432,8 @@ program imas2transp
       enddo
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -449,8 +472,8 @@ program imas2transp
       enddo
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -538,8 +561,8 @@ program imas2transp
       enddo
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -624,8 +647,8 @@ program imas2transp
 
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -668,8 +691,8 @@ program imas2transp
       enddo
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -745,8 +768,8 @@ program imas2transp
       t_uf1d%F(:)=eq%time_slice(:)%global_quantities%psi_axis / twopi
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -815,8 +838,8 @@ program imas2transp
          eq%time_slice(:)%global_quantities%psi_axis) / twopi
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -911,8 +934,8 @@ program imas2transp
       enddo
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -1007,8 +1030,8 @@ program imas2transp
       enddo
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -1107,8 +1130,8 @@ program imas2transp
       enddo
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -1176,8 +1199,8 @@ program imas2transp
       enddo
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -1226,8 +1249,8 @@ program imas2transp
       enddo
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -1278,8 +1301,8 @@ program imas2transp
       enddo
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -1374,8 +1397,8 @@ program imas2transp
          enddo
          call put_data_to_ufiles(ilun, &
             prefix,suffix,disk,directory, &
-            ishot, &
-            tdev,ndim,shdate, &
+            IMAS_SHOT, &
+            IMAS_TOK_ID,ndim,shdate, &
             comment, &
             t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
             ierr)
@@ -1399,6 +1422,7 @@ program imas2transp
 
    t_uf2d%nx=tlen
    t_uf2d%ny=ylen
+   print *, tlen, ylen, size(cp%profiles_1d(1)%n_i_total_over_n_e)
    if (t_uf2d%nx > 0 .and. t_uf2d%ny > 0) then
       t_uf2d%labelx='Time:'
       t_uf2d%unitsx='seconds'
@@ -1413,15 +1437,25 @@ program imas2transp
       t_uf2d%X=cp%time
       do kk=1,t_uf2d%ny
          t_uf2d%Y(kk)=cp%profiles_1d(1)%grid%rho_tor_norm(kk)
-         do jj=1,t_uf2d%nx
-            t_uf2d%F(jj,kk)=cp%profiles_1d(jj)%n_i_total_over_n_e(kk) * &
-               cp%profiles_1d(jj)%electrons%density(kk) * 1.0e-6
-         enddo
+         if (size(cp%profiles_1d(jj)%n_i_total_over_n_e)==t_uf2d%ny) then
+           do jj=1,t_uf2d%nx
+              t_uf2d%F(jj,kk)=cp%profiles_1d(jj)%n_i_total_over_n_e(kk) * &
+                 cp%profiles_1d(jj)%electrons%density(kk) * 1.0e-6
+           enddo
+         else
+           do jj=1,t_uf2d%nx
+             t_uf2d%F(jj,kk) = 0D0
+             do ll = 1, N_Ions
+               t_uf2d%F(jj,kk) = t_uf2d%F(jj,kk) + 1.0e-6 * cp%profiles_1d(jj)%ion(ll)%density(kk) * &
+                                 cp%profiles_1d(jj)%ion(ll)%element(1)%z_n 
+             enddo
+           enddo
+         endif
       enddo
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
-         ishot, &
-         tdev,ndim,shdate, &
+         IMAS_SHOT, &
+         IMAS_TOK_ID,ndim,shdate, &
          comment, &
          t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
          ierr)
@@ -1492,8 +1526,8 @@ program imas2transp
          enddo
          call put_data_to_ufiles(ilun, &
             prefix,suffix,disk,directory, &
-            ishot, &
-            tdev,ndim,shdate, &
+            IMAS_SHOT, &
+            IMAS_TOK_ID,ndim,shdate, &
             comment, &
             t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
             ierr)
@@ -1540,8 +1574,8 @@ program imas2transp
 !       enddo
 !       call put_data_to_ufiles(ilun, &
 !                               prefix,suffix,disk,directory, &
-!                               ishot, &
-!                               tdev,ndim,shdate, &
+!                               IMAS_SHOT, &
+!                               IMAS_TOK_ID,ndim,shdate, &
 !                               comment, &
 !                               t_uf0d,t_uf1d,t_uf2d,t_uf3d, &
 !                               ierr)
@@ -1565,7 +1599,7 @@ program imas2transp
    ! 144
    ! 81
 
-   call wrgeqdsk(ishot, eq)
+   call wrgeqdsk(IMAS_SHOT, eq)
 
    write(*,*)
    write(*,*)
@@ -1595,24 +1629,24 @@ subroutine write_shdate(shdate)
    character(len=*) :: shdate
    integer,dimension(8) :: xvalues
    call date_and_time(VALUES=xvalues)
-   write(shdate, '(i4,a,i2.2,a,i2.2)'), xvalues(1),'-',xvalues(2),'-',xvalues(3)
+   write(shdate, '(i4,a,i2.2,a,i2.2)') xvalues(1),'-',xvalues(2),'-',xvalues(3)
 end subroutine write_shdate
 
-!get shot number 'ishot'
-subroutine write_shotnumber(shot,run,ishot)
+!get shot number 'IMAS_SHOT'
+subroutine write_shotnumber(shot,run,IMAS_SHOT)
    integer,intent(in) :: shot, run
-   integer,intent(out) :: ishot
+   integer,intent(out) :: IMAS_SHOT
    if (shot.le.99 .and. shot.ge.10) then
-      ishot = shot * 10**(1 + (ceiling(log10(real(run))))) + run
+      IMAS_SHOT = shot * 10**(1 + (ceiling(log10(real(run))))) + run
    else if (shot.le.999 .and. shot.ge.1000) then
-      ishot = shot * 10**(ceiling(log10(real(run)))) + run
+      IMAS_SHOT = shot * 10**(ceiling(log10(real(run)))) + run
    else
       write(*,*) "... err: wrong shot number!"
    endif
 end subroutine write_shotnumber
 
 !write geqdsk file per timeslice
-subroutine wrgeqdsk(ishot, eq)
+subroutine wrgeqdsk(IMAS_SHOT, eq)
    use ids_routines             !! These are the Access Layer routines + management of IDS structures
    USE EZspline_obj
    USE EZspline
@@ -1620,7 +1654,7 @@ subroutine wrgeqdsk(ishot, eq)
 !
 !external EZspline_setup, EZlinear_init, EZspline_interp, EZspline_error, EZspline_free
 !============
-   INTEGER ishot
+   INTEGER IMAS_SHOT
    type (ids_equilibrium)   :: eq  ! Declaration of the empty ids variables to be filled
 
 !============
@@ -1673,7 +1707,7 @@ subroutine wrgeqdsk(ishot, eq)
 
    do jj=1, nt
       ngeq = 52
-      write(fnamegeq,'(a,i6.6,a,i6.6,a)') 'ids_', ishot, '_', jj, '.geq'
+      write(fnamegeq,'(a,i6.6,a,i6.6,a)') 'ids_', IMAS_SHOT, '_', jj, '.geq'
       write(*,'(a,i3.3,a,a)') 'at timeslice ', jj, ' write ', trim(fnamegeq)
       write(ngeqindex,'(a,f8.3,2x,a,a)') 'time=',eq%time(jj),'filename=',trim(fnamegeq)
 
@@ -1901,14 +1935,14 @@ subroutine wrgeqdsk(ishot, eq)
       case(1)='ids'
       case(2)='g'
       !case(3)='05/07'
-      write(case(3), '(i2.2,a,i2.2)'), xvalues(2),'/',xvalues(3)
+      write(case(3), '(i2.2,a,i2.2)') xvalues(2),'/',xvalues(3)
       !case(4)='2015'
-      write(case(4), '(i4.4)'), xvalues(1)
+      write(case(4), '(i4.4)') xvalues(1)
       case(5)='iter'
       write(case(6), '(f8.3)') eq%time(jj)
       !case(6)='ms'
       open(ngeq,file=trim(fnamegeq),form="formatted",status="unknown",iostat=istat)
-      write (ngeq,2000) (case(i),i=1,6),idum,nw,nh
+      write (ngeq,2000) (case(i),i=1,6), idum,nw,nh
       write (ngeq,2020) rdim,zdim,rcentr,rleft,zmid
       write (ngeq,2020) rmaxis,zmaxis,simag,sibry,bcentr
       write (ngeq,2020) current,simag,xdum,rmaxis,xdum
