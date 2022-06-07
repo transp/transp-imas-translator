@@ -14,20 +14,21 @@ INCLUDES = -I$(IMAS_PREFIX)/include/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/
 #LIBS = -L$(IMAS_PREFIX)/lib -limas-gfortran -limas \
 
 LIBS = \
-	$(LOCAL)/lib/uflib.a \
-	$(LOCAL)/lib/ufhdf.a \
-	$(LOCAL)/lib/vaxonly.a \
-	$(LOCAL)/lib/mds_sub.a \
-	$(LOCAL)/lib/mdstransp.a \
+	$(LOCAL)/lib/libuflib.a \
+	$(LOCAL)/lib/libufhdf.a \
+	$(LOCAL)/lib/libvaxonly.a \
+	$(LOCAL)/lib/libtokyr.a \
+	$(LOCAL)/lib/libmds_sub.a \
+	$(LOCAL)/lib/libmdstransp.a \
 	$(PSPLINE_HOME)/lib/libpspline.a \
-	$(LOCAL)/lib/portlib.a \
-	$(LOCAL)/lib/ezcdf.a \
-	$(LOCAL)/lib/comput.a \
-	-L$(IMAS_PREFIX)/lib -limas-gfortran -limas \
+	$(LOCAL)/lib/libportlib.a \
+	$(LOCAL)/lib/libezcdf.a \
+	$(LOCAL)/lib/libcomput.a \
+	$(L_IMAS) \
 	$(MDSPLUS_DIR)/lib/libMdsObjectsCppShr.a $(MDSPLUS_DIR)/lib/libMdsLib.a \
 	$(MDSPLUS_DIR)/lib/libTdiShr.a $(MDSPLUS_DIR)/lib/libTreeShr.a \
 	$(MDSPLUS_DIR)/lib/libMdsShr.a $(MDSPLUS_DIR)/lib/libMdsIpShr.so \
-	$(NETCDFHOME)/lib/libnetcdff.a $(NETCDFHOME)/lib/libnetcdf.so $(BLAS_LIB) \
+	$(NETCDF_FORTRAN_HOME)/lib/libnetcdff.a $(NETCDF_C_HOME)/lib/libnetcdf.so $(BLAS_LIB) \
 	-lxml2 -lrt -lpthread -lstdc++ -ldl
 #	-L$(IMAS_INSTALL_DIR)/lib -l:libimas-gfortran.so.3.17.0 -limas \
 
