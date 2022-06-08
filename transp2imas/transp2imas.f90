@@ -19,7 +19,6 @@ program transp2imas
 
    common/msgs/ imsg,iout
 
-   character*80 arg,argu             ! command line argument
    character*80 rpfile               ! string to establish runid connection
 
    integer ier,iwarn,istat           ! subroutine completion codes
@@ -63,6 +62,13 @@ program transp2imas
    integer imulti                    ! multigraph flag
    integer istype                    ! data item subtype code
    integer idims(8),irank
+   
+   character(len=25) :: IMAS_TOK_ID = 'iter'
+   character(len=25) :: zstr = ''
+   character(len=8)  :: IMAS_VERSION='3.36.0'
+   integer :: IMAS_RUN, IMAS_SHOT
+   integer :: ilen
+   character(len=25) :: cshot
 
    character*1 cmgsign(-1:1)
 !
@@ -102,8 +108,10 @@ program transp2imas
 !
 !  ids
 !
-   integer :: idsidx, shot, run, refshot, refrun
-   character(len=32)::treename
+   integer :: idsidx, run
+   integer :: refshot = 0
+   integer :: refrun = 0
+   character(len=3)::treename = 'ids'
 !
 !  work stuff
 !
@@ -119,7 +127,7 @@ program transp2imas
    real, dimension(:, :), allocatable ::  PLFLX, dXBdPLFLX
    real*8, dimension(:), allocatable ::  xibuf1, xibuf2, xbbuf1, xbbuf2, xbbuf3
 
-    type(ezspline1) :: spln1
+   type(ezspline1) :: spln1
 
    real :: rdum, rvdum(20), rvdum2(20), qmin, psimin, psimax
    integer :: ivdum(20), imin
@@ -138,18 +146,35 @@ program transp2imas
    call plc_msgs(imsg,'transp2imas.msgs')
 
    iout=66
-   rpfile = '11114P04'
    call get_arg_count(k)
-   do i = 1, k
-      call get_arg(i,arg)
-      argu = arg
-      call uupper(argu)
-      if (argu.eq.'STDOUT') then
-         iout=6
-      else
-         rpfile = arg
-      end if
-   end do
+   if(k < 3) then
+     print *, 'Error. Provide correct number of arguments:'
+     print *, '> transp2imas <IMAS_TOK_ID> <IMAS_SHOT> <IMAS_RUN> [STDOUT]'
+     print *, 'Here, IMAS_TOK_ID is tokamak name. For example, ITER'
+     print *, '      IMAS_SHOR is the shot number. For example, 101006'
+     print *, '      IMAS_RUN is the TRANSP run ID. For example, P60'
+     print *, '      STDOUT is the output option. This is optional variable.'
+     stop
+   endif
+   call get_command_argument(number=1, length=ilen)
+   call get_command_argument(number=1, value=IMAS_TOK_ID(1:ilen))
+   call get_command_argument(number=2, length=ilen)
+   call get_command_argument(number=2, value=zstr(1:ilen))
+   cshot = zstr(1:ilen)
+   read(zstr(1:ilen), *) IMAS_SHOT
+   zstr = ''
+   call get_command_argument(number=3, length=ilen)
+   call get_command_argument(number=3, value=zstr(1:ilen))
+   read(zstr(2:ilen), *) run
+   rpfile = TRIM(cshot) // zstr(1:ilen)
+   IMAS_RUN = ichar(zstr(1:1))*100 + run
+   zstr = ''
+   if (k > 3) then 
+     call get_command_argument(number=4, length=ilen)
+     call get_command_argument(number=4, value=zstr(1:ilen))
+     call uupper(zstr)
+     if (zstr(1:ilen).eq.'STDOUT') iout=6
+   endif
    if (iout .eq. 66) then
       open(unit=iout,file='transp2imas.output',status='unknown')
    endif
@@ -3285,19 +3310,8 @@ program transp2imas
 
    write(*,*) 'Open shot and write in IMAS !'
 
-   shot =385
-   run = 1
-   !shot =120
-   !run = 28
-   refshot = 0  ! 100
-   refrun = 0   ! 00
-   treename = ''
-   ! get ids shot & run number
-   call getids_shotid(rpfile,shot,run)
-   ! shot=174819
-
    call getenv('USER',user)
-   call imas_create_env(treename,shot,run,refshot,refrun,idsidx, trim(user),'d3d','3') 
+   call imas_create_env(treename,IMAS_SHOT,IMAS_RUN,refshot,refrun,idsidx, trim(user),IMAS_TOK_ID,IMAS_VERSION) 
 !
 !  save ids data
 !
