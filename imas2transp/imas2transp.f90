@@ -161,7 +161,6 @@ program imas2transp
       allocate(t_uf1d%F(t_uf1d%nx))
       t_uf1d%X=eq%time
       t_uf1d%F(:)=abs(eq%time_slice(:)%global_quantities%ip)
-      print *, 'Current', eq%time_slice(:)%global_quantities%ip, eq%time
       call put_data_to_ufiles(ilun, &
          prefix,suffix,disk,directory, &
          IMAS_SHOT, &
@@ -1351,7 +1350,8 @@ program imas2transp
    enddo
 
    do ll=1,N_Ions  !=5
-      write(*,*)"ion",ll,"label:",cp%profiles_1d(1)%ion(ll)%label
+      if (associated(cp%profiles_1d(1)%ion(ll)%label)) &
+        write(*,*)"ion",ll,"label:",cp%profiles_1d(1)%ion(ll)%label
 
       ndim=2
       prefix='A'
@@ -1481,7 +1481,8 @@ program imas2transp
    N_Ions=size(cp%profiles_1d(1)%ion)
    write(*,*)"# of ion species=", N_Ions
    do ll=1,N_Ions  !=5
-      write(*,*)"ion",ll,"label:",cp%profiles_1d(1)%ion(ll)%label
+      if (associated(cp%profiles_1d(1)%ion(ll)%label)) &
+           write(*,*)"ion",ll,"label:",cp%profiles_1d(1)%ion(ll)%label
 
       ndim=2
       prefix='A'
@@ -1506,7 +1507,8 @@ program imas2transp
 
       t_uf2d%nx=tlen
       t_uf2d%ny=ylen
-      if (t_uf2d%nx > 0 .and. t_uf2d%ny > 0) then
+      if (associated(cp%profiles_1d(1)%ion(1)%temperature) .and. & 
+          t_uf2d%nx > 0 .and. t_uf2d%ny > 0) then
          t_uf2d%labelx='Time:'
          t_uf2d%unitsx='seconds'
          t_uf2d%labely='normalized toroidal field:'

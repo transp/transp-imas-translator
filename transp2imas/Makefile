@@ -11,39 +11,42 @@ INCLUDES = -I$(IMAS_PREFIX)/include/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/
 #LIBS = -L$(IMAS_PREFIX)/lib -limas-gfortran -limas \
 
 LIBS = \
-	$(LOCAL)/lib/key_access.a \
-	$(LOCAL)/lib/trxplib.a \
-	$(LOCAL)/lib/trdatbuf_lib.a \
-	$(LOCAL)/lib/trread.a \
-	$(LOCAL)/lib/tr_getnl.a \
-	$(LOCAL)/lib/rp_kernel.a \
-	$(LOCAL)/lib/rplot_io.a \
-	$(LOCAL)/lib/xdatmgr.a \
-	$(LOCAL)/lib/uflib.a \
-	$(LOCAL)/lib/mds_sub.a \
-	$(LOCAL)/lib/ufhdf.a \
-	$(LOCAL)/lib/old_xplasma.a \
-	$(LOCAL)/lib/xplasma2.a \
-	$(LOCAL)/lib/geqdsk_mds.a \
-	$(LOCAL)/lib/mdstransp.a \
-	$(LOCAL)/lib/nscrunch.a \
-	$(LOCAL)/lib/fluxav.a \
-	$(LOCAL)/lib/r8bloat.a \
-	$(LOCAL)/lib/mclib.a \
-	$(LOCAL)/lib/r4smlib.a \
-	$(LOCAL)/lib/smlib.a \
-	$(LOCAL)/lib/interp_sub.a \
-	$(LOCAL)/lib/comput.a \
-	$(LOCAL)/lib/vaxonly.a \
+	$(LOCAL)/lib/libkey_access.a \
+	$(LOCAL)/lib/libtrxplib.a \
+	$(LOCAL)/lib/libtrdatbuf_lib.a \
+	$(LOCAL)/lib/libtrread.a \
+	$(LOCAL)/lib/libtr_getnl.a \
+	$(LOCAL)/lib/librp_kernel.a \
+	$(LOCAL)/lib/librplot_mod.a \
+	$(LOCAL)/lib/librplot_io.a \
+        $(LOCAL)/lib/libureadsub.a \
+        $(LOCAL)/lib/libtokyr.a \
+	$(LOCAL)/lib/libxdatmgr.a \
+	$(LOCAL)/lib/libuflib.a \
+	$(LOCAL)/lib/libmds_sub.a \
+	$(LOCAL)/lib/libufhdf.a \
+	$(LOCAL)/lib/libold_xplasma.a \
+	$(LOCAL)/lib/libxplasma2.a \
+	$(LOCAL)/lib/libgeqdsk_mds.a \
+	$(LOCAL)/lib/libmdstransp.a \
+	$(LOCAL)/lib/libnscrunch.a \
+	$(LOCAL)/lib/libfluxav.a \
+	$(LOCAL)/lib/libr8bloat.a \
+	$(LOCAL)/lib/libmclib.a \
+	$(LOCAL)/lib/libr4smlib.a \
+	$(LOCAL)/lib/libsmlib.a \
+	$(LOCAL)/lib/libinterp_sub.a \
+	$(LOCAL)/lib/libcomput.a \
+	$(LOCAL)/lib/libvaxonly.a \
 	$(PSPLINE_HOME)/lib/libpspline.a \
-	$(LOCAL)/lib/ezcdf.a \
-	$(LOCAL)/lib/lsode.a \
-	$(LOCAL)/lib/lsode_linpack.a \
-	$(LOCAL)/lib/portlib.a \
+	$(LOCAL)/lib/libezcdf.a \
+	$(LOCAL)/lib/liblsode.a \
+	$(LOCAL)/lib/liblsode_linpack.a \
+	$(LOCAL)/lib/libportlib.a \
 	-L$(IMAS_PREFIX)/lib -limas-gfortran -limas \
 	-L$(MDSPLUS_DIR)/lib -lMdsLib -lMdsShr \
-	$(NETCDFHOME)/lib/libnetcdff.a $(NETCDFHOME)/lib/libnetcdf.so $(BLAS_LIBS) \
-	-lxml2 -lrt -lpthread -L$(EBROOTGCC)/lib64 -lstdc++ -ldl
+	$(NETCDF_FORTRAN_HOME)/lib/libnetcdff.a $(NETCDF_C_HOME)/lib/libnetcdf.so $(BLAS_LIBS) \
+	-lxml2 -lrt -lpthread -lblas -L$(EBROOTGCC)/lib64 -lstdc++ -ldl
 
 transp2imas : transp2imas_mod.o transp2imas.o t1mhdgeq.o
 	@echo "   * $^ -> $@"
