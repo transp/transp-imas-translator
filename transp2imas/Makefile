@@ -7,7 +7,7 @@
 F90 = gfortran
 COPTS = -cpp -g -O0 -fPIE
 #COPTS = -cpp -O2
-INCLUDES = -I$(IMAS_PREFIX)/include/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/mod -I$(PSPLINE_HOME)/include
+INCLUDES = -I$(IMAS_PREFIX)/include/gfortran -I$(NETCDF_FORTRAN_HOME)/include -I$(LOCAL)/mod -I$(PSPLINE_HOME)/include
 #LIBS = -L$(IMAS_PREFIX)/lib -limas-gfortran -limas \
 
 LIBS = \

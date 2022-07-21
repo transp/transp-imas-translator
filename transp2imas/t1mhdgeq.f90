@@ -54,8 +54,8 @@ subroutine t1mhdeq_geq(runid, time)
    deltat = 0.01_r8
    ibccw  = 1
    ipccw  = 1
-   nR = 65 ! 105 ! this must be an ODD number
-   nZ = 105 ! 165 ! this must be an ODD number
+   nR = 121 ! 65 ! 105 ! this must be an ODD number
+   nZ = 121 !105 ! 165 ! this must be an ODD number
    ntheta = 85 ! 135
    ns = 85 ! 135 ! number of points to use to described plasma boundary and limiter
 
@@ -99,13 +99,14 @@ subroutine t1mhdeq_geq(runid, time)
    irzflag=1
    ier = ier + 1
    call trx_bxtr(ibccw,ipccw,irzflag,ier)
+   print *, '>>>>>4>', nZ, nR, ns, ier
    if(ier/=0) return
 
    write(ctime, '(f10.4)') time
    call date_and_time(date=cdate, time=cnow)
    geqdsk_lbl = runid//'T='//trim(ctime)// &
    & '::'//cdate//'_'//cnow
-   !write(*,*) 'Geqdsk file label: ', geqdsk_lbl
+   write(*,*) 'Geqdsk file label: ', geqdsk_lbl
 
    call eq_gfnum('pmhd',id_pmhd)
    call eq_gfnum('q',id_q)
