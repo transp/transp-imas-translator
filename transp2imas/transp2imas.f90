@@ -3118,6 +3118,7 @@ program transp2imas
       call transp2imas_echo('TE',mgslice(1,1),xsizes(istype),1)
 #endif
 
+#ifdef GEQ
 !---------------------------------
       do it=1,nprtime
          allocate(eq%time_slice(it)%profiles_2d(nprofile))
@@ -3141,6 +3142,8 @@ program transp2imas
       !         xplasma_wr_geqdsk  ==>> t1mhdeq_xplasma2geq, somehow
       !         didn't work, module name change also won't work. ????
 !---------------------------------
+#endif
+
 #if 1
 !  read namelist file
 
