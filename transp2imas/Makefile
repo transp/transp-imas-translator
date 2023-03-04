@@ -1,8 +1,7 @@
 # Makefile to link transp2imas with module IMAS library v. 3.8.1
 #
 # prerequisites:
-# 1) "module add imas" (or "module add imas/3.17.2/ual/3.8.1" if the default changes)
-# 2) a local TRANSP installation (at least the libraries and evironment variables used here)
+#  -- a local TRANSP installation that is based on the GCC compiler
 
 F90 = gfortran
 COPTS = -cpp -g -O0 -fPIE
@@ -19,23 +18,24 @@ LIBS = \
 	$(LOCAL)/lib/librp_kernel.a \
 	$(LOCAL)/lib/librplot_mod.a \
 	$(LOCAL)/lib/librplot_io.a \
-        $(LOCAL)/lib/libureadsub.a \
+	$(UFILES_ROOT)/lib/libureadsub.a \
         $(LOCAL)/lib/libtokyr.a \
 	$(LOCAL)/lib/libxdatmgr.a \
-	$(LOCAL)/lib/libuflib.a \
-	$(LOCAL)/lib/libmds_sub.a \
-	$(LOCAL)/lib/libufhdf.a \
+	$(UFILES_ROOT)/lib/libuflib.a \
+	$(UFILES_ROOT)/lib/libmds_sub.a \
+	$(UFILES_ROOT)/lib/libufhdf.a \
+	$(UFILES_ROOT)/lib/libufport.a \
 	$(LOCAL)/lib/libold_xplasma.a \
 	$(LOCAL)/lib/libxplasma2.a \
 	$(LOCAL)/lib/libgeqdsk_mds.a \
-	$(LOCAL)/lib/libmdstransp.a \
+	$(UFILES_ROOT)/lib/libmdstransp.a \
 	$(LOCAL)/lib/libnscrunch.a \
 	$(LOCAL)/lib/libfluxav.a \
 	$(LOCAL)/lib/libr8bloat.a \
 	$(LOCAL)/lib/libmclib.a \
-	$(LOCAL)/lib/libr4smlib.a \
+	$(UFILES_ROOT)/lib/libr4smlib.a \
 	$(LOCAL)/lib/libsmlib.a \
-	$(LOCAL)/lib/libinterp_sub.a \
+	$(UFILES_ROOT)/lib/libinterp_sub.a \
 	$(LOCAL)/lib/libcomput.a \
 	$(LOCAL)/lib/libvaxonly.a \
 	$(PSPLINE_HOME)/lib/libpspline.a \

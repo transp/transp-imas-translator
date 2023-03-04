@@ -14,12 +14,13 @@ INCLUDES = -I$(IMAS_PREFIX)/include/gfortran -I$(NETCDFHOME)/include -I$(LOCAL)/
 #LIBS = -L$(IMAS_PREFIX)/lib -limas-gfortran -limas \
 
 LIBS = \
-	$(LOCAL)/lib/libuflib.a \
-	$(LOCAL)/lib/libufhdf.a \
+	$(UFILES_ROOT)/lib/libuflib.a \
+	$(UFILES_ROOT)/lib/libufhdf.a \
+	$(UFILES_ROOT)/lib/libufport.a \
 	$(LOCAL)/lib/libvaxonly.a \
 	$(LOCAL)/lib/libtokyr.a \
-	$(LOCAL)/lib/libmds_sub.a \
-	$(LOCAL)/lib/libmdstransp.a \
+	$(UFILES_ROOT)/lib/libmds_sub.a \
+	$(UFILES_ROOT)/lib/libmdstransp.a \
 	$(PSPLINE_HOME)/lib/libpspline.a \
 	$(LOCAL)/lib/libportlib.a \
 	$(LOCAL)/lib/libezcdf.a \

@@ -20,6 +20,11 @@ The input for imas2transp are IMAS files ids_<treeid>.tree,
 ids_<treeid>.datafile and ids_<treeid>.characteristics located in the 
 directory $MDSPLUS_TREE_BASE_0 .
 
-Current lead developer: Johan Carlsson, PPPL
+The Makefiles uses the environment variables set by TRANSP/environ. In 
+order to compile the tools, do the following
 
-Original developer: Jin Chen, PPPL
+export COMPILER=GCC
+source [path\_to\_transp]/environ
+
+Previous developers: Jin Chen, PPPL
+		     Johan Carlsson, PPPL
